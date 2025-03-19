@@ -15,8 +15,9 @@
 
 ## Professores responsáveis
 
-* [Nome completo do professor 1]
-* [Nome completo do professor 2]
+* Eveline Alonso Veloso
+* Joana Gabriela Ribeiro de Souza
+* Ramon Lacerda Marques
 
 ## Instruções de utilização
 
