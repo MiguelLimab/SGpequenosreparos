@@ -10,7 +10,7 @@
 * Miguel Lima Barcellos
 * Gabriel Pedrosa do Carmo Nonato
 * Pedro Henrique Silva Vargas
-* Henrique
+* Henrique Azevedo Flores
 * Walter
 
 ## Professores responsáveis
