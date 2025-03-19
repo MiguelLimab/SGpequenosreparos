@@ -4,10 +4,12 @@
 
 ## Alunos integrantes da equipe
 
-* [Nome completo do aluno 1]
-* [Nome completo do aluno 2]
-* [Nome completo do aluno 3]
-* [Nome completo do aluno 4]
+* Felipe Luiz Parreiras Lima
+* Miguel Lima Barcellos
+* Gabriel Pedrosa do Carmo Nonato
+* Pedro Henrique Silva Vargas
+* Henrique
+* Walter
 
 ## Professores responsáveis
 
