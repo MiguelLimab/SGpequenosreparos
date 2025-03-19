@@ -11,7 +11,7 @@
 * Gabriel Pedrosa do Carmo Nonato
 * Pedro Henrique Silva Vargas
 * Henrique Azevedo Flores
-* Walter
+* Walter Roberto Rodrigues Louback
 
 ## Professores responsáveis
 
