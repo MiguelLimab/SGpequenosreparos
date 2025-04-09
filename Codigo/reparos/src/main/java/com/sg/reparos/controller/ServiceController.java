@@ -33,20 +33,20 @@ public class ServiceController {
     public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> userOptional = userService.findByUsername(auth.getName());
-    
+
         if (userOptional.isEmpty()) {
             return "redirect:/login";
         }
-    
+
         User user = userOptional.get();
         List<Service> services;
-        
+
         if (status != null) {
             services = serviceRepository.findByUserAndStatus(user, status);
         } else {
             services = serviceRepository.findByUser(user);
         }
-        
+
         model.addAttribute("services", services);
         return "service";
     }
@@ -111,23 +111,35 @@ public class ServiceController {
     public String rescheduleCompletion(@PathVariable Long id,
             @RequestParam("completionDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("completionTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time) {
-        
+
         Optional<Service> serviceOptional = serviceRepository.findById(id);
         if (serviceOptional.isPresent()) {
             Service service = serviceOptional.get();
-            
-            // Add validation
+
             if (date.isBefore(service.getVisitDate())) {
-                // Handle error - maybe redirect with error message
                 return "redirect:/service?error=Completion date cannot be before visit date";
             }
-            
+
             service.setCompletionDate(date);
             service.setCompletionTime(time);
             service.setStatus(Service.ServiceStatus.AGUARDANDO_FINALIZACAO);
             serviceRepository.save(service);
         }
-    
+
         return "redirect:/service";
+    }
+
+    // =========================================
+    // 🔹 NOVO ENDPOINT PARA INTEGRAÇÃO COM REACT
+    // =========================================
+
+    @GetMapping("/api/service")
+    @ResponseBody
+    public List<Service> listarServicosDoUsuario(Authentication authentication) {
+        Optional<User> userOptional = userService.findByUsername(authentication.getName());
+        if (userOptional.isPresent()) {
+            return serviceRepository.findByUser(userOptional.get());
+        }
+        return List.of(); // Lista vazia se não estiver autenticado
     }
 }

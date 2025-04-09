@@ -16,7 +16,7 @@ const Home = () => {
       <nav className="navbar">
         <div className="navbar-title"><Link to="/home">SG Pequenos Reparos</Link></div>
         <div className="navbar-links">
-        <Link to="/servico">Servicos</Link>
+        <Link to="/service">Servicos</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
