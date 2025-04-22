@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Gerenciamento de Serviços</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-container">
+    <header>
+        <nav>
+            <a href="/home">Início</a>
+            <a href="/service">Serviços</a>
+            <a href="/profile">Perfil</a>
+            <a href="/logout">Sair</a>
+            <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="admin-section">
+                <a href="/admin/service">Painel de Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <h1>Gerenciamento de Serviços</h1>
+
+        <!-- Filtro por Status -->
+        <section class="filters">
+            <form method="get" th:action="@{/admin/service}">
+                <label for="status">Status:</label>
+                <select id="status" name="status">
+                    <option value="" th:selected="${param.status == null}">Todos</option>
+                    <option th:each="status : ${T(com.sg.reparos.model.Service.ServiceStatus).values()}"
+                            th:value="${status}"
+                            th:text="${status}"
+                            th:selected="${status == param.status}"></option>    
+                                    
+                </select>
+                <button type="submit">Filtrar</button>
+            </form>
+        </section>
+
+        <!-- Lista de Serviços -->
+        <section class="service-list">
+            <div th:if="${services.empty}">
+                <p>Nenhum serviço encontrado.</p>
+            </div>
+
+            <div class="service-card" th:each="service : ${services}">
+                <header>
+                    <h3 th:text="${service.serviceType} + ' - ' + ${service.user.username}">Tipo - Usuário</h3>
+                    <span class="badge" th:classappend="' status-' + ${service.status.name().toLowerCase()}"
+                          th:text="${service.status}"></span>
+                </header>
+
+                <div class="details">
+                    <p><strong>Local:</strong> <span th:text="${service.location}"></span></p>
+                    <p><strong>Descrição:</strong> <span th:text="${service.description ?: 'Nenhuma'}"></span></p>
+
+                    <div th:switch="${service.status.name()}">
+                        <div th:case="'AGENDAMENTO_VISITA'">
+                            <p><strong>Visita:</strong> 
+                               <span th:text="${#temporals.format(service.visitDate, 'dd/MM/yyyy')} + ' às ' + ${service.visitTime}"></span>
+                            </p>
+                        </div>
+                        <div th:case="'VISITADO'">
+                            <p><strong>Preço Proposto:</strong> 
+                               <span th:text="${service.price != null ? 'R$ ' + #numbers.formatDecimal(service.price, 1, 2, 'COMMA') : 'Aguardando'}"></span>
+                            </p>
+                        </div>
+                        <div th:case="'AGENDAMENTO_FINALIZACAO'">
+                            <div th:if="${service.completionDate != null and service.completionTime != null}">
+                                <p><strong>Finalização Agendada:</strong> 
+                                    <span th:text="${#temporals.format(service.completionDate, 'dd/MM/yyyy')} + ' às ' + ${service.completionTime}"></span>
+                                </p>
+                            </div>
+                            <div th:if="${service.completionDate == null or service.completionTime == null}">
+                                <p><strong>Finalização Agendada:</strong> Aguardando agendamento</p>
+                            </div>
+                            <p><strong>Preço Aceito:</strong> 
+                                <span th:text="'R$ ' + ${#numbers.formatDecimal(service.price, 1, 2, 'COMMA')}"></span>
+                            </p>
+                        </div>
+                        
+                        <div th:case="'AGUARDANDO_FINALIZACAO'">
+                            <p><strong>Finalização Agendada:</strong> 
+                               <span th:text="${#temporals.format(service.completionDate, 'dd/MM/yyyy')} + ' às ' + ${service.completionTime}"></span>
+                            </p>
+                            <p><strong>Preço Final:</strong> 
+                               <span th:text="'R$ ' + ${#numbers.formatDecimal(service.price, 1, 2, 'COMMA')}"></span>
+                            </p>
+                        </div>
+                        <div th:case="'FINALIZADO'">
+                            <p><strong>Finalizado em:</strong> 
+                               <span th:text="${#temporals.format(service.completionDate, 'dd/MM/yyyy')} + ' às ' + ${service.completionTime}"></span>
+                            </p>
+                            <p><strong>Preço:</strong> 
+                               <span th:text="'R$ ' + ${#numbers.formatDecimal(service.price, 1, 2, 'COMMA')}"></span>
+                            </p>
+                        </div>
+                    </div>
+                    
+
+                    <div th:if="${service.status.name() == 'CANCELADO' || service.status.name() == 'REJEITADO'}">
+                        <p><strong>Status:</strong> <span th:text="${service.status}"></span></p>
+                        <p th:if="${service.price != null}"><strong>Preço Proposto:</strong> <span th:text="'R$ ' + ${#numbers.formatDecimal(service.price, 1, 2, 'COMMA')}"></span></p>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <div th:if="${service.status.name() == 'AGENDAMENTO_VISITA'}">
+                        <form th:action="@{'/admin/service/visit/' + ${service.id}}" method="post">
+                            <label>Preço:</label>
+                            <input type="number" step="0.01" name="price" required>
+                            <button type="submit">Marcar como Visitado</button>
+                        </form>
+                        <form th:action="@{'/admin/service/cancel/' + ${service.id}}" method="post">
+                            <button type="submit">Cancelar</button>
+                        </form>
+                    </div>
+                    <div th:if="${service.status.name() == 'VISITADO'}">
+                        <p>Aguardando resposta do cliente...</p>
+                    </div>
+                    <div th:if="${service.status.name() == 'AGUARDANDO_FINALIZACAO'}">
+                        <form th:action="@{'/admin/service/confirm-completion/' + ${service.id}}" method="post">
+                            <button type="submit">Confirmar Finalização</button>
+                        </form>
+                    </div>
+                    <div th:if="${service.status.name() == 'FINALIZADO' || service.status.name() == 'CANCELADO' || service.status.name() == 'REJEITADO'}">
+                        <p>Sem ações disponíveis, serviço finalizado.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
