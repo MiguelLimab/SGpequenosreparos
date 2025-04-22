@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Services</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="/home">Inicio</a>
+            <a href="/service">Services</a>
+            <a href="/profile">Perfil</a>
+            <a href="/logout">Deslogar</a>
+            <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="admin-section">
+                <a href="/admin/service">Painel de Admin</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Gerenciamento de Serviços</h1>
+
+        <!-- Formulário para criar novo serviço -->
+        <section class="new-service">
+            <h2>Criar Novo Serviço</h2>
+            <form th:action="@{/service/new}" method="post">
+                <div class="form-group">
+                    <label for="serviceType">Tipo de Serviço:</label>
+                    <select id="serviceType" name="serviceType" required>
+                        <option value="">Selecione...</option>
+                        <option value="ELETRICO">Elétrico</option>
+                        <option value="ENCANAMENTO">Encanamento</option>
+                        <option value="PINTURA">Pintura</option>
+                        <option value="ALVENARIA">Alvenaria</option>
+                        <option value="OUTROS">Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Localização:</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitDate">Data da Visita:</label>
+                    <input type="date" id="visitDate" name="visitDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitTime">Hora da Visita:</label>
+                    <input type="time" id="visitTime" name="visitTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Descrição:</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+
+                <button type="submit">Solicitar Serviço</button>
+            </form>
+        </section>
+
+        <!-- Filtro por Status -->
+        <section class="filters">
+            <form method="get" th:action="@{/service}">
+                <label for="status">Filtrar por Status:</label>
+                <select id="status" name="status">
+                    <option value="" th:selected="${param.status == null}">Todos</option>
+                    <option th:each="status : ${T(com.sg.reparos.model.Service.ServiceStatus).values()}"
+                            th:value="${status}"
+                            th:text="${status}"
+                            th:selected="${status == param.status}"></option>
+                </select>
+                <button type="submit">Filtrar</button>
+            </form>
+        </section>
+
+        <!-- Lista de serviços do usuário -->
+        <section class="service-list">
+            <h2>Meus Serviços</h2>
+            <div th:if="${services.empty}">
+                <p>Nenhum serviço encontrado.</p>
+            </div>
+
+            <div class="service-card" th:each="service : ${services}">
+                <h3 th:text="${service.serviceType}">Tipo de Serviço</h3>
+                <p><strong>Local:</strong> <span th:text="${service.location}"></span></p>
+                <p><strong>Status:</strong> <span th:text="${service.status}"></span></p>
+                <p><strong>Descrição:</strong> <span th:text="${service.description ?: 'Nenhuma'}"></span></p>
+
+                <div th:switch="${service.status.name()}">
+
+                    <div th:case="'AGENDAMENTO_VISITA'">
+                        <p><strong>Data da Visita:</strong> 
+                            <span th:text="${#temporals.format(service.visitDate, 'dd/MM/yyyy')}"></span> às 
+                            <span th:text="${service.visitTime}"></span>
+                        </p>
+                        <form th:action="@{'/service/cancel/' + ${service.id}}" method="post">
+                            <button type="submit">Cancelar Serviço</button>
+                        </form>
+                    </div>
+                
+                    <div th:case="'VISITADO'">
+                        <p><strong>Preço Proposto:</strong> 
+                            <span th:text="${service.price != null} ? 'R$ ' + ${#numbers.formatDecimal(service.price, 1, 2, 'POINT')} : 'Aguardando avaliação'"></span>
+                        </p>
+                        <div th:if="${service.price != null}">
+                            <form th:action="@{'/service/accept/' + ${service.id}}" method="post">
+                                <button type="submit">Aceitar Preço</button>
+                            </form>
+                            <form th:action="@{'/service/reject/' + ${service.id}}" method="post">
+                                <button type="submit">Rejeitar Preço</button>
+                            </form>
+                        </div>
+                    </div>
+                
+                    <div th:case="'AGENDAMENTO_FINALIZACAO'">
+
+                        <p><strong>Agendar data da Finalização:</strong>
+                    
+                            <form th:action="@{'/service/reschedule/' + ${service.id}}" method="post" onsubmit="return validateDates(this)">
+                                <div class="form-group">
+                                    <label th:for="'completionDate-' + ${service.id}">Nova Data:</label>
+                                    <input type="date" th:id="'completionDate-' + ${service.id}" 
+                                           name="completionDate" required
+                                           th:min="${#temporals.format(service.visitDate, 'yyyy-MM-dd')}">
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label th:for="'completionTime-' + ${service.id}">Nova Hora:</label>
+                                    <input type="time" th:id="'completionTime-' + ${service.id}" 
+                                           name="completionTime" required>
+                                </div>
+                            
+                                <button type="submit">Agendar Nova Finalização</button>
+                            </form>
+                            
+                            <script>
+                            function validateDates(form) {
+                                const visitDate = new Date('[[${service.visitDate}]]');
+                                const completionDate = new Date(form.completionDate.value);
+                                
+                                if (completionDate < visitDate) {
+                                    alert('A data de finalização não pode ser anterior à data da visita');
+                                    return false;
+                                }
+                                return true;
+                            }
+                            </script>
+                    
+                        <form th:action="@{'/service/cancel/' + ${service.id}}" method="post">
+                            <button type="submit">Cancelar Serviço</button>
+                        </form>
+                    </div>
+                                        
+                    <div th:case="'FINALIZADO' OR 'AGUARDANDO_FINALIZACAO'">
+                        <p><strong>Preço:</strong> 
+                            <span th:text="'R$ ' + ${#numbers.formatDecimal(service.price, 1, 2, 'POINT')}"></span>
+                        </p>
+                        <p><strong>Data de Finalização:</strong> 
+                            <span th:text="${#temporals.format(service.completionDate, 'dd/MM/yyyy')}"></span>
+                            às <span th:text="${service.completionTime}"></span>
+                        </p>
+                    </div>
+
+                </div>
+                
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
