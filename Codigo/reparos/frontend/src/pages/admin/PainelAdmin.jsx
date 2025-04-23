@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../../css/admin/PainelAdmin.css";
 
 const PainelAdmin = () => {
@@ -12,6 +12,12 @@ const PainelAdmin = () => {
   useEffect(() => {
     buscarServicos();
   }, [filtro]);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate("/");
+  };
 
   const buscarServicos = () => {
     let url = "http://localhost:8081/admin/service/api";
@@ -72,7 +78,7 @@ const PainelAdmin = () => {
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
           <Link to="/admin">Painel ADM</Link>
-          <a href="/logout">Sair</a>
+          <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
 
