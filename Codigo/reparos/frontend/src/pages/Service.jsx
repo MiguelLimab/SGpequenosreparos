@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 const Servicos = () => {
   const [servicos, setServicos] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [erro, setErro] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [novoServico, setNovoServico] = useState({
@@ -18,8 +19,17 @@ const Servicos = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    buscarServicos();
-  }, []);
+    axios.get("http://localhost:8081/api/user/role", { withCredentials: true })
+      .then((res) => {
+        setIsAdmin(res.data === "ROLE_ADMIN");
+        buscarServicos();
+      })
+      .catch((err) => {
+        console.error("Erro ao verificar papel do usuário:", err);
+        buscarServicos();
+      });
+  }, []);  
+  
 
   const buscarServicos = () => {
     setErro("");
@@ -128,6 +138,7 @@ const Servicos = () => {
         <div className="navbar-links">
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
+          {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
