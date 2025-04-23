@@ -19,7 +19,8 @@ const Servicos = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8081/api/user/role", { withCredentials: true })
+    axios
+      .get("http://localhost:8081/api/user/role", { withCredentials: true })
       .then((res) => {
         setIsAdmin(res.data === "ROLE_ADMIN");
         buscarServicos();
@@ -28,13 +29,14 @@ const Servicos = () => {
         console.error("Erro ao verificar papel do usuário:", err);
         buscarServicos();
       });
-  }, []);  
-  
+  }, []);
 
   const buscarServicos = () => {
     setErro("");
     axios
-      .get("http://localhost:8081/service/api/service", { withCredentials: true })
+      .get("http://localhost:8081/service/api/service", {
+        withCredentials: true,
+      })
       .then((res) => setServicos(res.data))
       .catch((err) => {
         console.error("Erro ao buscar serviços:", err);
@@ -76,7 +78,9 @@ const Servicos = () => {
       buscarServicos();
     } catch (err) {
       console.error("Erro ao adicionar serviço:", err);
-      setErro("Erro ao adicionar serviço. Verifique os dados e tente novamente.");
+      setErro(
+        "Erro ao adicionar serviço. Verifique os dados e tente novamente."
+      );
     }
   };
 
@@ -84,7 +88,11 @@ const Servicos = () => {
     if (window.confirm("Tem certeza que deseja cancelar este serviço?")) {
       setErro("");
       try {
-        await axios.post(`http://localhost:8081/service/cancel/${id}`, {}, { withCredentials: true });
+        await axios.post(
+          `http://localhost:8081/service/cancel/${id}`,
+          {},
+          { withCredentials: true }
+        );
         buscarServicos();
       } catch (err) {
         console.error("Erro ao cancelar serviço:", err);
@@ -96,7 +104,11 @@ const Servicos = () => {
   const aceitarServico = async (id) => {
     setErro("");
     try {
-      await axios.post(`http://localhost:8081/service/accept/${id}`, {}, { withCredentials: true });
+      await axios.post(
+        `http://localhost:8081/service/accept/${id}`,
+        {},
+        { withCredentials: true }
+      );
       buscarServicos();
     } catch (err) {
       console.error("Erro ao aceitar preço:", err);
@@ -107,7 +119,11 @@ const Servicos = () => {
   const rejeitarServico = async (id) => {
     setErro("");
     try {
-      await axios.post(`http://localhost:8081/service/reject/${id}`, {}, { withCredentials: true });
+      await axios.post(
+        `http://localhost:8081/service/reject/${id}`,
+        {},
+        { withCredentials: true }
+      );
       buscarServicos();
     } catch (err) {
       console.error("Erro ao rejeitar preço:", err);
@@ -138,7 +154,11 @@ const Servicos = () => {
         <div className="navbar-links">
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
-          {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
+          {isAdmin && (
+            <Link to="/admin" className="admin-link">
+              Painel ADM
+            </Link>
+          )}
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
@@ -216,15 +236,26 @@ const Servicos = () => {
               <strong>Status:</strong> {servico.status}
             </p>
             <p>
-              <strong>Descrição:</strong> {servico.description ? servico.description : "Nenhuma"}
+              <strong>Data:</strong>{" "}
+              {new Date(servico.visitDate).toLocaleDateString("pt-BR")}
+            </p>
+            <p>
+              <strong>Horário:</strong> {servico.visitTime.slice(0, 5)}
+            </p>
+            <p>
+              <strong>Descrição:</strong>{" "}
+              {servico.description ? servico.description : "Nenhuma"}
             </p>
 
             {servico.status === "AGENDAMENTO_VISITA" && (
               <>
                 <p>
-                  <strong>Visita:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}
+                  <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
+                  {servico.visitTime}
                 </p>
-                <button onClick={() => cancelarServico(servico.id)}>Cancelar Serviço</button>
+                <button onClick={() => cancelarServico(servico.id)}>
+                  Cancelar Serviço
+                </button>
               </>
             )}
 
@@ -238,21 +269,27 @@ const Servicos = () => {
                 </p>
                 {servico.price !== null && servico.price !== undefined && (
                   <>
-                    <button onClick={() => aceitarServico(servico.id)}>Aceitar Preço</button>
-                    <button onClick={() => rejeitarServico(servico.id)}>Rejeitar Preço</button>
+                    <button onClick={() => aceitarServico(servico.id)}>
+                      Aceitar Preço
+                    </button>
+                    <button onClick={() => rejeitarServico(servico.id)}>
+                      Rejeitar Preço
+                    </button>
                   </>
                 )}
               </>
             )}
 
-            {(servico.status === "FINALIZADO" || servico.status === "AGUARDANDO_FINALIZACAO") && (
+            {(servico.status === "FINALIZADO" ||
+              servico.status === "AGUARDANDO_FINALIZACAO") && (
               <>
                 <p>
                   <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
                 </p>
                 <p>
                   <strong>Finalização:</strong>{" "}
-                  {formatarData(servico.completionDate)} às {servico.completionTime}
+                  {formatarData(servico.completionDate)} às{" "}
+                  {servico.completionTime}
                 </p>
               </>
             )}
