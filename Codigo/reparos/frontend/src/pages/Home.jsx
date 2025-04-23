@@ -1,22 +1,51 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import "../css/Home.css"; // Importa o CSS que criaremos já já
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import "../css/Home.css";
 
 const Home = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Aqui você pode limpar dados do usuário (localStorage, token, etc.)
     navigate("/");
   };
+
+  const servicos = [
+    {
+      titulo: "Manutenção de Imóveis",
+      descricao: "Serviços preventivos e corretivos para manter seu imóvel em ótimas condições.",
+    },
+    {
+      titulo: "Pequenos Reparos",
+      descricao: "Consertos rápidos em portas, janelas, móveis, entre outros.",
+    },
+    {
+      titulo: "Instalação de Equipamentos",
+      descricao: "Instalação segura de suportes, eletrodomésticos, luminárias e mais.",
+    },
+    {
+      titulo: "Montagem de Móveis",
+      descricao: "Montagem com cuidado e precisão conforme o manual do fabricante.",
+    },
+    {
+      titulo: "Serviços Hidráulicos",
+      descricao: "Reparos e instalações em torneiras, chuveiros, encanamentos e registros.",
+    },
+    {
+      titulo: "Serviços Elétricos",
+      descricao: "Instalações e trocas de tomadas, disjuntores e luminárias.",
+    },
+    {
+      titulo: "Pintura",
+      descricao: "Pintura profissional para interiores e exteriores com ótimo acabamento.",
+    },
+  ];
 
   return (
     <div className="home-container">
       <nav className="navbar">
         <div className="navbar-title"><Link to="/home">SG Pequenos Reparos</Link></div>
         <div className="navbar-links">
-        <Link to="/service">Servicos</Link>
+          <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
@@ -33,6 +62,18 @@ const Home = () => {
             Aqui você pode solicitar serviços, acompanhar atendimentos,
             atualizar seu perfil e muito mais!
           </p>
+        </div>
+
+        <div className="servicos-section">
+          <h2 className="servicos-titulo">Nossos Serviços</h2>
+          <div className="servicos-grid">
+            {servicos.map((servico, index) => (
+              <div key={index} className="servico-card">
+                <h3>{servico.titulo}</h3>
+                <p>{servico.descricao}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </main>
     </div>

@@ -129,10 +129,7 @@ public class ServiceController {
         return "redirect:/service";
     }
 
-    // =========================================
-    // 🔹 NOVO ENDPOINT PARA INTEGRAÇÃO COM REACT
-    // =========================================
-
+    
     @GetMapping("/api/service")
     @ResponseBody
     public List<Service> listarServicosDoUsuario(Authentication authentication) {

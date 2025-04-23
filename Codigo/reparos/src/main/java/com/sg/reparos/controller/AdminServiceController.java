@@ -24,11 +24,19 @@ public class AdminServiceController {
     }
 
     @GetMapping
-    public String adminServicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model) {
+    public String adminServicePage(
+            @RequestParam(required = false) Service.ServiceStatus status,
+            @RequestParam(required = false) Service.ServiceType type,
+            Model model) {
+    
         List<Service> services;
     
-        if (status != null) {
+        if (status != null && type != null) {
+            services = serviceRepository.findByStatusAndServiceType(status, type);
+        } else if (status != null) {
             services = serviceRepository.findByStatus(status);
+        } else if (type != null) {
+            services = serviceRepository.findByServiceType(type);
         } else {
             services = serviceRepository.findAll();
         }
