@@ -236,23 +236,16 @@ const Servicos = () => {
               <strong>Status:</strong> {servico.status}
             </p>
             <p>
-              <strong>Data:</strong>{" "}
-              {new Date(servico.visitDate).toLocaleDateString("pt-BR")}
-            </p>
-            <p>
-              <strong>Horário:</strong> {servico.visitTime.slice(0, 5)}
-            </p>
-            <p>
               <strong>Descrição:</strong>{" "}
               {servico.description ? servico.description : "Nenhuma"}
+            </p>
+            <p>
+              <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
+              {servico.visitTime}
             </p>
 
             {servico.status === "AGENDAMENTO_VISITA" && (
               <>
-                <p>
-                  <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
-                  {servico.visitTime}
-                </p>
                 <button onClick={() => cancelarServico(servico.id)}>
                   Cancelar Serviço
                 </button>
