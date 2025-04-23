@@ -1,17 +1,24 @@
 package com.sg.reparos.controller;
 
+import com.sg.reparos.dto.ServiceEditDto;
 import com.sg.reparos.model.Service;
 import com.sg.reparos.repository.ServiceRepository;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -28,9 +35,9 @@ public class AdminServiceController {
             @RequestParam(required = false) Service.ServiceStatus status,
             @RequestParam(required = false) Service.ServiceType type,
             Model model) {
-    
+
         List<Service> services;
-    
+
         if (status != null && type != null) {
             services = serviceRepository.findByStatusAndServiceType(status, type);
         } else if (status != null) {
@@ -40,11 +47,10 @@ public class AdminServiceController {
         } else {
             services = serviceRepository.findAll();
         }
-    
+
         model.addAttribute("services", services);
         return "admin/service";
     }
-    
 
     @PostMapping("/visit/{id}")
     public String markAsVisited(@PathVariable Long id, @RequestParam Double price) {
@@ -82,5 +88,45 @@ public class AdminServiceController {
         }
         return "redirect:/admin/service";
     }
+
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Service> listarServicosAdmin(
+            @RequestParam(required = false) Service.ServiceStatus status,
+            @RequestParam(required = false) Service.ServiceType type) {
+        if (status != null && type != null) {
+            return serviceRepository.findByStatusAndServiceType(status, type);
+        } else if (status != null) {
+            return serviceRepository.findByStatus(status);
+        } else if (type != null) {
+            return serviceRepository.findByServiceType(type);
+        } else {
+            return serviceRepository.findAll();
+        }
+    }
+
+@PutMapping("/edit/{id}")
+@ResponseBody
+public ResponseEntity<String> editarServico(@PathVariable Long id, @RequestBody ServiceEditDto updated) {
+    Optional<Service> optional = serviceRepository.findById(id);
+    if (optional.isEmpty()) return ResponseEntity.notFound().build();
+
+    Service original = optional.get();
+    original.setServiceType(Service.ServiceType.valueOf(updated.getServiceType()));
+    original.setLocation(updated.getLocation());
+    original.setDescription(updated.getDescription());
+    original.setVisitDate(updated.getVisitDate());
+    original.setVisitTime(updated.getVisitTime());
+    original.setCompletionDate(updated.getCompletionDate());
+    original.setCompletionTime(updated.getCompletionTime());
+    original.setStatus(updated.getStatus());
+    original.setPrice(updated.getPrice());
+
+    serviceRepository.save(original);
+    return ResponseEntity.ok("Serviço atualizado com sucesso.");
+}
+
+    
+    
 
 }
