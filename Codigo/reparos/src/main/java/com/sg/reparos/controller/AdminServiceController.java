@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,9 +29,9 @@ public class AdminServiceController {
             @RequestParam(required = false) Service.ServiceStatus status,
             @RequestParam(required = false) Service.ServiceType type,
             Model model) {
-    
+
         List<Service> services;
-    
+
         if (status != null && type != null) {
             services = serviceRepository.findByStatusAndServiceType(status, type);
         } else if (status != null) {
@@ -40,11 +41,10 @@ public class AdminServiceController {
         } else {
             services = serviceRepository.findAll();
         }
-    
+
         model.addAttribute("services", services);
         return "admin/service";
     }
-    
 
     @PostMapping("/visit/{id}")
     public String markAsVisited(@PathVariable Long id, @RequestParam Double price) {
@@ -81,6 +81,22 @@ public class AdminServiceController {
             serviceRepository.save(service);
         }
         return "redirect:/admin/service";
+    }
+
+    @GetMapping("/api")
+    @ResponseBody
+    public List<Service> listarServicosAdmin(
+            @RequestParam(required = false) Service.ServiceStatus status,
+            @RequestParam(required = false) Service.ServiceType type) {
+        if (status != null && type != null) {
+            return serviceRepository.findByStatusAndServiceType(status, type);
+        } else if (status != null) {
+            return serviceRepository.findByStatus(status);
+        } else if (type != null) {
+            return serviceRepository.findByServiceType(type);
+        } else {
+            return serviceRepository.findAll();
+        }
     }
 
 }
