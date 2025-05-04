@@ -43,6 +43,8 @@ public class Service {
     
     private Double price;
     
+    private String estimatedDuration;
+    
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
