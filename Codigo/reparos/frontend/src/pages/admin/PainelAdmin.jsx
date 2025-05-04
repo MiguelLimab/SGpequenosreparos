@@ -75,9 +75,10 @@ const PainelAdmin = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
+        <Link to="/admin">Painel ADM</Link>
+        <Link to="/calendar">Calendario</Link>
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
-          <Link to="/admin">Painel ADM</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>

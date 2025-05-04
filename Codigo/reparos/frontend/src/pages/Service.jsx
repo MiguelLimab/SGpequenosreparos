@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Service.css";
 import { useNavigate, Link } from "react-router-dom";
-
 const Servicos = () => {
   const [servicos, setServicos] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -152,13 +151,18 @@ const Servicos = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          <Link to="/service">Serviços</Link>
-          <Link to="/perfil">Perfil</Link>
-          {isAdmin && (
+        {isAdmin && (
             <Link to="/admin" className="admin-link">
               Painel ADM
             </Link>
           )}
+          {isAdmin && (
+            <Link to="/calendar" className="admin-link">
+              Calendario
+            </Link>
+          )}
+          <Link to="/service">Serviços</Link>
+          <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
