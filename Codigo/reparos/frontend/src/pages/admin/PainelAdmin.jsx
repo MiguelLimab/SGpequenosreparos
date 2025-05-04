@@ -75,8 +75,8 @@ const PainelAdmin = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-        <Link to="/admin">Painel ADM</Link>
-        <Link to="/calendar">Calendario</Link>
+          <Link to="/admin">Painel ADM</Link>
+          <Link to="/calendar">Calendario</Link>
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
@@ -151,6 +151,10 @@ const PainelAdmin = () => {
                       ? `R$ ${servico.price.toFixed(2)}`
                       : "-"}
                   </p>
+                  <p>
+                    <strong>Duração estimada:</strong>{" "}
+                    {servico.estimatedDuration || "Nenhuma"}
+                  </p>
                 </div>
                 <div className="actions">
                   <button onClick={() => handleEditar(servico)}>Editar</button>
@@ -200,6 +204,13 @@ const PainelAdmin = () => {
                       value={form.price || ""}
                       onChange={handleFormChange}
                       placeholder="Preço"
+                    />
+                    <input
+                      type="text"
+                      name="estimatedDuration"
+                      placeholder="duração estimada"
+                      value={form.estimatedDuration || ""}
+                      onChange={handleFormChange}
                     />
                     <select
                       name="status"

@@ -151,7 +151,7 @@ const Servicos = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-        {isAdmin && (
+          {isAdmin && (
             <Link to="/admin" className="admin-link">
               Painel ADM
             </Link>
@@ -247,6 +247,10 @@ const Servicos = () => {
               <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
               {servico.visitTime}
             </p>
+            <p>
+              <strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}
+            </p>
+
 
             {servico.status === "AGENDAMENTO_VISITA" && (
               <>
@@ -279,17 +283,17 @@ const Servicos = () => {
 
             {(servico.status === "FINALIZADO" ||
               servico.status === "AGUARDANDO_FINALIZACAO") && (
-              <>
-                <p>
-                  <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
-                </p>
-                <p>
-                  <strong>Finalização:</strong>{" "}
-                  {formatarData(servico.completionDate)} às{" "}
-                  {servico.completionTime}
-                </p>
-              </>
-            )}
+                <>
+                  <p>
+                    <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
+                  </p>
+                  <p>
+                    <strong>Finalização:</strong>{" "}
+                    {formatarData(servico.completionDate)} às{" "}
+                    {servico.completionTime}
+                  </p>
+                </>
+              )}
           </div>
         ))
       )}
