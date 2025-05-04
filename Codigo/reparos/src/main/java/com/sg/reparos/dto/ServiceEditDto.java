@@ -18,5 +18,6 @@ public class ServiceEditDto {
     private LocalTime completionTime;
     private Service.ServiceStatus status;
     private Double price;
+    private String estimatedDuration;
 }
 
