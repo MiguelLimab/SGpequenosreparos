@@ -19,5 +19,7 @@ public class ServiceEditDto {
     private Service.ServiceStatus status;
     private Double price;
     private String estimatedDuration;
+    private String orcamentoStatus; 
+    
 }
 
