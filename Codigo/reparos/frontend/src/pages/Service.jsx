@@ -8,6 +8,7 @@ const Servicos = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [erro, setErro] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [tipoFiltro, setTipoFiltro] = useState("");
   const [novoServico, setNovoServico] = useState({
     serviceType: "",
     location: "",
@@ -164,7 +165,22 @@ const Servicos = () => {
       </nav>
 
       <h1>Meus Serviços</h1>
-
+      
+      <div className="filtro-container">
+        <label htmlFor="filtroTipo">Filtrar por tipo:</label>
+        <select
+          id="filtroTipo"
+          value={tipoFiltro}
+          onChange={(e) => setTipoFiltro(e.target.value)}
+        >
+          <option value="">Todos</option>
+          <option value="ELETRICO">Elétrico</option>
+          <option value="ENCANAMENTO">Encanamento</option>
+          <option value="PINTURA">Pintura</option>
+          <option value="ALVENARIA">Alvenaria</option>
+          <option value="OUTROS">Outros</option>
+        </select>
+      </div>
       <button className="adicionar-btn" onClick={() => setShowForm(!showForm)}>
         {showForm ? "Fechar Formulário" : "➕ Adicionar Serviço"}
       </button>
@@ -223,71 +239,77 @@ const Servicos = () => {
 
       {erro && <p className="erro">{erro}</p>}
 
-      {servicos.length === 0 ? (
+      {servicos.filter(
+        (servico) => !tipoFiltro || servico.serviceType === tipoFiltro
+      ).length === 0 ? (
         <p>Nenhum serviço encontrado.</p>
       ) : (
-        servicos.map((servico) => (
-          <div key={servico.id} className="servico-card">
-            <h3>{servico.serviceType}</h3>
-            <p>
-              <strong>Local:</strong> {servico.location}
-            </p>
-            <p>
-              <strong>Status:</strong> {servico.status}
-            </p>
-            <p>
-              <strong>Descrição:</strong>{" "}
-              {servico.description ? servico.description : "Nenhuma"}
-            </p>
-            <p>
-              <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
-              {servico.visitTime}
-            </p>
+        servicos
+          .filter(
+            (servico) => !tipoFiltro || servico.serviceType === tipoFiltro
+          )
+          .map((servico) => (
+            <div key={servico.id} className="servico-card">
+              <h3>{servico.serviceType}</h3>
+              <p>
+                <strong>Local:</strong> {servico.location}
+              </p>
+              <p>
+                <strong>Status:</strong> {servico.status}
+              </p>
+              <p>
+                <strong>Descrição:</strong>{" "}
+                {servico.description ? servico.description : "Nenhuma"}
+              </p>
+              <p>
+                <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
+                {servico.visitTime}
+              </p>
 
-            {servico.status === "AGENDAMENTO_VISITA" && (
-              <>
-                <button onClick={() => cancelarServico(servico.id)}>
-                  Cancelar Serviço
-                </button>
-              </>
-            )}
+              {servico.status === "AGENDAMENTO_VISITA" && (
+                <>
+                  <button onClick={() => cancelarServico(servico.id)}>
+                    Cancelar Serviço
+                  </button>
+                </>
+              )}
 
-            {servico.status === "VISITADO" && (
-              <>
-                <p>
-                  <strong>Preço Proposto:</strong>{" "}
-                  {servico.price !== null && servico.price !== undefined
-                    ? `R$ ${servico.price.toFixed(2)}`
-                    : "Aguardando avaliação"}
-                </p>
-                {servico.price !== null && servico.price !== undefined && (
-                  <>
-                    <button onClick={() => aceitarServico(servico.id)}>
-                      Aceitar Preço
-                    </button>
-                    <button onClick={() => rejeitarServico(servico.id)}>
-                      Rejeitar Preço
-                    </button>
-                  </>
-                )}
-              </>
-            )}
+              {servico.status === "VISITADO" && (
+                <>
+                  <p>
+                    <strong>Preço Proposto:</strong>{" "}
+                    {servico.price !== null && servico.price !== undefined
+                      ? `R$ ${servico.price.toFixed(2)}`
+                      : "Aguardando avaliação"}
+                  </p>
+                  {servico.price !== null && servico.price !== undefined && (
+                    <>
+                      <button onClick={() => aceitarServico(servico.id)}>
+                        Aceitar Preço
+                      </button>
+                      <button onClick={() => rejeitarServico(servico.id)}>
+                        Rejeitar Preço
+                      </button>
+                    </>
+                  )}
+                </>
+              )}
 
-            {(servico.status === "FINALIZADO" ||
-              servico.status === "AGUARDANDO_FINALIZACAO") && (
-              <>
-                <p>
-                  <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
-                </p>
-                <p>
-                  <strong>Finalização:</strong>{" "}
-                  {formatarData(servico.completionDate)} às{" "}
-                  {servico.completionTime}
-                </p>
-              </>
-            )}
-          </div>
-        ))
+              {(servico.status === "FINALIZADO" ||
+                servico.status === "AGUARDANDO_FINALIZACAO") && (
+                <>
+                  <p>
+                    <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
+                  </p>
+                  <p>
+                    <strong>Finalização:</strong>{" "}
+                    {formatarData(servico.completionDate)} às{" "}
+                    {servico.completionTime}
+                  </p>
+                </>
+              )}
+            </div>
+          ))
       )}
     </div>
   );
