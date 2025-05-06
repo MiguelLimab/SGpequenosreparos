@@ -3,7 +3,92 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
+import {
+  FaClock,
+  FaCheck,
+  FaTimes,
+  FaCalendarCheck,
+  FaClipboardList,
+  FaHourglassHalf,
+  FaClipboard,
+} from 'react-icons/fa';
+
 const localizer = momentLocalizer(moment);
+
+const handleLogout = () => {
+  // Limpar dados do usuário (localStorage, cookies, etc) se necessário
+  navigate("/");
+};
+
+// Mapa de cores, ícones e siglas por status
+const statusInfo = {
+  AGENDAMENTO_VISITA: { color: '#6c63ff', icon: <FaCalendarCheck />, label: 'AGV' },
+  VISITADO: { color: '#2ecc71', icon: <FaCheck />, label: 'VIS' },
+  AGENDAMENTO_FINALIZACAO: { color: '#f39c12', icon: <FaClipboardList />, label: 'AGF' },
+  AGUARDANDO_FINALIZACAO: { color: '#e67e22', icon: <FaHourglassHalf />, label: 'AFN' },
+  FINALIZADO: { color: '#3498db', icon: <FaClipboard />, label: 'FIN' },
+  CANCELADO: { color: '#e74c3c', icon: <FaTimes />, label: 'CAN' },
+  REJEITADO: { color: '#c0392b', icon: <FaTimes />, label: 'REJ' },
+};
+
+// Componente customizado para eventos
+const CustomEvent = ({ event }) => {
+  const info = statusInfo[event.status] || {
+    color: '#3174ad',
+    icon: <FaClipboard />,
+    label: 'OUT',
+  };
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: info.color,
+        color: 'white',
+        padding: '4px',
+        borderRadius: '4px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        fontSize: '0.85rem',
+      }}
+    >
+      {info.icon}
+      <span>{event.title.split(' - ')[0]} [{info.label}]</span>
+    </div>
+  );
+};
+
+// Legenda de status
+const LegendaStatus = () => {
+  return (
+    <div style={{ marginTop: '1rem' }}>
+      <h4>Legenda de Status</h4>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+        {Object.entries(statusInfo).map(([status, info]) => (
+          <div
+            key={status}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: info.color,
+              color: 'white',
+              padding: '6px 10px',
+              borderRadius: '4px',
+              fontSize: '0.85rem',
+            }}
+          >
+            {info.icon}
+            <strong>[{info.label}]</strong> {status}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 function ServiceCalendar() {
   const [services, setServices] = useState([]);
@@ -26,7 +111,7 @@ function ServiceCalendar() {
             title: `${service.serviceType} - ${service.status}`,
             start,
             end,
-            status: service.status, // importante para as cores
+            status: service.status, // usado para estilo
           };
         });
 
@@ -34,29 +119,8 @@ function ServiceCalendar() {
       })
       .catch(error => console.error(error));
   }, []);
-
-  // Define as cores dos eventos de acordo com o status
-  const eventStyleGetter = (event) => {
-    let backgroundColor = '#3174ad'; // padrão azul
-
-    if (event.status === 'Pendente') backgroundColor = '#f0ad4e'; // amarelo
-    else if (event.status === 'Concluído') backgroundColor = '#5cb85c'; // verde
-    else if (event.status === 'Cancelado') backgroundColor = '#d9534f'; // vermelho
-
-    return {
-      style: {
-        backgroundColor,
-        borderRadius: '5px',
-        opacity: 0.9,
-        color: 'white',
-        border: '0px',
-        display: 'block',
-      }
-    };
-  };
-
   return (
-    <div className="calendar-container">
+    <div className="calendar-container" style={{ maxWidth: 900, margin: 'auto', padding: '1rem' }}>
       <h2>Calendário de Serviços</h2>
       <Calendar
         localizer={localizer}
@@ -64,7 +128,7 @@ function ServiceCalendar() {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 600 }}
-        eventPropGetter={eventStyleGetter}
+        components={{ event: CustomEvent }}
         messages={{
           next: "Próximo",
           previous: "Anterior",
@@ -74,6 +138,7 @@ function ServiceCalendar() {
           day: "Dia",
         }}
       />
+      <LegendaStatus />
     </div>
   );
 }
