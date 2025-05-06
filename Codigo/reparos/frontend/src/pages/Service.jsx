@@ -57,14 +57,14 @@ const Servicos = () => {
       formData.append("visitDate", novoServico.visitDate);
       formData.append("visitTime", novoServico.visitTime);
       formData.append("description", novoServico.description);
-
+  
       await axios.post("http://localhost:8081/service/new", formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-
+  
       alert("Serviço adicionado com sucesso!");
       setShowForm(false);
       setNovoServico({
@@ -77,11 +77,14 @@ const Servicos = () => {
       buscarServicos();
     } catch (err) {
       console.error("Erro ao adicionar serviço:", err);
-      setErro(
-        "Erro ao adicionar serviço. Verifique os dados e tente novamente."
-      );
+      if (err.response && err.response.data) {
+        setErro(err.response.data); // Mensagem customizada do backend
+      } else {
+        setErro("Erro ao adicionar serviço. Verifique os dados e tente novamente.");
+      }
     }
   };
+  
 
   const cancelarServico = async (id) => {
     if (window.confirm("Tem certeza que deseja cancelar este serviço?")) {

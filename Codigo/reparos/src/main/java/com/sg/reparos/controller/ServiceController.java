@@ -7,6 +7,8 @@ import com.sg.reparos.repository.ServiceRepository;
 import com.sg.reparos.service.UserService;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -52,12 +54,24 @@ public class ServiceController {
     }
 
     @PostMapping("/new")
-    public String createService(@ModelAttribute ServiceDto serviceDto) {
+    public ResponseEntity<String> createService(@ModelAttribute ServiceDto serviceDto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> userOptional = userService.findByUsername(auth.getName());
 
         if (userOptional.isEmpty()) {
-            return "redirect:/login";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado.");
+        }
+
+        LocalDate visitDate = serviceDto.getVisitDate();
+        LocalTime visitTime = serviceDto.getVisitTime();
+
+        if (visitDate.isBefore(LocalDate.now()) ||
+                (visitDate.isEqual(LocalDate.now()) && visitTime.isBefore(LocalTime.now()))) {
+            return ResponseEntity.badRequest().body("A data e hora da visita não podem estar no passado.");
+        }
+
+        if (serviceRepository.existsByVisitDateAndVisitTime(visitDate, visitTime)) {
+            return ResponseEntity.badRequest().body("Já existe um serviço agendado nesse horário.");
         }
 
         User user = userOptional.get();
@@ -65,13 +79,13 @@ public class ServiceController {
         service.setServiceType(Service.ServiceType.valueOf(serviceDto.getServiceType()));
         service.setLocation(serviceDto.getLocation());
         service.setDescription(serviceDto.getDescription());
-        service.setVisitDate(serviceDto.getVisitDate());
-        service.setVisitTime(serviceDto.getVisitTime());
+        service.setVisitDate(visitDate);
+        service.setVisitTime(visitTime);
         service.setStatus(Service.ServiceStatus.AGENDAMENTO_VISITA);
         service.setUser(user);
 
         serviceRepository.save(service);
-        return "redirect:/service";
+        return ResponseEntity.ok("Serviço criado com sucesso.");
     }
 
     @PostMapping("/cancel/{id}")
@@ -129,7 +143,6 @@ public class ServiceController {
         return "redirect:/service";
     }
 
-    
     @GetMapping("/api/service")
     @ResponseBody
     public List<Service> listarServicosDoUsuario(Authentication authentication) {

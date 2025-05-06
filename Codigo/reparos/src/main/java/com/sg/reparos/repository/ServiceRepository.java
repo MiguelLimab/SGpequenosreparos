@@ -20,4 +20,5 @@ List<Service> findByUserAndStatus(User user, Service.ServiceStatus status);
 List<Service> findByUserAndServiceType(User user, Service.ServiceType type);
 
 List<Service> findByUserAndStatusAndServiceType(User user, Service.ServiceStatus status, Service.ServiceType type);
+boolean existsByVisitDateAndVisitTime(java.time.LocalDate visitDate, java.time.LocalTime visitTime);
 }
