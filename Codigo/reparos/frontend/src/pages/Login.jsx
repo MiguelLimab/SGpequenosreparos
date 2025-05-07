@@ -11,22 +11,35 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setErrorMsg("");
+  
     try {
       const params = new URLSearchParams();
       params.append("username", username);
       params.append("password", password);
-
+  
       await axios.post("http://localhost:8081/login", params, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         withCredentials: true,
       });
-
-      navigate("/home");
+  
+      // Verifica se login deu certo perguntando o papel do usuário
+      const res = await axios.get("http://localhost:8081/api/user/role", {
+        withCredentials: true,
+      });
+  
+      if (res.data === "ROLE_ADMIN" || res.data === "ROLE_USER") {
+        navigate("/home");
+      } else {
+        setErrorMsg("Usuário ou senha inválidos.");
+      }
+  
     } catch (err) {
+      console.error("Erro de login:", err);
       setErrorMsg("Usuário ou senha inválidos.");
     }
   };
+  
 
   return (
     <div className="login-container">
