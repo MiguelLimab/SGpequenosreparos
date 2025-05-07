@@ -2,6 +2,8 @@ package com.sg.reparos.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore; // <== IMPORTANTE
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -28,17 +30,12 @@ public class Service {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ServiceType serviceType;
 
-    @Column(nullable = false)
     private String location;
-
-    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ServiceStatus status;
 
     private LocalDate visitDate;
@@ -52,10 +49,10 @@ public class Service {
     private String estimatedDuration;
     private String orcamentoStatus;
 
-    @Column(length = 300)
     private String motivoCancelamento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore // <== CORREÇÃO: impede erro de serialização no JSON
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

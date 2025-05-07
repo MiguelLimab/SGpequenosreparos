@@ -95,26 +95,41 @@ function ServiceCalendar() {
   };
 
   const buscarServicos = () => {
-    axios.get("http://localhost:8081/admin/service/api", { withCredentials: true })
+    axios
+      .get("http://localhost:8081/admin/service/api", { withCredentials: true })
       .then((res) => {
-        const formatted = res.data.map(service => {
-          const start = new Date(`${service.visitDate}T${service.visitTime}`);
-          const end = new Date(start.getTime() + 60 * 60 * 1000); // 1h
-
-          return {
-            id: service.id,
-            title: `${service.serviceType} - ${service.status}`,
-            start,
-            end,
-            status: service.status,
-          };
-        });
+        if (!Array.isArray(res.data)) {
+          console.error("Erro: resposta não é array", res.data);
+          return;
+        }
+  
+        const formatted = res.data.map((service) => {
+          try {
+            const start = new Date(`${service.visitDate}T${service.visitTime}`);
+            const end = new Date(start.getTime() + 60 * 60 * 1000);
+  
+            return {
+              id: service.id,
+              title: `${service.serviceType} - ${service.status}`,
+              start,
+              end,
+              status: service.status,
+            };
+          } catch (e) {
+            console.error("Erro ao formatar serviço:", service, e);
+            return null;
+          }
+        }).filter(Boolean); // remove nulos
+  
         setServices(formatted);
       })
       .catch((error) => {
         console.error("Erro ao buscar serviços:", error);
+        if (error.response) {
+          console.error("Resposta do servidor:", error.response.status, error.response.data);
+        }
       });
-  };
+  };  
 
   useEffect(() => {
     axios
