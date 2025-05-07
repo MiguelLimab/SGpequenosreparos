@@ -5,7 +5,8 @@ import Home from "./pages/Home";
 import Perfil from "./pages/Perfil";
 import Servicos from "./pages/Service";
 import PainelAdmin from "./pages/admin/PainelAdmin";
-import ServiceCalendar from "./pages/ServiceCalendar"; // 
+import ServiceCalendar from "./pages/ServiceCalendar";
+import UserList from "./pages/admin/UserList"; // 
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/service" element={<Servicos />} />
         <Route path="/admin" element={<PainelAdmin />} />
         <Route path="/calendar" element={<ServiceCalendar />} />
+        <Route path="/userlist" element={<UserList />} />
       </Routes>
     </BrowserRouter>
   );
