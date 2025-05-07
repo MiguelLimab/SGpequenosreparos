@@ -1,17 +1,22 @@
 package com.sg.reparos.dto;
 
-import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.sg.reparos.model.Service;
+
+import lombok.Data;
+
 @Data
 public class ServiceDto {
+    private Long id; 
     private String serviceType;
     private String location;
     private String description;
     private LocalDate visitDate;
     private LocalTime visitTime;
+    private String status; 
     private LocalDate completionDate;
     private LocalTime completionTime;
-    private String estimatedDuration;
+    private Double price; 
 }

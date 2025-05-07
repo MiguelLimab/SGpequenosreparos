@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/service")
 public class ServiceController {
+
     private final ServiceRepository serviceRepository;
     private final UserService userService;
 
@@ -88,17 +90,6 @@ public class ServiceController {
         return ResponseEntity.ok("Serviço criado com sucesso.");
     }
 
-    @PostMapping("/cancel/{id}")
-    public String cancelService(@PathVariable Long id) {
-        Optional<Service> serviceOptional = serviceRepository.findById(id);
-        if (serviceOptional.isPresent()) {
-            Service service = serviceOptional.get();
-            service.setStatus(Service.ServiceStatus.CANCELADO);
-            serviceRepository.save(service);
-        }
-        return "redirect:/service";
-    }
-
     @PostMapping("/accept/{id}")
     public String acceptPrice(@PathVariable Long id) {
         Optional<Service> serviceOptional = serviceRepository.findById(id);
@@ -122,7 +113,8 @@ public class ServiceController {
     }
 
     @PostMapping("/reschedule/{id}")
-    public String rescheduleCompletion(@PathVariable Long id,
+    public String rescheduleCompletion(
+            @PathVariable Long id,
             @RequestParam("completionDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam("completionTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time) {
 
@@ -151,5 +143,24 @@ public class ServiceController {
             return serviceRepository.findByUser(userOptional.get());
         }
         return List.of(); // Lista vazia se não estiver autenticado
+    }
+
+    @PostMapping("/cancel/{id}")
+    @ResponseBody
+    public ResponseEntity<String> cancelarComMotivo(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        Optional<Service> optional = serviceRepository.findById(id);
+        if (optional.isEmpty()) return ResponseEntity.notFound().build();
+
+        String motivo = payload.get("motivo");
+        if (motivo == null || motivo.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Motivo do cancelamento é obrigatório.");
+        }
+
+        Service servico = optional.get();
+        servico.setStatus(Service.ServiceStatus.CANCELADO);
+        servico.setMotivoCancelamento(motivo);
+        serviceRepository.save(servico);
+
+        return ResponseEntity.ok("Serviço cancelado com motivo.");
     }
 }
