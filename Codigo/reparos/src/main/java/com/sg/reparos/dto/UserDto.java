@@ -9,4 +9,8 @@ public class UserDto {
     private String username;
     private String email;
     private Role role;
+    private long totalServices;
+    private long completedServices;
+    private long canceledServices;
+    private long otherServices;
 }

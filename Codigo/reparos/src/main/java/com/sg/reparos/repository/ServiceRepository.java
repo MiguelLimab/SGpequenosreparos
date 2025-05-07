@@ -14,6 +14,9 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     List<Service> findByServiceType(ServiceType type);
     List<Service> findByStatusAndServiceType(ServiceStatus status, ServiceType type);
     List<Service> findByUser(User user);
+    long countByUser(User user);
+
+    long countByUserAndStatus(User user, Service.ServiceStatus status);
 
 List<Service> findByUserAndStatus(User user, Service.ServiceStatus status);
 

@@ -19,7 +19,7 @@ const UserList = () => {
           withCredentials: true
         });
         console.log("Resposta:", response.data);
-        setUsuarios(response.data); // Deve ser um array direto
+        setUsuarios(response.data); // Atualizando o estado com os dados retornados
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
       }
@@ -71,12 +71,15 @@ const UserList = () => {
               <p><strong>Username:</strong> {usuarioSelecionado.username}</p>
               <p><strong>Email:</strong> {usuarioSelecionado.email}</p>
               <p><strong>Role:</strong> {usuarioSelecionado.role}</p>
+              <p><strong>Total de Serviços:</strong> {usuarioSelecionado.totalServices}</p>
+              <p><strong>Serviços Concluídos:</strong> {usuarioSelecionado.completedServices}</p>
+              <p><strong>Serviços Cancelados:</strong> {usuarioSelecionado.canceledServices}</p>
+              <p><strong>Outros Status:</strong> {usuarioSelecionado.otherServices}</p>
               <button onClick={() => setUsuarioSelecionado(null)}>Fechar</button>
             </div>
           </div>
         )}
       </div>
-
     </div>
   );
 };
