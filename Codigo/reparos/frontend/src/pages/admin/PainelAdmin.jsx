@@ -75,9 +75,10 @@ const PainelAdmin = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
+          <Link to="/admin">Painel ADM</Link>
+          <Link to="/calendar">Calendario</Link>
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
-          <Link to="/admin">Painel ADM</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
@@ -150,6 +151,14 @@ const PainelAdmin = () => {
                       ? `R$ ${servico.price.toFixed(2)}`
                       : "-"}
                   </p>
+                  <p>
+                    <strong>Duração estimada:</strong>{" "}
+                    {servico.estimatedDuration || "Nenhuma"}
+                  </p>
+                  <p>
+                    <strong>Status Orçamento:</strong>{" "}
+                    {servico.orcamentoStatus || "Nenhuma"}
+                  </p>
                 </div>
                 <div className="actions">
                   <button onClick={() => handleEditar(servico)}>Editar</button>
@@ -200,6 +209,27 @@ const PainelAdmin = () => {
                       onChange={handleFormChange}
                       placeholder="Preço"
                     />
+                    <input
+                      type="text"
+                      name="estimatedDuration"
+                      placeholder="duração estimada"
+                      value={form.estimatedDuration || ""}
+                      onChange={handleFormChange}
+                    />
+                    <div>
+                      <label>Situação Orçamento:</label>
+                      <div>
+                        <select
+                          name="orcamentoStatus"
+                          value={form.orcamentoStatus || "A_FAZER"}
+                          onChange={handleFormChange}
+                        >
+                          <option value="A_FAZER">A FAZER</option>
+                          <option value="FEITO">FEITO</option>
+                        </select>
+                      </div>
+                    </div>
+
                     <select
                       name="status"
                       value={form.status || ""}

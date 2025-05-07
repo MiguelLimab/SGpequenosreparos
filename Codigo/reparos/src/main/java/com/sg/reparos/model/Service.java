@@ -44,8 +44,9 @@ public class Service {
     private LocalTime completionTime;
     
     private Double price;
-    private Integer estimatedDuration;
-    
+    private String estimatedDuration;
+    private String orcamentoStatus; 
+     
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
