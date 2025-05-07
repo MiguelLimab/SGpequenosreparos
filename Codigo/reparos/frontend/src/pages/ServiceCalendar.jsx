@@ -7,7 +7,6 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
 import {
-  FaClock,
   FaCheck,
   FaTimes,
   FaCalendarCheck,
@@ -18,7 +17,6 @@ import {
 
 const localizer = momentLocalizer(moment);
 
-// Mapa de cores, ícones e siglas por status
 const statusInfo = {
   AGENDAMENTO_VISITA: { color: '#6c63ff', icon: <FaCalendarCheck />, label: 'AGV' },
   VISITADO: { color: '#2ecc71', icon: <FaCheck />, label: 'VIS' },
@@ -87,23 +85,21 @@ const LegendaStatus = () => (
 function ServiceCalendar() {
   const [services, setServices] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [view, setView] = useState('month');
+  const [date, setDate] = useState(new Date());
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Ex: localStorage.clear();
     navigate('/');
   };
 
   const buscarServicos = () => {
-    fetch('/admin/service/api')
-      .then(response => {
-        if (!response.ok) throw new Error("Erro ao carregar serviços");
-        return response.json();
-      })
-      .then(data => {
-        const formatted = data.map(service => {
+    axios.get("http://localhost:8081/admin/service/api", { withCredentials: true })
+      .then((res) => {
+        const formatted = res.data.map(service => {
           const start = new Date(`${service.visitDate}T${service.visitTime}`);
-          const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hora
+          const end = new Date(start.getTime() + 60 * 60 * 1000); // 1h
 
           return {
             id: service.id,
@@ -115,7 +111,9 @@ function ServiceCalendar() {
         });
         setServices(formatted);
       })
-      .catch(error => console.error("Erro:", error));
+      .catch((error) => {
+        console.error("Erro ao buscar serviços:", error);
+      });
   };
 
   useEffect(() => {
@@ -127,7 +125,7 @@ function ServiceCalendar() {
       })
       .catch((err) => {
         console.error("Erro ao verificar papel do usuário:", err);
-        buscarServicos(); // mesmo se falhar
+        buscarServicos(); // tenta mesmo com erro
       });
   }, []);
 
@@ -139,14 +137,10 @@ function ServiceCalendar() {
         </div>
         <div className="navbar-links">
           {isAdmin && (
-            <Link to="/admin" className="admin-link">
-              Painel ADM
-            </Link>
-          )}
-          {isAdmin && (
-            <Link to="/calendar" className="admin-link">
-              Calendário
-            </Link>
+            <>
+              <Link to="/admin" className="admin-link">Painel ADM</Link>
+              <Link to="/calendar" className="admin-link">Calendário</Link>
+            </>
           )}
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
@@ -160,6 +154,10 @@ function ServiceCalendar() {
         events={services}
         startAccessor="start"
         endAccessor="end"
+        view={view}
+        onView={setView}
+        date={date}
+        onNavigate={setDate}
         style={{ height: 600 }}
         components={{ event: CustomEvent }}
         messages={{
@@ -169,6 +167,7 @@ function ServiceCalendar() {
           month: "Mês",
           week: "Semana",
           day: "Dia",
+          agenda: "Agenda"
         }}
       />
       <LegendaStatus />
