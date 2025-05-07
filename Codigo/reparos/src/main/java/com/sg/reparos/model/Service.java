@@ -2,11 +2,13 @@ package com.sg.reparos.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
 @Data
+@Entity
+
 public class Service {
     public enum ServiceType {
         ELETRICO, ENCANAMENTO, PINTURA, ALVENARIA, OUTROS
@@ -42,6 +44,7 @@ public class Service {
     private LocalTime completionTime;
     
     private Double price;
+    private Integer estimatedDuration;
     
     @ManyToOne
     @JoinColumn(name = "user_id")

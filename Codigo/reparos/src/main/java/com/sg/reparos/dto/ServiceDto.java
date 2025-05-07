@@ -13,4 +13,5 @@ public class ServiceDto {
     private LocalTime visitTime;
     private LocalDate completionDate;
     private LocalTime completionTime;
+    private String estimatedDuration;
 }

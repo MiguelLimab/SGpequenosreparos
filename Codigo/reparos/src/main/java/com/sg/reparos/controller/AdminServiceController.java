@@ -121,6 +121,8 @@ public ResponseEntity<String> editarServico(@PathVariable Long id, @RequestBody 
     original.setCompletionTime(updated.getCompletionTime());
     original.setStatus(updated.getStatus());
     original.setPrice(updated.getPrice());
+    original.setEstimatedDuration(updated.getEstimatedDuration());
+    original.setOrcamentoStatus(updated.getOrcamentoStatus());
 
     serviceRepository.save(original);
     return ResponseEntity.ok("Serviço atualizado com sucesso.");
