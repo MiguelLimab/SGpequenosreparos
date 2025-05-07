@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Service.css";
 import { useNavigate, Link } from "react-router-dom";
-
 const Servicos = () => {
   const [servicos, setServicos] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -59,14 +58,14 @@ const Servicos = () => {
       formData.append("visitDate", novoServico.visitDate);
       formData.append("visitTime", novoServico.visitTime);
       formData.append("description", novoServico.description);
-
+  
       await axios.post("http://localhost:8081/service/new", formData, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-
+  
       alert("Serviço adicionado com sucesso!");
       setShowForm(false);
       setNovoServico({
@@ -79,11 +78,14 @@ const Servicos = () => {
       buscarServicos();
     } catch (err) {
       console.error("Erro ao adicionar serviço:", err);
-      setErro(
-        "Erro ao adicionar serviço. Verifique os dados e tente novamente."
-      );
+      if (err.response && err.response.data) {
+        setErro(err.response.data); // Mensagem customizada do backend
+      } else {
+        setErro("Erro ao adicionar serviço. Verifique os dados e tente novamente.");
+      }
     }
   };
+  
 
   const cancelarServico = async (id) => {
     if (window.confirm("Tem certeza que deseja cancelar este serviço?")) {
@@ -153,13 +155,18 @@ const Servicos = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          <Link to="/service">Serviços</Link>
-          <Link to="/perfil">Perfil</Link>
           {isAdmin && (
             <Link to="/admin" className="admin-link">
               Painel ADM
             </Link>
           )}
+          {isAdmin && (
+            <Link to="/calendar" className="admin-link">
+              Calendario
+            </Link>
+          )}
+          <Link to="/service">Serviços</Link>
+          <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
@@ -244,27 +251,26 @@ const Servicos = () => {
       ).length === 0 ? (
         <p>Nenhum serviço encontrado.</p>
       ) : (
-        servicos
-          .filter(
-            (servico) => !tipoFiltro || servico.serviceType === tipoFiltro
-          )
-          .map((servico) => (
-            <div key={servico.id} className="servico-card">
-              <h3>{servico.serviceType}</h3>
-              <p>
-                <strong>Local:</strong> {servico.location}
-              </p>
-              <p>
-                <strong>Status:</strong> {servico.status}
-              </p>
-              <p>
-                <strong>Descrição:</strong>{" "}
-                {servico.description ? servico.description : "Nenhuma"}
-              </p>
-              <p>
-                <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
-                {servico.visitTime}
-              </p>
+        servicos.map((servico) => (
+          <div key={servico.id} className="servico-card">
+            <h3>{servico.serviceType}</h3>
+            <p>
+              <strong>Local:</strong> {servico.location}
+            </p>
+            <p>
+              <strong>Status:</strong> {servico.status}
+            </p>
+            <p>
+              <strong>Descrição:</strong>{" "}
+              {servico.description ? servico.description : "Nenhuma"}
+            </p>
+            <p>
+              <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
+              {servico.visitTime}
+            </p>
+            <p>
+              <strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}
+            </p>
 
               {servico.status === "AGENDAMENTO_VISITA" && (
                 <>
@@ -294,9 +300,8 @@ const Servicos = () => {
                   )}
                 </>
               )}
-
-              {(servico.status === "FINALIZADO" ||
-                servico.status === "AGUARDANDO_FINALIZACAO") && (
+            {(servico.status === "FINALIZADO" ||
+              servico.status === "AGUARDANDO_FINALIZACAO") && (
                 <>
                   <p>
                     <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
@@ -308,8 +313,8 @@ const Servicos = () => {
                   </p>
                 </>
               )}
-            </div>
-          ))
+          </div>
+        ))
       )}
     </div>
   );

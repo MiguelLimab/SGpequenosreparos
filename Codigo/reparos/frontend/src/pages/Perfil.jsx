@@ -142,6 +142,7 @@ const Perfil = () => {
         </button>
 
         {msg && <p className="mensagem">{msg}</p>}
+        <Link to="/userlist">Listar Usuários</Link>
       </form>
     </div>
   );
