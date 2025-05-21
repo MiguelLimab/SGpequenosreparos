@@ -34,6 +34,34 @@ function isDataPermitida(date) {
   return ciclo >= 0 && ciclo <= 3;
 }
 
+function getVisibleDates(currentDate, view) {
+  let start, end;
+
+  if (view === 'month') {
+    start = moment(currentDate).startOf('month').startOf('week');
+    end = moment(currentDate).endOf('month').endOf('week');
+  } else if (view === 'week') {
+    start = moment(currentDate).startOf('week');
+    end = moment(currentDate).endOf('week');
+  } else if (view === 'day') {
+    start = moment(currentDate).startOf('day');
+    end = moment(currentDate).endOf('day');
+  } else {
+    start = moment(currentDate).startOf('week');
+    end = moment(currentDate).endOf('week');
+  }
+
+  const dates = [];
+  const day = start.clone();
+
+  while (day.isBefore(end, 'day') || day.isSame(end, 'day')) {
+    dates.push(day.clone().toDate());
+    day.add(1, 'day');
+  }
+
+  return dates;
+}
+
 const CustomEvent = ({ event }) => {
   const info = statusInfo[event.status] || {
     color: '#3174ad',
@@ -152,21 +180,28 @@ function ServiceCalendar() {
   }, []);
 
   useEffect(() => {
-    const marcarDiasBloqueados = () => {
-      document.querySelectorAll('.rbc-day-bg').forEach((element) => {
-        const dateStr = element.getAttribute('title');
-        if (!dateStr) return;
+    const observer = new MutationObserver(() => {
+      const visibleDates = getVisibleDates(date, view);
+      document.querySelectorAll('.rbc-day-bg').forEach((element, index) => {
+        const currentDate = visibleDates[index];
+        if (!currentDate) return;
 
-        const date = new Date(dateStr);
-        if (!isDataPermitida(date)) {
+        if (!isDataPermitida(currentDate)) {
           element.classList.add('bloqueado');
         } else {
           element.classList.remove('bloqueado');
         }
       });
-    };
+    });
 
-    marcarDiasBloqueados();
+    const calendarNodes = document.querySelectorAll('.rbc-month-view, .rbc-time-view');
+    calendarNodes.forEach(node => {
+      observer.observe(node, { childList: true, subtree: true });
+    });
+
+    observer.takeRecords();
+
+    return () => observer.disconnect();
   }, [date, view, services]);
 
   return (
@@ -209,55 +244,6 @@ function ServiceCalendar() {
             }}
           />
           <LegendaStatus />
-        </div>
-
-        <div style={{
-          flex: 1,
-          backgroundColor: '#f8f8f8',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          padding: '1rem',
-          overflowY: 'auto',
-          maxHeight: '700px'
-        }}>
-          <h3 style={{ marginBottom: '1rem' }}>Lista de Serviços</h3>
-          {services.length === 0 ? (
-            <p>Nenhum serviço encontrado.</p>
-          ) : (
-            services.map(service => {
-              const info = statusInfo[service.status] || {
-                color: '#888',
-                icon: <FaClipboard />,
-                label: 'OUT',
-              };
-
-              return (
-                <div key={service.id} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  backgroundColor: '#fff',
-                  border: `2px solid ${info.color}`,
-                  borderRadius: '6px',
-                  padding: '0.75rem',
-                  marginBottom: '0.75rem',
-                }}>
-                  <div>
-                    <strong>{service.title.split(' - ')[0]}</strong><br />
-                    <small>
-                      {moment(service.start).format('DD/MM/YYYY')} às {moment(service.start).format('HH:mm')}
-                      {!isDataPermitida(service.start) && (
-                        <span style={{ color: 'red', fontSize: '0.8rem' }}> (Data Bloqueada)</span>
-                      )}
-                    </small>
-                  </div>
-                  <div style={{ fontSize: '1.2rem', color: info.color }} title={service.status}>
-                    {info.icon}
-                  </div>
-                </div>
-              );
-            })
-          )}
         </div>
       </div>
     </div>
