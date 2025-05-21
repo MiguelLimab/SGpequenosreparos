@@ -104,6 +104,15 @@ public class AdminServiceController {
             return serviceRepository.findAll();
         }
     }
+    @GetMapping("/api")
+public List<ServicoDTO> listarServicos(
+    @RequestParam(required = false) String status,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim
+) {
+    return servicoService.buscarServicosComFiltro(status, dataInicio, dataFim);
+}
+
 
 @PutMapping("/edit/{id}")
 @ResponseBody
