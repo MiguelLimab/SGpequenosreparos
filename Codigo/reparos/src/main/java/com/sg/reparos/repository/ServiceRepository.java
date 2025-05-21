@@ -30,5 +30,14 @@ boolean existsByVisitDateAndVisitTime(java.time.LocalDate visitDate, java.time.L
 List<Service> findByStatusAndVisitDateBetween(Service.ServiceStatus status, LocalDate dataInicio, LocalDate dataFim);
 void deleteByUser_Id(Long id);
 
+List<Service> findByVisitDateBetween(LocalDate dataInicio, LocalDate dataFim);
+
+List<Service> findByStatusAndServiceTypeAndVisitDateBetween(
+    Service.ServiceStatus status,
+    Service.ServiceType type,
+    LocalDate dataInicio,
+    LocalDate dataFim
+);
+
 
 }

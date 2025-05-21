@@ -6,6 +6,8 @@ import "../../css/admin/PainelAdmin.css";
 const PainelAdmin = () => {
   const [servicos, setServicos] = useState([]);
   const [filtro, setFiltro] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({});
 
@@ -13,7 +15,7 @@ const PainelAdmin = () => {
 
   useEffect(() => {
     buscarServicos();
-  }, [filtro]);
+  }, [filtro, dataInicio, dataFim]);
 
   const handleLogout = () => {
     navigate("/");
@@ -24,6 +26,8 @@ const PainelAdmin = () => {
     const params = new URLSearchParams();
 
     if (filtro) params.append("status", filtro);
+    if (dataInicio) params.append("dataInicio", dataInicio);
+    if (dataFim) params.append("dataFim", dataFim);
 
     axios
       .get(`${url}?${params.toString()}`, { withCredentials: true })
@@ -103,6 +107,22 @@ const PainelAdmin = () => {
               <option value="CANCELADO">CANCELADO</option>
               <option value="REJEITADO">REJEITADO</option>
             </select>
+
+            <label htmlFor="dataInicio">Data Início:</label>
+            <input
+              type="date"
+              id="dataInicio"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+            />
+
+            <label htmlFor="dataFim">Data Fim:</label>
+            <input
+              type="date"
+              id="dataFim"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+            />
 
             <button type="submit">Buscar</button>
           </form>
