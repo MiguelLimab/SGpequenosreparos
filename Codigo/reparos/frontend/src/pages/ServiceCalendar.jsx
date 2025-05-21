@@ -245,6 +245,55 @@ function ServiceCalendar() {
           />
           <LegendaStatus />
         </div>
+
+        <div style={{
+          flex: 1,
+          backgroundColor: '#f8f8f8',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          padding: '1rem',
+          overflowY: 'auto',
+          maxHeight: '700px'
+        }}>
+          <h3 style={{ marginBottom: '1rem' }}>Lista de Serviços</h3>
+          {services.length === 0 ? (
+            <p>Nenhum serviço encontrado.</p>
+          ) : (
+            services.map(service => {
+              const info = statusInfo[service.status] || {
+                color: '#888',
+                icon: <FaClipboard />,
+                label: 'OUT',
+              };
+
+              return (
+                <div key={service.id} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  backgroundColor: '#fff',
+                  border: `2px solid ${info.color}`,
+                  borderRadius: '6px',
+                  padding: '0.75rem',
+                  marginBottom: '0.75rem',
+                }}>
+                  <div>
+                    <strong>{service.title.split(' - ')[0]}</strong><br />
+                    <small>
+                      {moment(service.start).format('DD/MM/YYYY')} às {moment(service.start).format('HH:mm')}
+                      {!isDataPermitida(service.start) && (
+                        <span style={{ color: 'red', fontSize: '0.8rem' }}> (Data Bloqueada)</span>
+                      )}
+                    </small>
+                  </div>
+                  <div style={{ fontSize: '1.2rem', color: info.color }} title={service.status}>
+                    {info.icon}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );
