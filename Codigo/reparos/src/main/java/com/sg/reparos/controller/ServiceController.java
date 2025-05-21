@@ -4,13 +4,13 @@ import com.sg.reparos.dto.ServiceDto;
 import com.sg.reparos.model.Service;
 import com.sg.reparos.model.User;
 import com.sg.reparos.repository.ServiceRepository;
+import com.sg.reparos.service.ServiceService;
 import com.sg.reparos.service.UserService;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,45 +18,46 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/service")
 public class ServiceController {
+
     private final ServiceRepository serviceRepository;
     private final UserService userService;
+    private final ServiceService serviceService;
 
-    public ServiceController(ServiceRepository serviceRepository, UserService userService) {
+    public ServiceController(ServiceRepository serviceRepository, UserService userService, ServiceService serviceService) {
         this.serviceRepository = serviceRepository;
         this.userService = userService;
+        this.serviceService = serviceService;
     }
 
+    /**
+     * Página principal do usuário com seus serviços.
+     */
     @GetMapping
-    public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> userOptional = userService.findByUsername(auth.getName());
-
-        if (userOptional.isEmpty()) {
-            return "redirect:/login";
-        }
+    public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model, Authentication authentication) {
+        Optional<User> userOptional = userService.findByUsername(authentication.getName());
+        if (userOptional.isEmpty()) return "redirect:/login";
 
         User user = userOptional.get();
-        List<Service> services;
-
-        if (status != null) {
-            services = serviceRepository.findByUserAndStatus(user, status);
-        } else {
-            services = serviceRepository.findByUser(user);
-        }
+        List<Service> services = (status != null)
+                ? serviceRepository.findByUserAndStatus(user, status)
+                : serviceRepository.findByUser(user);
 
         model.addAttribute("services", services);
         return "service";
     }
 
+    /**
+     * Criação de novo serviço/agendamento.
+     */
     @PostMapping("/new")
-    public ResponseEntity<String> createService(@ModelAttribute ServiceDto serviceDto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> userOptional = userService.findByUsername(auth.getName());
+    public ResponseEntity<String> createService(@ModelAttribute ServiceDto serviceDto, Authentication authentication) {
+        Optional<User> userOptional = userService.findByUsername(authentication.getName());
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado.");
@@ -70,11 +71,17 @@ public class ServiceController {
             return ResponseEntity.badRequest().body("A data e hora da visita não podem estar no passado.");
         }
 
+        // ✅ NOVA VALIDAÇÃO: 4 dias sim, 4 dias não
+        try {
+            serviceService.validarDataPermitida(visitDate);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
         if (serviceRepository.existsByVisitDateAndVisitTime(visitDate, visitTime)) {
             return ResponseEntity.badRequest().body("Já existe um serviço agendado nesse horário.");
         }
 
-        User user = userOptional.get();
         Service service = new Service();
         service.setServiceType(Service.ServiceType.valueOf(serviceDto.getServiceType()));
         service.setLocation(serviceDto.getLocation());
@@ -82,53 +89,54 @@ public class ServiceController {
         service.setVisitDate(visitDate);
         service.setVisitTime(visitTime);
         service.setStatus(Service.ServiceStatus.AGENDAMENTO_VISITA);
-        service.setUser(user);
+        service.setUser(userOptional.get());
 
         serviceRepository.save(service);
         return ResponseEntity.ok("Serviço criado com sucesso.");
     }
 
-    @PostMapping("/cancel/{id}")
-    public String cancelService(@PathVariable Long id) {
-        Optional<Service> serviceOptional = serviceRepository.findById(id);
-        if (serviceOptional.isPresent()) {
-            Service service = serviceOptional.get();
-            service.setStatus(Service.ServiceStatus.CANCELADO);
-            serviceRepository.save(service);
-        }
-        return "redirect:/service";
-    }
-
+    /**
+     * Cliente aceita proposta.
+     */
     @PostMapping("/accept/{id}")
-    public String acceptPrice(@PathVariable Long id) {
-        Optional<Service> serviceOptional = serviceRepository.findById(id);
-        if (serviceOptional.isPresent()) {
-            Service service = serviceOptional.get();
-            service.setStatus(Service.ServiceStatus.AGENDAMENTO_FINALIZACAO);
-            serviceRepository.save(service);
-        }
-        return "redirect:/service";
+    public String acceptPrice(@PathVariable Long id, Authentication authentication) {
+        return alterarStatusDoUsuario(id, authentication, Service.ServiceStatus.AGENDAMENTO_FINALIZACAO);
     }
 
+    /**
+     * Cliente rejeita proposta.
+     */
     @PostMapping("/reject/{id}")
-    public String rejectPrice(@PathVariable Long id) {
-        Optional<Service> serviceOptional = serviceRepository.findById(id);
-        if (serviceOptional.isPresent()) {
-            Service service = serviceOptional.get();
-            service.setStatus(Service.ServiceStatus.REJEITADO);
+    public String rejectPrice(@PathVariable Long id, Authentication authentication) {
+        return alterarStatusDoUsuario(id, authentication, Service.ServiceStatus.REJEITADO);
+    }
+
+    /**
+     * Auxiliar para alterar status com validação de propriedade.
+     */
+    private String alterarStatusDoUsuario(Long id, Authentication authentication, Service.ServiceStatus novoStatus) {
+        Optional<Service> optional = serviceRepository.findById(id);
+        if (optional.isPresent() && pertenceAoUsuario(optional.get(), authentication)) {
+            Service service = optional.get();
+            service.setStatus(novoStatus);
             serviceRepository.save(service);
         }
         return "redirect:/service";
     }
 
+    /**
+     * Reagendamento da finalização após visita.
+     */
     @PostMapping("/reschedule/{id}")
-    public String rescheduleCompletion(@PathVariable Long id,
+    public String rescheduleCompletion(
+            @PathVariable Long id,
             @RequestParam("completionDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam("completionTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time) {
+            @RequestParam("completionTime") @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime time,
+            Authentication authentication) {
 
-        Optional<Service> serviceOptional = serviceRepository.findById(id);
-        if (serviceOptional.isPresent()) {
-            Service service = serviceOptional.get();
+        Optional<Service> optional = serviceRepository.findById(id);
+        if (optional.isPresent() && pertenceAoUsuario(optional.get(), authentication)) {
+            Service service = optional.get();
 
             if (date.isBefore(service.getVisitDate())) {
                 return "redirect:/service?error=Completion date cannot be before visit date";
@@ -143,13 +151,47 @@ public class ServiceController {
         return "redirect:/service";
     }
 
+    /**
+     * API: listar serviços do usuário autenticado.
+     */
     @GetMapping("/api/service")
     @ResponseBody
     public List<Service> listarServicosDoUsuario(Authentication authentication) {
-        Optional<User> userOptional = userService.findByUsername(authentication.getName());
-        if (userOptional.isPresent()) {
-            return serviceRepository.findByUser(userOptional.get());
+        return userService.findByUsername(authentication.getName())
+                .map(serviceRepository::findByUser)
+                .orElse(List.of());
+    }
+
+    /**
+     * Cancelamento com motivo fornecido pelo cliente.
+     */
+    @PostMapping("/cancel/{id}")
+    @ResponseBody
+    public ResponseEntity<String> cancelarComMotivo(@PathVariable Long id, @RequestBody Map<String, String> payload, Authentication authentication) {
+        Optional<Service> optional = serviceRepository.findById(id);
+        if (optional.isEmpty()) return ResponseEntity.notFound().build();
+
+        Service servico = optional.get();
+        if (!pertenceAoUsuario(servico, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não pode cancelar este serviço.");
         }
-        return List.of(); // Lista vazia se não estiver autenticado
+
+        String motivo = payload.get("motivo");
+        if (motivo == null || motivo.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Motivo do cancelamento é obrigatório.");
+        }
+
+        servico.setStatus(Service.ServiceStatus.CANCELADO);
+        servico.setMotivoCancelamento(motivo.trim());
+        serviceRepository.save(servico);
+
+        return ResponseEntity.ok("Serviço cancelado com motivo.");
+    }
+
+    /**
+     * Valida se o serviço pertence ao usuário autenticado.
+     */
+    private boolean pertenceAoUsuario(Service service, Authentication authentication) {
+        return service.getUser().getUsername().equals(authentication.getName());
     }
 }

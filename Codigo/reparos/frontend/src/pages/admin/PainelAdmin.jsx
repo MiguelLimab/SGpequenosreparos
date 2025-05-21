@@ -26,10 +26,6 @@ const PainelAdmin = () => {
     const params = new URLSearchParams();
 
     if (filtro) params.append("status", filtro);
-    if (dataInicio) params.append("dataInicio", dataInicio);
-    if (dataFim) params.append("dataFim", dataFim);
-
-    const fullUrl = `${url}?${params.toString()}`;
 
     axios
       .get(fullUrl, { withCredentials: true })
@@ -110,27 +106,8 @@ const PainelAdmin = () => {
               <option value="FINALIZADO">FINALIZADO</option>
               <option value="CANCELADO">CANCELADO</option>
               <option value="REJEITADO">REJEITADO</option>
+              <button type="button" onClick={buscarServicos}></button>
             </select>
-
-            <label htmlFor="dataInicio">Data Início:</label>
-            <input
-              type="date"
-              id="dataInicio"
-              value={dataInicio}
-              onChange={(e) => setDataInicio(e.target.value)}
-            />
-
-            <label htmlFor="dataFim">Data Fim:</label>
-            <input
-              type="date"
-              id="dataFim"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-            />
-
-            <button type="button" onClick={buscarServicos}>
-              Filtrar
-            </button>
           </form>
         </section>
 

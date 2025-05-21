@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Service.css";
 import { useNavigate, Link } from "react-router-dom";
+
 const Servicos = () => {
   const [servicos, setServicos] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -34,9 +35,7 @@ const Servicos = () => {
   const buscarServicos = () => {
     setErro("");
     axios
-      .get("http://localhost:8081/service/api/service", {
-        withCredentials: true,
-      })
+      .get("http://localhost:8081/service/api/service", { withCredentials: true })
       .then((res) => setServicos(res.data))
       .catch((err) => {
         console.error("Erro ao buscar serviços:", err);
@@ -48,9 +47,25 @@ const Servicos = () => {
     setNovoServico({ ...novoServico, [e.target.name]: e.target.value });
   };
 
+  // ✅ Função para validar "4 dias sim, 4 dias não"
+  function isDataPermitida(dateStr) {
+    const date = new Date(dateStr);
+    const inicio = new Date(2025, 0, 1);
+    const diffTime = date - inicio;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const ciclo = diffDays % 8;
+    return ciclo >= 0 && ciclo <= 3;
+  }
+
   const handleAdicionarServico = async (e) => {
     e.preventDefault();
     setErro("");
+
+    if (!isDataPermitida(novoServico.visitDate)) {
+      setErro("A data selecionada está em um período não permitido (4 dias sim, 4 dias não).");
+      return;
+    }
+
     try {
       const formData = new URLSearchParams();
       formData.append("serviceType", novoServico.serviceType);
@@ -58,14 +73,12 @@ const Servicos = () => {
       formData.append("visitDate", novoServico.visitDate);
       formData.append("visitTime", novoServico.visitTime);
       formData.append("description", novoServico.description);
-  
+
       await axios.post("http://localhost:8081/service/new", formData, {
         withCredentials: true,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
-  
+
       alert("Serviço adicionado com sucesso!");
       setShowForm(false);
       setNovoServico({
@@ -79,22 +92,30 @@ const Servicos = () => {
     } catch (err) {
       console.error("Erro ao adicionar serviço:", err);
       if (err.response && err.response.data) {
-        setErro(err.response.data); // Mensagem customizada do backend
+        setErro(err.response.data);
       } else {
         setErro("Erro ao adicionar serviço. Verifique os dados e tente novamente.");
       }
     }
   };
-  
 
   const cancelarServico = async (id) => {
+    const justificativa = window.prompt("Por favor, informe o motivo do cancelamento:");
+    if (!justificativa || justificativa.trim() === "") {
+      alert("É necessário informar um motivo para cancelar o serviço.");
+      return;
+    }
+
     if (window.confirm("Tem certeza que deseja cancelar este serviço?")) {
       setErro("");
       try {
         await axios.post(
           `http://localhost:8081/service/cancel/${id}`,
-          {},
-          { withCredentials: true }
+          { justificativa },
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
+          }
         );
         buscarServicos();
       } catch (err) {
@@ -135,12 +156,9 @@ const Servicos = () => {
   };
 
   const handleLogout = () => {
-    // Limpar dados do usuário (localStorage, cookies, etc) se necessário
-    // Exemplo: localStorage.clear();
     navigate("/");
   };
 
-  // Função para formatar data no padrão brasileiro (dd/mm/yyyy)
   const formatarData = (dataStr) => {
     if (!dataStr) return "";
     const data = new Date(dataStr);
@@ -155,16 +173,8 @@ const Servicos = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          {isAdmin && (
-            <Link to="/admin" className="admin-link">
-              Painel ADM
-            </Link>
-          )}
-          {isAdmin && (
-            <Link to="/calendar" className="admin-link">
-              Calendario
-            </Link>
-          )}
+          {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
+          {isAdmin && <Link to="/calendar" className="admin-link">Calendario</Link>}
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
@@ -172,7 +182,7 @@ const Servicos = () => {
       </nav>
 
       <h1>Meus Serviços</h1>
-      
+
       <div className="filtro-container">
         <label htmlFor="filtroTipo">Filtrar por tipo:</label>
         <select
@@ -188,6 +198,7 @@ const Servicos = () => {
           <option value="OUTROS">Outros</option>
         </select>
       </div>
+
       <button className="adicionar-btn" onClick={() => setShowForm(!showForm)}>
         {showForm ? "Fechar Formulário" : "➕ Adicionar Serviço"}
       </button>
@@ -254,65 +265,36 @@ const Servicos = () => {
         servicos.map((servico) => (
           <div key={servico.id} className="servico-card">
             <h3>{servico.serviceType}</h3>
-            <p>
-              <strong>Local:</strong> {servico.location}
-            </p>
-            <p>
-              <strong>Status:</strong> {servico.status}
-            </p>
-            <p>
-              <strong>Descrição:</strong>{" "}
-              {servico.description ? servico.description : "Nenhuma"}
-            </p>
-            <p>
-              <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
-              {servico.visitTime}
-            </p>
-            <p>
-              <strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}
-            </p>
+            <p><strong>Local:</strong> {servico.location}</p>
+            <p><strong>Status:</strong> {servico.status}</p>
+            <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
+            <p><strong>Visita:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
+            <p><strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}</p>
 
-              {servico.status === "AGENDAMENTO_VISITA" && (
-                <>
-                  <button onClick={() => cancelarServico(servico.id)}>
-                    Cancelar Serviço
-                  </button>
-                </>
-              )}
+            {servico.status === "AGENDAMENTO_VISITA" && (
+              <button onClick={() => cancelarServico(servico.id)}>
+                Cancelar Serviço
+              </button>
+            )}
 
-              {servico.status === "VISITADO" && (
-                <>
-                  <p>
-                    <strong>Preço Proposto:</strong>{" "}
-                    {servico.price !== null && servico.price !== undefined
-                      ? `R$ ${servico.price.toFixed(2)}`
-                      : "Aguardando avaliação"}
-                  </p>
-                  {servico.price !== null && servico.price !== undefined && (
-                    <>
-                      <button onClick={() => aceitarServico(servico.id)}>
-                        Aceitar Preço
-                      </button>
-                      <button onClick={() => rejeitarServico(servico.id)}>
-                        Rejeitar Preço
-                      </button>
-                    </>
-                  )}
-                </>
-              )}
-            {(servico.status === "FINALIZADO" ||
-              servico.status === "AGUARDANDO_FINALIZACAO") && (
-                <>
-                  <p>
-                    <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
-                  </p>
-                  <p>
-                    <strong>Finalização:</strong>{" "}
-                    {formatarData(servico.completionDate)} às{" "}
-                    {servico.completionTime}
-                  </p>
-                </>
-              )}
+            {servico.status === "VISITADO" && (
+              <>
+                <p><strong>Preço Proposto:</strong> {servico.price != null ? `R$ ${servico.price.toFixed(2)}` : "Aguardando avaliação"}</p>
+                {servico.price != null && (
+                  <>
+                    <button onClick={() => aceitarServico(servico.id)}>Aceitar Preço</button>
+                    <button onClick={() => rejeitarServico(servico.id)}>Rejeitar Preço</button>
+                  </>
+                )}
+              </>
+            )}
+
+            {(servico.status === "FINALIZADO" || servico.status === "AGUARDANDO_FINALIZACAO") && (
+              <>
+                <p><strong>Preço:</strong> R$ {servico.price?.toFixed(2)}</p>
+                <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
+              </>
+            )}
           </div>
         ))
       )}
