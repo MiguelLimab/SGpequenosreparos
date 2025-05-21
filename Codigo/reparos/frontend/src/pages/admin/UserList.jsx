@@ -41,11 +41,28 @@ const UserList = () => {
   const handleCancelarEdicao = () => {
     setModoEdicao(false);
     setUsuarioSelecionado(null);
+    setError(null);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUsuarioSelecionado((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const formatarErro = (erroOriginal) => {
+    if (!erroOriginal) return "Erro desconhecido";
+
+    const mensagem = erroOriginal.response?.data?.message || erroOriginal.message || String(erroOriginal);
+
+    if (mensagem.includes('violação de restrição de unicidade')) {
+      return "Nome de usuário já existe. Escolha outro.";
+    }
+
+    if (mensagem.includes('could not execute statement')) {
+      return "Erro ao executar a operação. Verifique os dados informados: possivelmente dados duplicados ou inválidos.";
+    }
+
+    return `Erro: ${mensagem}`;
   };
 
   const handleSalvar = async () => {
@@ -73,7 +90,7 @@ const UserList = () => {
       );
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error);
-      setError(`Erro ao atualizar: ${error.response?.data?.message || error.message}`);
+      setError(formatarErro(error));
     } finally {
       setLoading(false);
     }
@@ -84,33 +101,31 @@ const UserList = () => {
     if (!confirmacao) return;
 
     try {
-        setLoading(true);
-        const response = await axios.delete(
-            `http://localhost:8081/admin/userlist/${user.id}`,
-            {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-        
-        if (response.status === 200) {
-            alert("Usuário excluído com sucesso!");
-            // Atualiza a lista removendo o usuário excluído
-            setUsuarios(prev => prev.filter(u => u.id !== user.id));
-            // Fecha o modal se estiver aberto
-            if (usuarioSelecionado && usuarioSelecionado.id === user.id) {
-                setUsuarioSelecionado(null);
-            }
+      setLoading(true);
+      const response = await axios.delete(
+        `http://localhost:8081/admin/userlist/${user.id}`,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
+      );
+
+      if (response.status === 200) {
+        alert("Usuário excluído com sucesso!");
+        setUsuarios(prev => prev.filter(u => u.id !== user.id));
+        if (usuarioSelecionado && usuarioSelecionado.id === user.id) {
+          setUsuarioSelecionado(null);
+        }
+      }
     } catch (error) {
-        console.error("Erro ao excluir usuário:", error);
-        setError(`Erro ao excluir usuário: ${error.response?.data || error.message}`);
+      console.error("Erro ao excluir usuário:", error);
+      setError(formatarErro(error));
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   return (
     <div className="user-list-container">
@@ -125,9 +140,14 @@ const UserList = () => {
 
       <div className="main">
         <h1>Lista de Usuários</h1>
-        
+
         {loading && <div className="loading-indicator">Processando...</div>}
-        {error && <div className="error-message">{error}</div>}
+
+        {error && (
+          <div className="error-message">
+            <strong>⚠️ Atenção:</strong> {error}
+          </div>
+        )}
 
         <div className="user-table-container">
           <table className="user-table">

@@ -1,12 +1,13 @@
 package com.sg.reparos.controller;
 
-
 import com.sg.reparos.dto.ServiceEditDto;
 import com.sg.reparos.model.Service;
 import com.sg.reparos.repository.ServiceRepository;
 import com.sg.reparos.service.ServiceService;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -80,3 +81,18 @@ public class AdminServiceController {
             @PathVariable Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate visitDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime visitTime) {
+
+        Service atualizado = serviceService.agendarVisita(id, visitDate, visitTime);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    // Atualizar status
+    @PutMapping("/status/{id}")
+    public ResponseEntity<Service> atualizarStatus(
+            @PathVariable Long id,
+            @RequestParam Service.ServiceStatus status) {
+
+        Service atualizado = serviceService.atualizarStatus(id, status);
+        return ResponseEntity.ok(atualizado);
+    }
+}
