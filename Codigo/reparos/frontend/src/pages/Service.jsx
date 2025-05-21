@@ -88,13 +88,24 @@ const Servicos = () => {
   
 
   const cancelarServico = async (id) => {
+    const justificativa = window.prompt("Por favor, informe o motivo do cancelamento:");
+    if (!justificativa || justificativa.trim() === "") {
+      alert("É necessário informar um motivo para cancelar o serviço.");
+      return;
+    }
+  
     if (window.confirm("Tem certeza que deseja cancelar este serviço?")) {
       setErro("");
       try {
         await axios.post(
           `http://localhost:8081/service/cancel/${id}`,
-          {},
-          { withCredentials: true }
+          { justificativa },
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         buscarServicos();
       } catch (err) {
@@ -103,6 +114,7 @@ const Servicos = () => {
       }
     }
   };
+  
 
   const aceitarServico = async (id) => {
     setErro("");

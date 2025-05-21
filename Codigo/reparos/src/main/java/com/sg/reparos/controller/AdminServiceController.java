@@ -5,23 +5,13 @@ import com.sg.reparos.model.Service;
 import com.sg.reparos.repository.ServiceRepository;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequestMapping("/admin/service")
 public class AdminServiceController {
     private final ServiceRepository serviceRepository;
@@ -30,67 +20,7 @@ public class AdminServiceController {
         this.serviceRepository = serviceRepository;
     }
 
-    @GetMapping
-    public String adminServicePage(
-            @RequestParam(required = false) Service.ServiceStatus status,
-            @RequestParam(required = false) Service.ServiceType type,
-            Model model) {
-
-        List<Service> services;
-
-        if (status != null && type != null) {
-            services = serviceRepository.findByStatusAndServiceType(status, type);
-        } else if (status != null) {
-            services = serviceRepository.findByStatus(status);
-        } else if (type != null) {
-            services = serviceRepository.findByServiceType(type);
-        } else {
-            services = serviceRepository.findAll();
-        }
-
-        model.addAttribute("services", services);
-        return "admin/service";
-    }
-
-    @PostMapping("/visit/{id}")
-    public String markAsVisited(@PathVariable Long id, @RequestParam Double price) {
-        Service service = serviceRepository.findById(id).orElseThrow();
-        service.setStatus(Service.ServiceStatus.VISITADO);
-        service.setPrice(price);
-        serviceRepository.save(service);
-        return "redirect:/admin/service";
-    }
-
-    @PostMapping("/complete/{id}")
-    public String markAsCompleted(@PathVariable Long id) {
-        Service service = serviceRepository.findById(id).orElseThrow();
-        service.setStatus(Service.ServiceStatus.FINALIZADO);
-        service.setCompletionDate(LocalDate.now());
-        serviceRepository.save(service);
-        return "redirect:/admin/service";
-    }
-
-    @PostMapping("/cancel/{id}")
-    public String cancelService(@PathVariable Long id) {
-        Service service = serviceRepository.findById(id).orElseThrow();
-        service.setStatus(Service.ServiceStatus.CANCELADO);
-        serviceRepository.save(service);
-        return "redirect:/admin/service";
-    }
-
-    @PostMapping("/confirm-completion/{id}")
-    public String confirmCompletion(@PathVariable Long id) {
-        Optional<Service> serviceOptional = serviceRepository.findById(id);
-        if (serviceOptional.isPresent()) {
-            Service service = serviceOptional.get();
-            service.setStatus(Service.ServiceStatus.FINALIZADO);
-            serviceRepository.save(service);
-        }
-        return "redirect:/admin/service";
-    }
-
     @GetMapping("/api")
-    @ResponseBody
     public List<Service> listarServicosAdmin(
             @RequestParam(required = false) Service.ServiceStatus status,
             @RequestParam(required = false) Service.ServiceType type) {
@@ -105,30 +35,51 @@ public class AdminServiceController {
         }
     }
 
-@PutMapping("/edit/{id}")
-@ResponseBody
-public ResponseEntity<String> editarServico(@PathVariable Long id, @RequestBody ServiceEditDto updated) {
-    Optional<Service> optional = serviceRepository.findById(id);
-    if (optional.isEmpty()) return ResponseEntity.notFound().build();
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<String> editarServico(@PathVariable Long id, @RequestBody ServiceEditDto updated) {
+        Optional<Service> optional = serviceRepository.findById(id);
+        if (optional.isEmpty()) return ResponseEntity.notFound().build();
 
-    Service original = optional.get();
-    original.setServiceType(Service.ServiceType.valueOf(updated.getServiceType()));
-    original.setLocation(updated.getLocation());
-    original.setDescription(updated.getDescription());
-    original.setVisitDate(updated.getVisitDate());
-    original.setVisitTime(updated.getVisitTime());
-    original.setCompletionDate(updated.getCompletionDate());
-    original.setCompletionTime(updated.getCompletionTime());
-    original.setStatus(updated.getStatus());
-    original.setPrice(updated.getPrice());
-    original.setEstimatedDuration(updated.getEstimatedDuration());
-    original.setOrcamentoStatus(updated.getOrcamentoStatus());
+        Service original = optional.get();
+        original.setServiceType(Service.ServiceType.valueOf(updated.getServiceType()));
+        original.setLocation(updated.getLocation());
+        original.setDescription(updated.getDescription());
+        original.setVisitDate(updated.getVisitDate());
+        original.setVisitTime(updated.getVisitTime());
+        original.setCompletionDate(updated.getCompletionDate());
+        original.setCompletionTime(updated.getCompletionTime());
+        original.setStatus(updated.getStatus());
+        original.setPrice(updated.getPrice());
+        original.setEstimatedDuration(updated.getEstimatedDuration());
+        original.setOrcamentoStatus(updated.getOrcamentoStatus());
 
-    serviceRepository.save(original);
-    return ResponseEntity.ok("Serviço atualizado com sucesso.");
-}
+        serviceRepository.save(original);
+        return ResponseEntity.ok("Serviço atualizado com sucesso.");
+    }
 
-    
-    
+    @PostMapping("/visit/{id}")
+    public ResponseEntity<?> markAsVisited(@PathVariable Long id, @RequestParam Double price) {
+        Service service = serviceRepository.findById(id).orElseThrow();
+        service.setStatus(Service.ServiceStatus.VISITADO);
+        service.setPrice(price);
+        serviceRepository.save(service);
+        return ResponseEntity.ok("Marcado como visitado");
+    }
 
+    @PostMapping("/complete/{id}")
+    public ResponseEntity<?> markAsCompleted(@PathVariable Long id) {
+        Service service = serviceRepository.findById(id).orElseThrow();
+        service.setStatus(Service.ServiceStatus.FINALIZADO);
+        service.setCompletionDate(LocalDate.now());
+        serviceRepository.save(service);
+        return ResponseEntity.ok("Finalizado com sucesso");
+    }
+
+    @PostMapping("/cancel/{id}")
+    public ResponseEntity<?> cancelService(@PathVariable Long id) {
+        Service service = serviceRepository.findById(id).orElseThrow();
+        service.setStatus(Service.ServiceStatus.CANCELADO);
+        serviceRepository.save(service);
+        return ResponseEntity.ok("Cancelado com sucesso");
+    }
 }

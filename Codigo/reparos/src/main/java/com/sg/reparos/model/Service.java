@@ -2,51 +2,55 @@ package com.sg.reparos.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
 @Entity
-
 public class Service {
+
     public enum ServiceType {
         ELETRICO, ENCANAMENTO, PINTURA, ALVENARIA, OUTROS
     }
 
     public enum ServiceStatus {
-        AGENDAMENTO_VISITA,   
-        VISITADO,              
-        AGENDAMENTO_FINALIZACAO, 
+        AGENDAMENTO_VISITA,
+        VISITADO,
+        AGENDAMENTO_FINALIZACAO,
         AGUARDANDO_FINALIZACAO,
-        FINALIZADO,            
+        FINALIZADO,
         CANCELADO,
-        REJEITADO              
+        REJEITADO
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
-    
+
     private String location;
     private String description;
-    
+
     @Enumerated(EnumType.STRING)
     private ServiceStatus status;
-    
+
     private LocalDate visitDate;
     private LocalTime visitTime;
-    
+
     private LocalDate completionDate;
     private LocalTime completionTime;
-    
+
     private Double price;
     private String estimatedDuration;
-    private String orcamentoStatus; 
-     
+    private String orcamentoStatus;
+
+    private String motivoCancelamento;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
