@@ -3,23 +3,29 @@ package com.sg.reparos.controller;
 import com.sg.reparos.dto.ServiceEditDto;
 import com.sg.reparos.model.Service;
 import com.sg.reparos.repository.ServiceRepository;
+import com.sg.reparos.service.ServiceService;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/service")
 public class AdminServiceController {
-    private final ServiceRepository serviceRepository;
 
-    public AdminServiceController(ServiceRepository serviceRepository) {
+    private final ServiceRepository serviceRepository;
+    private final ServiceService serviceService;
+
+    public AdminServiceController(ServiceRepository serviceRepository, ServiceService serviceService) {
         this.serviceRepository = serviceRepository;
+        this.serviceService = serviceService;
     }
 
+    // Listar todos com filtros opcionais
     @GetMapping("/api")
     public List<Service> listarServicosAdmin(
             @RequestParam(required = false) Service.ServiceStatus status,
@@ -35,51 +41,58 @@ public class AdminServiceController {
         }
     }
 
+    // Editar serviço (atualização completa)
     @PutMapping("/edit/{id}")
     public ResponseEntity<String> editarServico(@PathVariable Long id, @RequestBody ServiceEditDto updated) {
-        Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isEmpty()) return ResponseEntity.notFound().build();
-
-        Service original = optional.get();
-        original.setServiceType(Service.ServiceType.valueOf(updated.getServiceType()));
-        original.setLocation(updated.getLocation());
-        original.setDescription(updated.getDescription());
-        original.setVisitDate(updated.getVisitDate());
-        original.setVisitTime(updated.getVisitTime());
-        original.setCompletionDate(updated.getCompletionDate());
-        original.setCompletionTime(updated.getCompletionTime());
-        original.setStatus(updated.getStatus());
-        original.setPrice(updated.getPrice());
-        original.setEstimatedDuration(updated.getEstimatedDuration());
-        original.setOrcamentoStatus(updated.getOrcamentoStatus());
-
-        serviceRepository.save(original);
+        serviceService.atualizarAgendamento(id, updated);
         return ResponseEntity.ok("Serviço atualizado com sucesso.");
     }
 
+    // Marcar como visitado
     @PostMapping("/visit/{id}")
-    public ResponseEntity<?> markAsVisited(@PathVariable Long id, @RequestParam Double price) {
+    public ResponseEntity<String> markAsVisited(@PathVariable Long id, @RequestParam Double price) {
         Service service = serviceRepository.findById(id).orElseThrow();
         service.setStatus(Service.ServiceStatus.VISITADO);
         service.setPrice(price);
         serviceRepository.save(service);
-        return ResponseEntity.ok("Marcado como visitado");
+        return ResponseEntity.ok("Marcado como visitado.");
     }
 
+    // Marcar como finalizado
     @PostMapping("/complete/{id}")
-    public ResponseEntity<?> markAsCompleted(@PathVariable Long id) {
+    public ResponseEntity<String> markAsCompleted(@PathVariable Long id) {
         Service service = serviceRepository.findById(id).orElseThrow();
         service.setStatus(Service.ServiceStatus.FINALIZADO);
         service.setCompletionDate(LocalDate.now());
         serviceRepository.save(service);
-        return ResponseEntity.ok("Finalizado com sucesso");
+        return ResponseEntity.ok("Finalizado com sucesso.");
     }
 
-    @PostMapping("/cancel/{id}")
-    public ResponseEntity<?> cancelService(@PathVariable Long id) {
-        Service service = serviceRepository.findById(id).orElseThrow();
-        service.setStatus(Service.ServiceStatus.CANCELADO);
-        serviceRepository.save(service);
-        return ResponseEntity.ok("Cancelado com sucesso");
+    // Cancelar serviço com motivo
+    @PutMapping("/cancel/{id}")
+    public ResponseEntity<Service> cancelService(@PathVariable Long id, @RequestParam String motivo) {
+        Service cancelado = serviceService.cancelar(id, motivo);
+        return ResponseEntity.ok(cancelado);
+    }
+
+    // Agendar visita
+    @PutMapping("/agendar/{id}")
+    public ResponseEntity<Service> agendarVisita(
+            @PathVariable Long id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate visitDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime visitTime) {
+
+        Service atualizado = serviceService.agendarVisita(id, visitDate, visitTime);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    // Atualizar status
+    @PutMapping("/status/{id}")
+    public ResponseEntity<Service> atualizarStatus(
+            @PathVariable Long id,
+            @RequestParam Service.ServiceStatus status) {
+
+        Service atualizado = serviceService.atualizarStatus(id, status);
+        return ResponseEntity.ok(atualizado);
     }
 }
