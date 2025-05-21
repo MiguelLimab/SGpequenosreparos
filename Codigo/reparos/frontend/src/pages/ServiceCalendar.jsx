@@ -102,12 +102,12 @@ function ServiceCalendar() {
           console.error("Erro: resposta não é array", res.data);
           return;
         }
-  
+
         const formatted = res.data.map((service) => {
           try {
             const start = new Date(`${service.visitDate}T${service.visitTime}`);
             const end = new Date(start.getTime() + 60 * 60 * 1000);
-  
+
             return {
               id: service.id,
               title: `${service.serviceType} - ${service.status}`,
@@ -119,8 +119,8 @@ function ServiceCalendar() {
             console.error("Erro ao formatar serviço:", service, e);
             return null;
           }
-        }).filter(Boolean); // remove nulos
-  
+        }).filter(Boolean);
+
         setServices(formatted);
       })
       .catch((error) => {
@@ -129,7 +129,7 @@ function ServiceCalendar() {
           console.error("Resposta do servidor:", error.response.status, error.response.data);
         }
       });
-  };  
+  };
 
   useEffect(() => {
     axios
@@ -140,7 +140,7 @@ function ServiceCalendar() {
       })
       .catch((err) => {
         console.error("Erro ao verificar papel do usuário:", err);
-        buscarServicos(); // tenta mesmo com erro
+        buscarServicos();
       });
   }, []);
 
@@ -163,29 +163,81 @@ function ServiceCalendar() {
         </div>
       </nav>
 
-      <h2>Calendário de Serviços</h2>
-      <Calendar
-        localizer={localizer}
-        events={services}
-        startAccessor="start"
-        endAccessor="end"
-        view={view}
-        onView={setView}
-        date={date}
-        onNavigate={setDate}
-        style={{ height: 600 }}
-        components={{ event: CustomEvent }}
-        messages={{
-          next: "Próximo",
-          previous: "Anterior",
-          today: "Hoje",
-          month: "Mês",
-          week: "Semana",
-          day: "Dia",
-          agenda: "Agenda"
-        }}
-      />
-      <LegendaStatus />
+      <div style={{ display: 'flex', maxWidth: '1200px', margin: 'auto', padding: '1rem', gap: '1rem' }}>
+        {/* Coluna do Calendário */}
+        <div style={{ flex: 2 }}>
+          <h2>Calendário de Serviços</h2>
+          <Calendar
+            localizer={localizer}
+            events={services}
+            startAccessor="start"
+            endAccessor="end"
+            view={view}
+            onView={setView}
+            date={date}
+            onNavigate={setDate}
+            style={{ height: 600 }}
+            components={{ event: CustomEvent }}
+            messages={{
+              next: "Próximo",
+              previous: "Anterior",
+              today: "Hoje",
+              month: "Mês",
+              week: "Semana",
+              day: "Dia",
+              agenda: "Agenda"
+            }}
+          />
+          <LegendaStatus />
+        </div>
+
+        {/* Coluna da Lista */}
+        <div style={{
+          flex: 1,
+          backgroundColor: '#f8f8f8',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          padding: '1rem',
+          overflowY: 'auto',
+          maxHeight: '700px'
+        }}>
+          <h3 style={{ marginBottom: '1rem' }}>Lista de Serviços</h3>
+          {services.length === 0 ? (
+            <p>Nenhum serviço encontrado.</p>
+          ) : (
+            services.map(service => {
+              const info = statusInfo[service.status] || {
+                color: '#888',
+                icon: <FaClipboard />,
+                label: 'OUT',
+              };
+
+              return (
+                <div key={service.id} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  backgroundColor: '#fff',
+                  border: `2px solid ${info.color}`,
+                  borderRadius: '6px',
+                  padding: '0.75rem',
+                  marginBottom: '0.75rem',
+                }}>
+                  <div>
+                    <strong>{service.title.split(' - ')[0]}</strong><br />
+                    <small>
+                      {moment(service.start).format('DD/MM/YYYY')} às {moment(service.start).format('HH:mm')}
+                    </small>
+                  </div>
+                  <div style={{ fontSize: '1.2rem', color: info.color }} title={service.status}>
+                    {info.icon}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
     </div>
   );
 }

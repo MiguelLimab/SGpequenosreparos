@@ -2,13 +2,13 @@ package com.sg.reparos.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonIgnore; // <== IMPORTANTE
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Entity
 @Data
+@Entity
 public class Service {
 
     public enum ServiceType {
@@ -45,13 +45,12 @@ public class Service {
     private LocalTime completionTime;
 
     private Double price;
-
     private String estimatedDuration;
     private String orcamentoStatus;
 
     private String motivoCancelamento;
 
-    @JsonIgnore // <== CORREÇÃO: impede erro de serialização no JSON
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

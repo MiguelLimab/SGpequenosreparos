@@ -6,14 +6,16 @@ import "../../css/admin/PainelAdmin.css";
 const PainelAdmin = () => {
   const [servicos, setServicos] = useState([]);
   const [filtro, setFiltro] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({});
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     buscarServicos();
   }, [filtro]);
-
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     navigate("/");
@@ -21,10 +23,12 @@ const PainelAdmin = () => {
 
   const buscarServicos = () => {
     let url = "http://localhost:8081/admin/service/api";
-    if (filtro) url += `?status=${filtro}`;
+    const params = new URLSearchParams();
+
+    if (filtro) params.append("status", filtro);
 
     axios
-      .get(url, { withCredentials: true })
+      .get(fullUrl, { withCredentials: true })
       .then((res) => setServicos(res.data))
       .catch((err) => {
         console.error("Erro ao buscar serviços:", err);
@@ -97,19 +101,13 @@ const PainelAdmin = () => {
               <option value="">Todos</option>
               <option value="AGENDAMENTO_VISITA">AGENDAMENTO_VISITA</option>
               <option value="VISITADO">VISITADO</option>
-              <option value="AGENDAMENTO_FINALIZACAO">
-                AGENDAMENTO_FINALIZACAO
-              </option>
-              <option value="AGUARDANDO_FINALIZACAO">
-                AGUARDANDO_FINALIZACAO
-              </option>
+              <option value="AGENDAMENTO_FINALIZACAO">AGENDAMENTO_FINALIZACAO</option>
+              <option value="AGUARDANDO_FINALIZACAO">AGUARDANDO_FINALIZACAO</option>
               <option value="FINALIZADO">FINALIZADO</option>
               <option value="CANCELADO">CANCELADO</option>
               <option value="REJEITADO">REJEITADO</option>
+              <button type="button" onClick={buscarServicos}></button>
             </select>
-            <button type="button" onClick={buscarServicos}>
-              Filtrar
-            </button>
           </form>
         </section>
 
@@ -121,44 +119,20 @@ const PainelAdmin = () => {
               <div key={servico.id} className="service-card">
                 <header>
                   <h3>
-                    {servico.serviceType} -{" "}
-                    {servico.user?.username || "Usuário"}
+                    {servico.serviceType} - {servico.user?.username || "Usuário"}
                   </h3>
-                  <span
-                    className={`badge status-${servico.status.toLowerCase()}`}
-                  >
+                  <span className={`badge status-${servico.status.toLowerCase()}`}>
                     {servico.status}
                   </span>
                 </header>
                 <div className="details">
-                  <p>
-                    <strong>Local:</strong> {servico.location}
-                  </p>
-                  <p>
-                    <strong>Data:</strong>{" "}
-                    {new Date(servico.visitDate).toLocaleDateString("pt-BR")}
-                  </p>
-                  <p>
-                    <strong>Horário:</strong> {servico.visitTime.slice(0, 5)}
-                  </p>
-                  <p>
-                    <strong>Descrição:</strong>{" "}
-                    {servico.description || "Nenhuma"}
-                  </p>
-                  <p>
-                    <strong>Preço:</strong>{" "}
-                    {servico.price != null
-                      ? `R$ ${servico.price.toFixed(2)}`
-                      : "-"}
-                  </p>
-                  <p>
-                    <strong>Duração estimada:</strong>{" "}
-                    {servico.estimatedDuration || "Nenhuma"}
-                  </p>
-                  <p>
-                    <strong>Status Orçamento:</strong>{" "}
-                    {servico.orcamentoStatus || "Nenhuma"}
-                  </p>
+                  <p><strong>Local:</strong> {servico.location}</p>
+                  <p><strong>Data:</strong> {new Date(servico.visitDate).toLocaleDateString("pt-BR")}</p>
+                  <p><strong>Horário:</strong> {servico.visitTime?.slice(0, 5)}</p>
+                  <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
+                  <p><strong>Preço:</strong> {servico.price != null ? `R$ ${servico.price.toFixed(2)}` : "-"}</p>
+                  <p><strong>Duração estimada:</strong> {servico.estimatedDuration || "Nenhuma"}</p>
+                  <p><strong>Status Orçamento:</strong> {servico.orcamentoStatus || "Nenhuma"}</p>
                 </div>
                 <div className="actions">
                   <button onClick={() => handleEditar(servico)}>Editar</button>
@@ -212,22 +186,20 @@ const PainelAdmin = () => {
                     <input
                       type="text"
                       name="estimatedDuration"
-                      placeholder="duração estimada"
+                      placeholder="Duração estimada"
                       value={form.estimatedDuration || ""}
                       onChange={handleFormChange}
                     />
                     <div>
                       <label>Situação Orçamento:</label>
-                      <div>
-                        <select
-                          name="orcamentoStatus"
-                          value={form.orcamentoStatus || "A_FAZER"}
-                          onChange={handleFormChange}
-                        >
-                          <option value="A_FAZER">A FAZER</option>
-                          <option value="FEITO">FEITO</option>
-                        </select>
-                      </div>
+                      <select
+                        name="orcamentoStatus"
+                        value={form.orcamentoStatus || "A_FAZER"}
+                        onChange={handleFormChange}
+                      >
+                        <option value="A_FAZER">A FAZER</option>
+                        <option value="FEITO">FEITO</option>
+                      </select>
                     </div>
 
                     <select
@@ -236,16 +208,10 @@ const PainelAdmin = () => {
                       onChange={handleFormChange}
                     >
                       <option value="">Selecione o status</option>
-                      <option value="AGENDAMENTO_VISITA">
-                        AGENDAMENTO_VISITA
-                      </option>
+                      <option value="AGENDAMENTO_VISITA">AGENDAMENTO_VISITA</option>
                       <option value="VISITADO">VISITADO</option>
-                      <option value="AGENDAMENTO_FINALIZACAO">
-                        AGENDAMENTO_FINALIZACAO
-                      </option>
-                      <option value="AGUARDANDO_FINALIZACAO">
-                        AGUARDANDO_FINALIZACAO
-                      </option>
+                      <option value="AGENDAMENTO_FINALIZACAO">AGENDAMENTO_FINALIZACAO</option>
+                      <option value="AGUARDANDO_FINALIZACAO">AGUARDANDO_FINALIZACAO</option>
                       <option value="FINALIZADO">FINALIZADO</option>
                       <option value="CANCELADO">CANCELADO</option>
                       <option value="REJEITADO">REJEITADO</option>
