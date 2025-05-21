@@ -5,7 +5,6 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '../css/ServiceCalendar.css';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-
 import {
   FaCheck,
   FaTimes,
@@ -27,6 +26,14 @@ const statusInfo = {
   REJEITADO: { color: '#c0392b', icon: <FaTimes />, label: 'REJ' },
 };
 
+function isDataPermitida(date) {
+  const inicio = new Date(2025, 0, 1);
+  const diffTime = date - inicio;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const ciclo = diffDays % 8;
+  return ciclo >= 0 && ciclo <= 3;
+}
+
 const CustomEvent = ({ event }) => {
   const info = statusInfo[event.status] || {
     color: '#3174ad',
@@ -39,7 +46,7 @@ const CustomEvent = ({ event }) => {
       style={{
         width: '100%',
         height: '100%',
-        backgroundColor: info.color,
+        backgroundColor: isDataPermitida(event.start) ? info.color : '#ccc',
         color: 'white',
         padding: '4px',
         borderRadius: '4px',
@@ -144,6 +151,24 @@ function ServiceCalendar() {
       });
   }, []);
 
+  useEffect(() => {
+    const marcarDiasBloqueados = () => {
+      document.querySelectorAll('.rbc-day-bg').forEach((element) => {
+        const dateStr = element.getAttribute('title');
+        if (!dateStr) return;
+
+        const date = new Date(dateStr);
+        if (!isDataPermitida(date)) {
+          element.classList.add('bloqueado');
+        } else {
+          element.classList.remove('bloqueado');
+        }
+      });
+    };
+
+    marcarDiasBloqueados();
+  }, [date, view, services]);
+
   return (
     <div className="calendar-container">
       <nav className="navbar">
@@ -151,12 +176,8 @@ function ServiceCalendar() {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          {isAdmin && (
-            <>
-              <Link to="/admin" className="admin-link">Painel ADM</Link>
-              <Link to="/calendar" className="admin-link">Calendário</Link>
-            </>
-          )}
+          {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
+          {isAdmin && <Link to="/calendar" className="admin-link">Calendário</Link>}
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
@@ -164,7 +185,6 @@ function ServiceCalendar() {
       </nav>
 
       <div style={{ display: 'flex', maxWidth: '1200px', margin: 'auto', padding: '1rem', gap: '1rem' }}>
-        {/* Coluna do Calendário */}
         <div style={{ flex: 2 }}>
           <h2>Calendário de Serviços</h2>
           <Calendar
@@ -191,7 +211,6 @@ function ServiceCalendar() {
           <LegendaStatus />
         </div>
 
-        {/* Coluna da Lista */}
         <div style={{
           flex: 1,
           backgroundColor: '#f8f8f8',
@@ -227,6 +246,9 @@ function ServiceCalendar() {
                     <strong>{service.title.split(' - ')[0]}</strong><br />
                     <small>
                       {moment(service.start).format('DD/MM/YYYY')} às {moment(service.start).format('HH:mm')}
+                      {!isDataPermitida(service.start) && (
+                        <span style={{ color: 'red', fontSize: '0.8rem' }}> (Data Bloqueada)</span>
+                      )}
                     </small>
                   </div>
                   <div style={{ fontSize: '1.2rem', color: info.color }} title={service.status}>
