@@ -6,6 +6,7 @@ import com.sg.reparos.model.User;
 import com.sg.reparos.repository.ServiceRepository;
 import com.sg.reparos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/userlist")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(
+    origins = "http://localhost:3000", 
+    allowCredentials = "true",
+    allowedHeaders = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
+)
 public class AdminUserList {
 
     @Autowired
@@ -24,7 +30,6 @@ public class AdminUserList {
     @Autowired
     private ServiceRepository serviceRepository;
 
-    // GET: Lista todos os usuários com estatísticas
     @GetMapping
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -37,7 +42,6 @@ public class AdminUserList {
         return userDTOs;
     }
 
-    // GET: Busca um usuário pelo ID com estatísticas
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         Optional<User> optUser = userRepository.findById(id);
@@ -48,9 +52,11 @@ public class AdminUserList {
         }
     }
 
-    // PUT: Atualiza dados básicos de um usuário
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        System.out.println("Recebida requisição para atualizar usuário ID: " + id);
+        System.out.println("Dados recebidos: " + userDto);
+        
         Optional<User> optUser = userRepository.findById(id);
         if (optUser.isPresent()) {
             User user = optUser.get();
@@ -64,19 +70,30 @@ public class AdminUserList {
         }
     }
 
-    // DELETE: Exclui o usuário
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        Optional<User> optUser = userRepository.findById(id);
-        if (optUser.isPresent()) {
-            userRepository.delete(optUser.get());
-            return ResponseEntity.ok().build();
-        } else {
+@DeleteMapping("/{id}")
+public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    System.out.println("Recebida requisição para deletar usuário ID: " + id);
+    
+    try {
+        // Verifica se o usuário existe
+        if (!userRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+        
+        // Primeiro deleta os serviços associados ao usuário
+        serviceRepository.deleteByUser_Id(id);
+        
+        // Depois deleta o usuário
+        userRepository.deleteById(id);
+        
+        System.out.println("Usuário ID " + id + " deletado com sucesso");
+        return ResponseEntity.ok().build();
+    } catch (Exception e) {
+        System.out.println("Erro ao deletar usuário ID " + id + ": " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+               .body("Erro ao deletar usuário: " + e.getMessage());
     }
-
-    // Método auxiliar para converter User → UserDto
+}
     private UserDto convertToDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());

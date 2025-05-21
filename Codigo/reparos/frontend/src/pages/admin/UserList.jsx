@@ -8,16 +8,22 @@ const UserList = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [modoEdicao, setModoEdicao] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const buscarUsuarios = async () => {
       try {
+        setLoading(true);
         const response = await axios.get("http://localhost:8081/admin/userlist", {
           withCredentials: true,
         });
         setUsuarios(response.data);
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
+        setError("Erro ao carregar usuários");
+      } finally {
+        setLoading(false);
       }
     };
     buscarUsuarios();
@@ -29,10 +35,12 @@ const UserList = () => {
 
   const handleEditarClick = () => {
     setModoEdicao(true);
+    setError(null);
   };
 
   const handleCancelarEdicao = () => {
     setModoEdicao(false);
+    setUsuarioSelecionado(null);
   };
 
   const handleInputChange = (e) => {
@@ -41,38 +49,68 @@ const UserList = () => {
   };
 
   const handleSalvar = async () => {
+    if (!usuarioSelecionado.username || !usuarioSelecionado.email) {
+      setError("Username e email são obrigatórios!");
+      return;
+    }
+
     try {
-      await axios.put(`http://localhost:8081/admin/user/${usuarioSelecionado.id}`, usuarioSelecionado, {
-        withCredentials: true,
-      });
+      setLoading(true);
+      await axios.put(
+        `http://localhost:8081/admin/userlist/${usuarioSelecionado.id}`,
+        usuarioSelecionado,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       alert("Usuário atualizado com sucesso!");
       setModoEdicao(false);
-      // Atualiza a lista
       setUsuarios((prev) =>
         prev.map((u) => (u.id === usuarioSelecionado.id ? usuarioSelecionado : u))
       );
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error);
-      alert("Erro ao atualizar o usuário.");
+      setError(`Erro ao atualizar: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleExcluir = async () => {
-    const confirmacao = window.confirm("Tem certeza que deseja excluir este usuário?");
+  const handleExcluir = async (user) => {
+    const confirmacao = window.confirm(`Tem certeza que deseja excluir o usuário ${user.username}?`);
     if (!confirmacao) return;
 
     try {
-      await axios.delete(`http://localhost:8081/admin/user/${usuarioSelecionado.id}`, {
-        withCredentials: true,
-      });
-      alert("Usuário excluído com sucesso!");
-      setUsuarios((prev) => prev.filter((u) => u.id !== usuarioSelecionado.id));
-      setUsuarioSelecionado(null);
+        setLoading(true);
+        const response = await axios.delete(
+            `http://localhost:8081/admin/userlist/${user.id}`,
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        
+        if (response.status === 200) {
+            alert("Usuário excluído com sucesso!");
+            // Atualiza a lista removendo o usuário excluído
+            setUsuarios(prev => prev.filter(u => u.id !== user.id));
+            // Fecha o modal se estiver aberto
+            if (usuarioSelecionado && usuarioSelecionado.id === user.id) {
+                setUsuarioSelecionado(null);
+            }
+        }
     } catch (error) {
-      console.error("Erro ao excluir usuário:", error);
-      alert("Erro ao excluir o usuário.");
+        console.error("Erro ao excluir usuário:", error);
+        setError(`Erro ao excluir usuário: ${error.response?.data || error.message}`);
+    } finally {
+        setLoading(false);
     }
-  };
+};
 
   return (
     <div className="user-list-container">
@@ -87,6 +125,10 @@ const UserList = () => {
 
       <div className="main">
         <h1>Lista de Usuários</h1>
+        
+        {loading && <div className="loading-indicator">Processando...</div>}
+        {error && <div className="error-message">{error}</div>}
+
         <div className="user-table-container">
           <table className="user-table">
             <thead>
@@ -106,9 +148,9 @@ const UserList = () => {
                   <td>{user.email}</td>
                   <td>{user.role}</td>
                   <td>
-                    <button onClick={() => { setUsuarioSelecionado(user); setModoEdicao(false); }}>Ver</button>
-                    <button onClick={() => { setUsuarioSelecionado(user); setModoEdicao(true); }}>Editar</button>
-                    <button onClick={() => { setUsuarioSelecionado(user); handleExcluir(); }}>Excluir</button>
+                    <button onClick={() => setUsuarioSelecionado(user)}>Ver</button>
+                    <button onClick={() => { setUsuarioSelecionado(user); handleEditarClick(); }}>Editar</button>
+                    <button onClick={() => handleExcluir(user)}>Excluir</button>
                   </td>
                 </tr>
               ))}
@@ -117,7 +159,7 @@ const UserList = () => {
         </div>
 
         {usuarioSelecionado && (
-          <div className="overlay" onClick={() => setUsuarioSelecionado(null)}>
+          <div className="overlay" onClick={() => { setUsuarioSelecionado(null); setError(null); }}>
             <div className="overlay-content" onClick={(e) => e.stopPropagation()}>
               <h2>{modoEdicao ? "Editar Usuário" : "Detalhes do Usuário"}</h2>
 
@@ -147,9 +189,11 @@ const UserList = () => {
                     onChange={handleInputChange}
                   />
 
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "10px" }}>
-                    <button onClick={handleSalvar}>Salvar</button>
-                    <button onClick={handleCancelarEdicao} style={{ backgroundColor: "#aaa" }}>
+                  <div className="button-group">
+                    <button onClick={handleSalvar} disabled={loading}>
+                      {loading ? 'Salvando...' : 'Salvar'}
+                    </button>
+                    <button onClick={handleCancelarEdicao} className="cancel-button">
                       Cancelar
                     </button>
                   </div>
