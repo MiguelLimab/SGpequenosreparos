@@ -29,13 +29,20 @@ public class AdminServiceController {
     @GetMapping("/api")
     public List<Service> listarServicosAdmin(
             @RequestParam(required = false) Service.ServiceStatus status,
-            @RequestParam(required = false) Service.ServiceType type) {
-        if (status != null && type != null) {
+            @RequestParam(required = false) Service.ServiceType type,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+
+        if (status != null && type != null && dataInicio != null && dataFim != null) {
+            return serviceRepository.findByStatusAndServiceTypeAndVisitDateBetween(status, type, dataInicio, dataFim);
+        } else if (status != null && type != null) {
             return serviceRepository.findByStatusAndServiceType(status, type);
         } else if (status != null) {
             return serviceRepository.findByStatus(status);
         } else if (type != null) {
             return serviceRepository.findByServiceType(type);
+        } else if (dataInicio != null && dataFim != null) {
+            return serviceRepository.findByVisitDateBetween(dataInicio, dataFim);
         } else {
             return serviceRepository.findAll();
         }

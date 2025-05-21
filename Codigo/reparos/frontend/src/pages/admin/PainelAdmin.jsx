@@ -15,7 +15,7 @@ const PainelAdmin = () => {
 
   useEffect(() => {
     buscarServicos();
-  }, [filtro]);
+  }, [filtro, dataInicio, dataFim]);
 
   const handleLogout = () => {
     navigate("/");
@@ -26,9 +26,11 @@ const PainelAdmin = () => {
     const params = new URLSearchParams();
 
     if (filtro) params.append("status", filtro);
+    if (dataInicio) params.append("dataInicio", dataInicio);
+    if (dataFim) params.append("dataFim", dataFim);
 
     axios
-      .get(fullUrl, { withCredentials: true })
+      .get(`${url}?${params.toString()}`, { withCredentials: true })
       .then((res) => setServicos(res.data))
       .catch((err) => {
         console.error("Erro ao buscar serviços:", err);
@@ -56,9 +58,7 @@ const PainelAdmin = () => {
         formFiltrado,
         {
           withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       )
       .then(() => {
@@ -80,7 +80,7 @@ const PainelAdmin = () => {
         </div>
         <div className="navbar-links">
           <Link to="/admin">Painel ADM</Link>
-          <Link to="/calendar">Calendario</Link>
+          <Link to="/calendar">Calendário</Link>
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
@@ -91,7 +91,7 @@ const PainelAdmin = () => {
         <h1>Gerenciamento de Serviços</h1>
 
         <section className="filters">
-          <form>
+          <form onSubmit={(e) => { e.preventDefault(); buscarServicos(); }}>
             <label htmlFor="status">Status:</label>
             <select
               id="status"
@@ -106,8 +106,25 @@ const PainelAdmin = () => {
               <option value="FINALIZADO">FINALIZADO</option>
               <option value="CANCELADO">CANCELADO</option>
               <option value="REJEITADO">REJEITADO</option>
-              <button type="button" onClick={buscarServicos}></button>
             </select>
+
+            <label htmlFor="dataInicio">Data Início:</label>
+            <input
+              type="date"
+              id="dataInicio"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+            />
+
+            <label htmlFor="dataFim">Data Fim:</label>
+            <input
+              type="date"
+              id="dataFim"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+            />
+
+            <button type="submit">Buscar</button>
           </form>
         </section>
 
@@ -125,6 +142,7 @@ const PainelAdmin = () => {
                     {servico.status}
                   </span>
                 </header>
+
                 <div className="details">
                   <p><strong>Local:</strong> {servico.location}</p>
                   <p><strong>Data:</strong> {new Date(servico.visitDate).toLocaleDateString("pt-BR")}</p>
@@ -134,9 +152,11 @@ const PainelAdmin = () => {
                   <p><strong>Duração estimada:</strong> {servico.estimatedDuration || "Nenhuma"}</p>
                   <p><strong>Status Orçamento:</strong> {servico.orcamentoStatus || "Nenhuma"}</p>
                 </div>
+
                 <div className="actions">
                   <button onClick={() => handleEditar(servico)}>Editar</button>
                 </div>
+
                 {editando === servico.id && (
                   <div className="edit-form">
                     <input
@@ -190,18 +210,18 @@ const PainelAdmin = () => {
                       value={form.estimatedDuration || ""}
                       onChange={handleFormChange}
                     />
-                    <div>
-                      <label>Situação Orçamento:</label>
-                      <select
-                        name="orcamentoStatus"
-                        value={form.orcamentoStatus || "A_FAZER"}
-                        onChange={handleFormChange}
-                      >
-                        <option value="A_FAZER">A FAZER</option>
-                        <option value="FEITO">FEITO</option>
-                      </select>
-                    </div>
 
+                    <label>Situação Orçamento:</label>
+                    <select
+                      name="orcamentoStatus"
+                      value={form.orcamentoStatus || "A_FAZER"}
+                      onChange={handleFormChange}
+                    >
+                      <option value="A_FAZER">A FAZER</option>
+                      <option value="FEITO">FEITO</option>
+                    </select>
+
+                    <label>Status:</label>
                     <select
                       name="status"
                       value={form.status || ""}
@@ -216,6 +236,7 @@ const PainelAdmin = () => {
                       <option value="CANCELADO">CANCELADO</option>
                       <option value="REJEITADO">REJEITADO</option>
                     </select>
+
                     <button onClick={salvarEdicao}>Salvar Alterações</button>
                   </div>
                 )}
