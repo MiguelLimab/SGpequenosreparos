@@ -6,7 +6,8 @@ import Perfil from "./pages/Perfil";
 import Servicos from "./pages/Service";
 import PainelAdmin from "./pages/admin/PainelAdmin";
 import ServiceCalendar from "./pages/ServiceCalendar";
-import UserList from "./pages/admin/UserList"; // 
+import UserList from "./pages/admin/UserList";
+import ServiceHistory from "./pages/ServiceHistory";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/service" element={<Servicos />} />
+        <Route path="/servicehistory" element={<ServiceHistory />} />
         <Route path="/admin" element={<PainelAdmin />} />
         <Route path="/calendar" element={<ServiceCalendar />} />
         <Route path="/userlist" element={<UserList />} />
