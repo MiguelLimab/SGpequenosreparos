@@ -10,6 +10,8 @@ const Perfil = () => {
     email: "",
   });
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -21,8 +23,8 @@ const Perfil = () => {
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
 
-  // Carrega os dados do usuário ao iniciar
   useEffect(() => {
+    // Buscar dados do perfil
     axios
       .get("http://localhost:8081/profile/api/profile", {
         withCredentials: true,
@@ -38,6 +40,15 @@ const Perfil = () => {
       .catch((err) => {
         console.error("Erro ao buscar perfil:", err);
         setMsg("Erro ao carregar dados do perfil.");
+      });
+
+    // Buscar papel do usuário para saber se é admin
+    axios
+      .get("http://localhost:8081/api/user/role", { withCredentials: true })
+      .then((res) => setIsAdmin(res.data === "ROLE_ADMIN"))
+      .catch((err) => {
+        console.error("Erro ao buscar papel do usuário:", err);
+        setIsAdmin(false);
       });
   }, []);
 
@@ -88,16 +99,18 @@ const Perfil = () => {
   };
 
   const handleLogout = () => {
-    // Aqui você pode limpar dados do usuário (localStorage, token, etc.)
+    // Limpar dados locais se necessário
     navigate("/");
   };
 
   return (
     <div className="perfil-container">
       <nav className="navbar">
-        <div className="navbar-title"><Link to="/home">SG Pequenos Reparos</Link></div>
+        <div className="navbar-title">
+          <Link to="/home">SG Pequenos Reparos</Link>
+        </div>
         <div className="navbar-links">
-        <Link to="/service">Servicos</Link>
+          <Link to="/service">Servicos</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
@@ -142,7 +155,8 @@ const Perfil = () => {
         </button>
 
         {msg && <p className="mensagem">{msg}</p>}
-        <Link to="/userlist">Listar Usuários</Link>
+
+        {isAdmin && <Link to="/userlist">Listar Usuários</Link>}
       </form>
     </div>
   );
