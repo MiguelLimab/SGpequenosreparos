@@ -3,7 +3,7 @@ import axios from 'axios';
 import "../css/ServiceHistory.css";
 import { useNavigate, Link } from "react-router-dom";
 
-const ServicoHistorico = () => {
+const ServiceHistory = () => {
   const [servicos, setServicos] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [erro, setErro] = useState("");
@@ -96,7 +96,7 @@ const ServicoHistorico = () => {
           {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
           {isAdmin && <Link to="/calendar" className="admin-link">Calendario</Link>}
           <Link to="/service">Serviços</Link>
-          <Link to="/service/history">Histórico</Link>
+          <Link to="/servicehistory">Histórico</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
@@ -181,4 +181,4 @@ const ServicoHistorico = () => {
   );
 };
 
-export default ServicoHistorico;
+export default ServiceHistory

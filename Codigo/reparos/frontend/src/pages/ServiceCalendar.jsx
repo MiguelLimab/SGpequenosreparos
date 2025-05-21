@@ -214,6 +214,7 @@ function ServiceCalendar() {
           {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
           {isAdmin && <Link to="/calendar" className="admin-link">Calendário</Link>}
           <Link to="/service">Serviços</Link>
+          <Link to="/servicehistory">Histórico</Link>
           <Link to="/perfil">Perfil</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
