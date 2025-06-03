@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Bell } from "lucide-react"; // Importação do ícone de sino
 import "../css/Home.css";
 
 const Home = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    navigate("/");
-  };
+  const [showNotifications, setShowNotifications] = useState(false); // Estado para controlar o dropdown
 
   const servicos = [
     {
@@ -40,13 +39,94 @@ const Home = () => {
     },
   ];
 
+  const notifications = [
+    "Novo serviço disponível",
+    "Seu agendamento foi confirmado",
+    "Mensagem recebida do suporte",
+  ];
+
+  const handleLogout = () => {
+    navigate("/");
+  };
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   return (
     <div className="home-container">
       <nav className="navbar">
-        <div className="navbar-title"><Link to="/home">SG Pequenos Reparos</Link></div>
+        <div className="navbar-title">
+          <Link to="/home">SG Pequenos Reparos</Link>
+        </div>
         <div className="navbar-links">
           <Link to="/service">Serviços</Link>
           <Link to="/perfil">Perfil</Link>
+
+          {/* Botão de Notificações */}
+          <div className="notification-wrapper" style={{ position: "relative" }}>
+            <button
+              onClick={toggleNotifications}
+              className="notification-button"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "15px",
+              }}
+            >
+              <Bell size={24} />
+            </button>
+            {showNotifications && (
+              <div
+                className="notification-box"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  width: "250px",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
+                  {notifications.map((notification, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        padding: "8px 0",
+                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
+                      }}
+                    >
+                      {notification}
+                    </li>
+                  ))}
+                </ul>
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid #eee",
+                    textAlign: "center",
+                  }}
+                >
+                  <Link
+                    to="/notifications"
+                    style={{
+                      textDecoration: "none",
+                      color: "#007BFF",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>

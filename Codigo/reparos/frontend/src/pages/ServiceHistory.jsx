@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "../css/ServiceHistory.css";
 import { useNavigate, Link } from "react-router-dom";
+import { Bell } from "lucide-react"; // Ícone de sino
 
 const ServiceHistory = () => {
   const [servicos, setServicos] = useState([]);
@@ -9,8 +10,15 @@ const ServiceHistory = () => {
   const [erro, setErro] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false); // Estado notificações
 
   const navigate = useNavigate();
+
+  const notifications = [
+    "Histórico de serviço atualizado",
+    "Novo serviço adicionado ao histórico",
+    "Mensagem importante do suporte",
+  ];
 
   useEffect(() => {
     axios
@@ -30,7 +38,6 @@ const ServiceHistory = () => {
     axios
       .get("http://localhost:8081/service/api/service", { withCredentials: true })
       .then((res) => {
-        // Filtramos apenas os serviços finalizados, concluídos, cancelados ou rejeitados
         const historico = res.data.filter(servico => 
           servico.status === 'CONCLUIDO' || 
           servico.status === 'CANCELADO' || 
@@ -49,6 +56,10 @@ const ServiceHistory = () => {
     navigate("/");
   };
 
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   const formatarData = (dataStr) => {
     if (!dataStr) return "";
     const data = new Date(dataStr);
@@ -56,7 +67,6 @@ const ServiceHistory = () => {
     return data.toLocaleDateString("pt-BR");
   };
 
-  // Função para converter o status em texto mais amigável
   const formatarStatus = (status) => {
     const statusMap = {
       'CONCLUIDO': 'Concluído',
@@ -67,7 +77,6 @@ const ServiceHistory = () => {
     return statusMap[status] || status;
   };
 
-  // Função para obter o tipo de serviço em formato legível
   const formatarTipoServico = (tipo) => {
     const tiposMap = {
       'ELETRICO': 'Elétrico',
@@ -79,7 +88,6 @@ const ServiceHistory = () => {
     return tiposMap[tipo] || tipo;
   };
 
-  // Função para filtrar os serviços com base nos filtros de tipo e status
   const servicosFiltrados = servicos.filter(servico => {
     const filtroTipoOk = !tipoFiltro || servico.serviceType === tipoFiltro;
     const filtroStatusOk = !statusFiltro || servico.status === statusFiltro;
@@ -94,10 +102,75 @@ const ServiceHistory = () => {
         </div>
         <div className="navbar-links">
           {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
-          {isAdmin && <Link to="/calendar" className="admin-link">Calendario</Link>}
+          {isAdmin && <Link to="/calendar" className="admin-link">Calendário</Link>}
           <Link to="/service">Serviços</Link>
           <Link to="/servicehistory">Histórico</Link>
           <Link to="/perfil">Perfil</Link>
+
+          {/* Botão de Notificações */}
+          <div className="notification-wrapper" style={{ position: "relative" }}>
+            <button
+              onClick={toggleNotifications}
+              className="notification-button"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "15px",
+              }}
+            >
+              <Bell size={24} />
+            </button>
+            {showNotifications && (
+              <div
+                className="notification-box"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  width: "250px",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
+                  {notifications.map((notification, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        padding: "8px 0",
+                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
+                      }}
+                    >
+                      {notification}
+                    </li>
+                  ))}
+                </ul>
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid #eee",
+                    textAlign: "center",
+                  }}
+                >
+                  <Link
+                    to="/notifications"
+                    style={{
+                      textDecoration: "none",
+                      color: "#007BFF",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
@@ -181,4 +254,4 @@ const ServiceHistory = () => {
   );
 };
 
-export default ServiceHistory
+export default ServiceHistory;

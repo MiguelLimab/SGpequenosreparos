@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Perfil.css";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Bell } from "lucide-react"; // ícone de sino
 
 const Perfil = () => {
   const [usuario, setUsuario] = useState({
@@ -21,7 +21,15 @@ const Perfil = () => {
   });
 
   const [msg, setMsg] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false); // controla dropdown de notificações
   const navigate = useNavigate();
+
+  // Exemplo de notificações
+  const notifications = [
+    "Nova solicitação de serviço recebida",
+    "Seu perfil foi atualizado",
+    "Mensagem nova de cliente",
+  ];
 
   useEffect(() => {
     // Buscar dados do perfil
@@ -103,6 +111,10 @@ const Perfil = () => {
     navigate("/");
   };
 
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   return (
     <div className="perfil-container">
       <nav className="navbar">
@@ -110,10 +122,76 @@ const Perfil = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          <Link to="/service">Servicos</Link>
+          <Link to="/service">Serviços</Link>
+
+          {/* Botão de Notificações */}
+          <div className="notification-wrapper" style={{ position: "relative" }}>
+            <button
+              onClick={toggleNotifications}
+              className="notification-button"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "15px",
+              }}
+            >
+              <Bell size={24} />
+            </button>
+            {showNotifications && (
+              <div
+                className="notification-box"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  width: "250px",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
+                  {notifications.map((notification, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        padding: "8px 0",
+                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
+                      }}
+                    >
+                      {notification}
+                    </li>
+                  ))}
+                </ul>
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid #eee",
+                    textAlign: "center",
+                  }}
+                >
+                  <Link
+                    to="/notifications"
+                    style={{
+                      textDecoration: "none",
+                      color: "#007BFF",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
+
       <form onSubmit={handleUpdate} className="perfil-form">
         <h2>Meu Perfil</h2>
 
