@@ -1,11 +1,10 @@
 package com.sg.reparos.controller;
 
 import com.sg.reparos.dto.ServiceDto;
-import com.sg.reparos.model.Notification;
 import com.sg.reparos.model.Service;
 import com.sg.reparos.model.User;
-import com.sg.reparos.repository.NotificationRepository;
 import com.sg.reparos.repository.ServiceRepository;
+import com.sg.reparos.service.NotificationService;
 import com.sg.reparos.service.ServiceService;
 import com.sg.reparos.service.UserService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +28,13 @@ public class ServiceController {
     private final ServiceRepository serviceRepository;
     private final UserService userService;
     private final ServiceService serviceService;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
-    public ServiceController(ServiceRepository serviceRepository, UserService userService, ServiceService serviceService, NotificationRepository notificationRepository) {
+    public ServiceController(ServiceRepository serviceRepository, UserService userService, ServiceService serviceService, NotificationService notificationService) {
         this.serviceRepository = serviceRepository;
         this.userService = userService;
         this.serviceService = serviceService;
-        this.notificationRepository = notificationRepository;
+        this.notificationService = notificationService;
     }
 
     @GetMapping
@@ -56,7 +54,6 @@ public class ServiceController {
     @PostMapping("/new")
     public ResponseEntity<String> createService(@ModelAttribute ServiceDto serviceDto, Authentication authentication) {
         Optional<User> userOptional = userService.findByUsername(authentication.getName());
-
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado.");
         }
@@ -65,7 +62,7 @@ public class ServiceController {
         LocalTime visitTime = serviceDto.getVisitTime();
 
         if (visitDate.isBefore(LocalDate.now()) ||
-                (visitDate.isEqual(LocalDate.now()) && visitTime.isBefore(LocalTime.now()))) {
+            (visitDate.isEqual(LocalDate.now()) && visitTime.isBefore(LocalTime.now()))) {
             return ResponseEntity.badRequest().body("A data e hora da visita não podem estar no passado.");
         }
 
@@ -90,13 +87,12 @@ public class ServiceController {
 
         serviceRepository.save(service);
 
-        // ✅ Notificação de novo serviço agendado
-        Notification notification = new Notification(
+        // ✅ Criar notificação para o usuário
+        notificationService.criarNotificacaoParaUsuario(
+                userOptional.get().getUsername(),
                 "Novo serviço agendado",
-                "Você agendou um serviço de " + service.getServiceType() + " para " + service.getVisitDate(),
-                LocalDateTime.now()
+                "Você agendou um serviço de " + service.getServiceType() + " para " + service.getVisitDate()
         );
-        notificationRepository.save(notification);
 
         return ResponseEntity.ok("Serviço criado com sucesso.");
     }
@@ -173,13 +169,12 @@ public class ServiceController {
         servico.setMotivoCancelamento(motivo.trim());
         serviceRepository.save(servico);
 
-        // ✅ Notificação de cancelamento
-        Notification notification = new Notification(
+        // ✅ Notificar cancelamento
+        notificationService.criarNotificacaoParaUsuario(
+                servico.getUser().getUsername(),
                 "Serviço cancelado",
-                "Seu serviço de " + servico.getServiceType() + " foi cancelado. Motivo: " + motivo.trim(),
-                LocalDateTime.now()
+                "Seu serviço de " + servico.getServiceType() + " foi cancelado. Motivo: " + motivo.trim()
         );
-        notificationRepository.save(notification);
 
         return ResponseEntity.ok("Serviço cancelado com motivo.");
     }

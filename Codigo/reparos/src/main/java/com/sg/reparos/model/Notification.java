@@ -20,13 +20,18 @@ public class Notification {
     @Column(nullable = false)
     private LocalDateTime data;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user; // Relação: Notificação pertence a um usuário
+
     // Construtores
     public Notification() {}
 
-    public Notification(String titulo, String descricao, LocalDateTime data) {
+    public Notification(String titulo, String descricao, LocalDateTime data, User user) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.data = data;
+        this.user = user;
     }
 
     // Getters e Setters
@@ -56,5 +61,13 @@ public class Notification {
 
     public void setData(LocalDateTime data) {
         this.data = data;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

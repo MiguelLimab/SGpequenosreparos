@@ -1,7 +1,9 @@
 package com.sg.reparos.service;
 
 import com.sg.reparos.model.Notification;
+import com.sg.reparos.model.User;
 import com.sg.reparos.repository.NotificationRepository;
+import com.sg.reparos.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -11,27 +13,35 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserRepository userRepository;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
     }
 
     /**
-     * Cria e salva uma nova notificação.
+     * Cria e salva uma nova notificação para um usuário específico.
      */
-    public void criarNotificacao(String titulo, String descricao) {
-        Notification notification = new Notification(
-                titulo,
-                descricao,
-                LocalDateTime.now()
-        );
+    public void criarNotificacaoParaUsuario(String username, String titulo, String descricao) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+
+        Notification notification = new Notification();
+        notification.setTitulo(titulo);
+        notification.setDescricao(descricao);
+        notification.setData(LocalDateTime.now());
+        notification.setUser(user);
+
         notificationRepository.save(notification);
     }
 
     /**
-     * Lista todas as notificações.
+     * Lista todas as notificações do usuário autenticado.
      */
-    public List<Notification> listarNotificacoes() {
-        return notificationRepository.findAll();
+    public List<Notification> listarNotificacoesPorUsuario(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
+        return notificationRepository.findByUser(user);
     }
 }

@@ -1,17 +1,15 @@
 package com.sg.reparos.controller;
 
 import com.sg.reparos.dto.ServiceEditDto;
-import com.sg.reparos.model.Notification;
 import com.sg.reparos.model.Service;
-import com.sg.reparos.repository.NotificationRepository;
-import com.sg.reparos.repository.ServiceRepository;
+import com.sg.reparos.service.NotificationService;
 import com.sg.reparos.service.ServiceService;
+import com.sg.reparos.repository.ServiceRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -21,12 +19,12 @@ public class AdminServiceController {
 
     private final ServiceRepository serviceRepository;
     private final ServiceService serviceService;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
-    public AdminServiceController(ServiceRepository serviceRepository, ServiceService serviceService, NotificationRepository notificationRepository) {
+    public AdminServiceController(ServiceRepository serviceRepository, ServiceService serviceService, NotificationService notificationService) {
         this.serviceRepository = serviceRepository;
         this.serviceService = serviceService;
-        this.notificationRepository = notificationRepository;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/api")
@@ -64,13 +62,12 @@ public class AdminServiceController {
         service.setPrice(price);
         serviceRepository.save(service);
 
-        // ✅ Notificação de visita realizada e preço enviado
-        Notification notification = new Notification(
+        // Notificação de visita realizada
+        notificationService.criarNotificacaoParaUsuario(
+                service.getUser().getUsername(),
                 "Visita realizada",
-                "O profissional visitou o local e enviou uma proposta de R$ " + String.format("%.2f", price) + " para o serviço de " + service.getServiceType(),
-                LocalDateTime.now()
+                "O profissional visitou o local e enviou uma proposta de R$ " + String.format("%.2f", price) + " para o serviço de " + service.getServiceType()
         );
-        notificationRepository.save(notification);
 
         return ResponseEntity.ok("Marcado como visitado.");
     }
@@ -82,13 +79,12 @@ public class AdminServiceController {
         service.setCompletionDate(LocalDate.now());
         serviceRepository.save(service);
 
-        // ✅ Notificação de finalização
-        Notification notification = new Notification(
+        // Notificação de finalização
+        notificationService.criarNotificacaoParaUsuario(
+                service.getUser().getUsername(),
                 "Serviço finalizado",
-                "Seu serviço de " + service.getServiceType() + " foi finalizado com sucesso.",
-                LocalDateTime.now()
+                "Seu serviço de " + service.getServiceType() + " foi finalizado com sucesso."
         );
-        notificationRepository.save(notification);
 
         return ResponseEntity.ok("Finalizado com sucesso.");
     }
@@ -97,13 +93,12 @@ public class AdminServiceController {
     public ResponseEntity<Service> cancelService(@PathVariable Long id, @RequestParam String motivo) {
         Service cancelado = serviceService.cancelar(id, motivo);
 
-        // ✅ Notificação de cancelamento
-        Notification notification = new Notification(
+        // Notificação de cancelamento
+        notificationService.criarNotificacaoParaUsuario(
+                cancelado.getUser().getUsername(),
                 "Serviço cancelado",
-                "Seu serviço de " + cancelado.getServiceType() + " foi cancelado. Motivo: " + motivo,
-                LocalDateTime.now()
+                "Seu serviço de " + cancelado.getServiceType() + " foi cancelado. Motivo: " + motivo
         );
-        notificationRepository.save(notification);
 
         return ResponseEntity.ok(cancelado);
     }
