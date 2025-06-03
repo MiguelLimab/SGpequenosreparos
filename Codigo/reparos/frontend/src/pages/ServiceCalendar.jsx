@@ -123,15 +123,10 @@ function ServiceCalendar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
-  const [showNotifications, setShowNotifications] = useState(false); // Estado para dropdown de notificações
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   const navigate = useNavigate();
-
-  const notifications = [
-    "Novo serviço adicionado",
-    "Atualização no status do serviço",
-    "Cliente enviou uma mensagem",
-  ];
 
   const handleLogout = () => {
     navigate('/');
@@ -139,6 +134,16 @@ function ServiceCalendar() {
 
   const toggleNotifications = () => {
     setShowNotifications(!showNotifications);
+  };
+
+  const buscarNotificacoes = () => {
+    axios.get("http://localhost:8081/notifications", { withCredentials: true })
+      .then((res) => {
+        setNotifications(res.data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar notificações:", err);
+      });
   };
 
   const buscarServicos = () => {
@@ -184,10 +189,12 @@ function ServiceCalendar() {
       .then((res) => {
         setIsAdmin(res.data === "ROLE_ADMIN");
         buscarServicos();
+        buscarNotificacoes();
       })
       .catch((err) => {
         console.error("Erro ao verificar papel do usuário:", err);
         buscarServicos();
+        buscarNotificacoes();
       });
   }, []);
 
@@ -259,15 +266,15 @@ function ServiceCalendar() {
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
+                  {notifications.map((notification) => (
                     <li
-                      key={index}
+                      key={notification.id}
                       style={{
                         padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
+                        borderBottom: "1px solid #eee",
                       }}
                     >
-                      {notification}
+                      {notification.titulo}
                     </li>
                   ))}
                 </ul>

@@ -11,31 +11,39 @@ const UserList = () => {
   const [modoEdicao, setModoEdicao] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showNotifications, setShowNotifications] = useState(false); // Estado para notificações
-
-  const notifications = [
-    "Novo usuário cadastrado",
-    "Alteração de dados de usuário",
-    "Conta de usuário excluída",
-  ];
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Notificações dinâmicas
 
   useEffect(() => {
-    const buscarUsuarios = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("http://localhost:8081/admin/userlist", {
-          withCredentials: true,
-        });
-        setUsuarios(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar usuários:", error);
-        setError("Erro ao carregar usuários");
-      } finally {
-        setLoading(false);
-      }
-    };
     buscarUsuarios();
+    buscarNotificacoes();
   }, []);
+
+  const buscarUsuarios = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:8081/admin/userlist", {
+        withCredentials: true,
+      });
+      setUsuarios(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+      setError("Erro ao carregar usuários");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const buscarNotificacoes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/notifications", {
+        withCredentials: true,
+      });
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
 
   const handleLogout = () => {
     navigate("/");
@@ -90,9 +98,7 @@ const UserList = () => {
         usuarioSelecionado,
         {
           withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' },
         }
       );
       alert("Usuário atualizado com sucesso!");
@@ -119,8 +125,8 @@ const UserList = () => {
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }
       );
 
@@ -173,23 +179,33 @@ const UserList = () => {
                   background: "#fff",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  width: "250px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                   boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                   zIndex: 1000,
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
-                      }}
-                    >
-                      {notification}
-                    </li>
-                  ))}
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px" }}>Nenhuma notificação.</li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        <strong>{notification.titulo}</strong><br />
+                        <small>{notification.descricao}</small><br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
                 </ul>
                 <div
                   style={{

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
+import axios from "axios"; 
 import "../css/Notificacoes.css";
 
 const Notificacoes = () => {
   const [notificacoes, setNotificacoes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -13,37 +15,16 @@ const Notificacoes = () => {
   };
 
   useEffect(() => {
-    // Simulando busca de notificações
     const fetchNotificacoes = async () => {
       try {
-        // Aqui você pode substituir por um GET real futuramente
-        const notificacoesFalsas = [
-          {
-            id: 1,
-            titulo: "Novo serviço disponível",
-            descricao: "Há um novo serviço de pintura disponível para agendamento.",
-            data: "2025-06-01",
-          },
-          {
-            id: 2,
-            titulo: "Serviço finalizado",
-            descricao: "Seu serviço de instalação elétrica foi finalizado com sucesso.",
-            data: "2025-05-28",
-          },
-          {
-            id: 3,
-            titulo: "Mensagem do suporte",
-            descricao: "Sua solicitação de alteração de endereço foi atendida.",
-            data: "2025-05-25",
-          },
-        ];
-
-        setTimeout(() => {
-          setNotificacoes(notificacoesFalsas);
-          setLoading(false);
-        }, 1000);
+        const response = await axios.get("http://localhost:8081/notifications", {
+          withCredentials: true,
+        });
+        setNotificacoes(response.data);
       } catch (error) {
         console.error("Erro ao buscar notificações:", error);
+        setErro("Erro ao carregar notificações.");
+      } finally {
         setLoading(false);
       }
     };
@@ -66,10 +47,14 @@ const Notificacoes = () => {
       </nav>
 
       <div className="notificacoes-content">
-        <h1><Bell size={28} /> Minhas Notificações</h1>
+        <h1 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Bell size={28} /> Minhas Notificações
+        </h1>
 
         {loading ? (
           <p>Carregando notificações...</p>
+        ) : erro ? (
+          <p>{erro}</p>
         ) : notificacoes.length === 0 ? (
           <p>Você não possui notificações no momento.</p>
         ) : (
@@ -78,7 +63,15 @@ const Notificacoes = () => {
               <li key={notificacao.id} className="notificacao-item">
                 <h3>{notificacao.titulo}</h3>
                 <p>{notificacao.descricao}</p>
-                <span className="data">{new Date(notificacao.data).toLocaleDateString("pt-BR")}</span>
+                <span className="data">
+                  {new Date(notificacao.data).toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </li>
             ))}
           </ul>

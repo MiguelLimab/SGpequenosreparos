@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Bell } from "lucide-react"; // Importação do ícone de sino
+import { Bell } from "lucide-react"; // Ícone de sino
+import axios from "axios";
 import "../css/Home.css";
 
 const Home = () => {
   const navigate = useNavigate();
-
-  const [showNotifications, setShowNotifications] = useState(false); // Estado para controlar o dropdown
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Notificações dinâmicas
 
   const servicos = [
     {
@@ -39,11 +40,20 @@ const Home = () => {
     },
   ];
 
-  const notifications = [
-    "Novo serviço disponível",
-    "Seu agendamento foi confirmado",
-    "Mensagem recebida do suporte",
-  ];
+  useEffect(() => {
+    buscarNotificacoes();
+  }, []);
+
+  const buscarNotificacoes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/notifications", {
+        withCredentials: true,
+      });
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
 
   const handleLogout = () => {
     navigate("/");
@@ -87,23 +97,33 @@ const Home = () => {
                   background: "#fff",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  width: "250px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                   boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                   zIndex: 1000,
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
-                      }}
-                    >
-                      {notification}
-                    </li>
-                  ))}
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px" }}>Nenhuma notificação.</li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        <strong>{notification.titulo}</strong><br />
+                        <small>{notification.descricao}</small><br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
                 </ul>
                 <div
                   style={{

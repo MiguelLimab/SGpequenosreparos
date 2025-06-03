@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { Bell } from "lucide-react"; // Ícone de sino para notificações
+import { Bell } from "lucide-react"; // Ícone de sino
 import "../../css/admin/PainelAdmin.css";
 
 const PainelAdmin = () => {
@@ -11,18 +11,14 @@ const PainelAdmin = () => {
   const [dataFim, setDataFim] = useState("");
   const [editando, setEditando] = useState(null);
   const [form, setForm] = useState({});
-  const [showNotifications, setShowNotifications] = useState(false); // Estado do dropdown de notificações
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Agora vindo do backend
 
   const navigate = useNavigate();
 
-  const notifications = [
-    "Novo serviço aguardando aprovação",
-    "Orçamento enviado para revisão",
-    "Solicitação de alteração recebida",
-  ];
-
   useEffect(() => {
     buscarServicos();
+    buscarNotificacoes();
   }, [filtro, dataInicio, dataFim]);
 
   const handleLogout = () => {
@@ -47,6 +43,15 @@ const PainelAdmin = () => {
       .catch((err) => {
         console.error("Erro ao buscar serviços:", err);
         setServicos([]);
+      });
+  };
+
+  const buscarNotificacoes = () => {
+    axios
+      .get("http://localhost:8081/notifications", { withCredentials: true })
+      .then((res) => setNotifications(res.data))
+      .catch((err) => {
+        console.error("Erro ao buscar notificações:", err);
       });
   };
 
@@ -120,23 +125,33 @@ const PainelAdmin = () => {
                   background: "#fff",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  width: "250px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                   boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                   zIndex: 1000,
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
-                      }}
-                    >
-                      {notification}
-                    </li>
-                  ))}
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px" }}>Nenhuma notificação.</li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        <strong>{notification.titulo}</strong><br />
+                        <small>{notification.descricao}</small><br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
                 </ul>
                 <div
                   style={{

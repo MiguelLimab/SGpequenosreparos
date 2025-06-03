@@ -10,7 +10,9 @@ const Servicos = () => {
   const [erro, setErro] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [tipoFiltro, setTipoFiltro] = useState("");
-  const [showNotifications, setShowNotifications] = useState(false); // Estado para controlar notificações
+  const [showNotifications, setShowNotifications] = useState(false); // Para dropdown
+  const [notifications, setNotifications] = useState([]); // Notificações do backend
+
   const [novoServico, setNovoServico] = useState({
     serviceType: "",
     location: "",
@@ -20,12 +22,6 @@ const Servicos = () => {
   });
 
   const navigate = useNavigate();
-
-  const notifications = [
-    "Novo agendamento confirmado",
-    "Pagamento recebido",
-    "Mensagem de cliente disponível",
-  ];
 
   useEffect(() => {
     axios
@@ -38,7 +34,20 @@ const Servicos = () => {
         console.error("Erro ao verificar papel do usuário:", err);
         buscarServicos();
       });
+
+    buscarNotificacoes();
   }, []);
+
+  const buscarNotificacoes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/notifications", {
+        withCredentials: true,
+      });
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
 
   const buscarServicos = () => {
     setErro("");
@@ -118,7 +127,7 @@ const Servicos = () => {
       try {
         await axios.post(
           `http://localhost:8081/service/cancel/${id}`,
-          { justificativa },
+          { motivo: justificativa },
           {
             withCredentials: true,
             headers: { "Content-Type": "application/json" },
@@ -220,15 +229,15 @@ const Servicos = () => {
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
+                  {notifications.map((notification) => (
                     <li
-                      key={index}
+                      key={notification.id}
                       style={{
                         padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
+                        borderBottom: "1px solid #eee",
                       }}
                     >
-                      {notification}
+                      {notification.titulo}
                     </li>
                   ))}
                 </ul>

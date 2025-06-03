@@ -5,11 +5,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { Bell } from "lucide-react"; // ícone de sino
 
 const Perfil = () => {
-  const [usuario, setUsuario] = useState({
-    username: "",
-    email: "",
-  });
-
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [form, setForm] = useState({
@@ -21,24 +16,22 @@ const Perfil = () => {
   });
 
   const [msg, setMsg] = useState("");
-  const [showNotifications, setShowNotifications] = useState(false); // controla dropdown de notificações
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
   const navigate = useNavigate();
 
-  // Exemplo de notificações
-  const notifications = [
-    "Nova solicitação de serviço recebida",
-    "Seu perfil foi atualizado",
-    "Mensagem nova de cliente",
-  ];
-
   useEffect(() => {
-    // Buscar dados do perfil
+    buscarPerfil();
+    buscarNotificacoes();
+  }, []);
+
+  const buscarPerfil = () => {
     axios
       .get("http://localhost:8081/profile/api/profile", {
         withCredentials: true,
       })
       .then((res) => {
-        setUsuario(res.data);
         setForm((prev) => ({
           ...prev,
           username: res.data.username,
@@ -50,7 +43,6 @@ const Perfil = () => {
         setMsg("Erro ao carregar dados do perfil.");
       });
 
-    // Buscar papel do usuário para saber se é admin
     axios
       .get("http://localhost:8081/api/user/role", { withCredentials: true })
       .then((res) => setIsAdmin(res.data === "ROLE_ADMIN"))
@@ -58,7 +50,18 @@ const Perfil = () => {
         console.error("Erro ao buscar papel do usuário:", err);
         setIsAdmin(false);
       });
-  }, []);
+  };
+
+  const buscarNotificacoes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/notifications", {
+        withCredentials: true,
+      });
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -107,7 +110,6 @@ const Perfil = () => {
   };
 
   const handleLogout = () => {
-    // Limpar dados locais se necessário
     navigate("/");
   };
 
@@ -148,23 +150,33 @@ const Perfil = () => {
                   background: "#fff",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  width: "250px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                   boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                   zIndex: 1000,
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
-                      }}
-                    >
-                      {notification}
-                    </li>
-                  ))}
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px" }}>Nenhuma notificação.</li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                        }}
+                      >
+                        <strong>{notification.titulo}</strong><br />
+                        <small>{notification.descricao}</small><br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
                 </ul>
                 <div
                   style={{

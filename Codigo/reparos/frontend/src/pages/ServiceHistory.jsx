@@ -10,15 +10,10 @@ const ServiceHistory = () => {
   const [erro, setErro] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
-  const [showNotifications, setShowNotifications] = useState(false); // Estado notificações
+  const [showNotifications, setShowNotifications] = useState(false); 
+  const [notifications, setNotifications] = useState([]); // Estado para notificações da API
 
   const navigate = useNavigate();
-
-  const notifications = [
-    "Histórico de serviço atualizado",
-    "Novo serviço adicionado ao histórico",
-    "Mensagem importante do suporte",
-  ];
 
   useEffect(() => {
     axios
@@ -26,10 +21,12 @@ const ServiceHistory = () => {
       .then((res) => {
         setIsAdmin(res.data === "ROLE_ADMIN");
         buscarHistoricoServicos();
+        buscarNotificacoes();
       })
       .catch((err) => {
         console.error("Erro ao verificar papel do usuário:", err);
         buscarHistoricoServicos();
+        buscarNotificacoes();
       });
   }, []);
 
@@ -49,6 +46,17 @@ const ServiceHistory = () => {
       .catch((err) => {
         console.error("Erro ao buscar histórico de serviços:", err);
         setErro("Erro ao carregar histórico de serviços. Tente novamente mais tarde.");
+      });
+  };
+
+  const buscarNotificacoes = () => {
+    axios
+      .get("http://localhost:8081/notifications", { withCredentials: true })
+      .then((res) => {
+        setNotifications(res.data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar notificações:", err);
       });
   };
 
@@ -137,15 +145,15 @@ const ServiceHistory = () => {
                 }}
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
-                  {notifications.map((notification, index) => (
+                  {notifications.map((notification) => (
                     <li
-                      key={index}
+                      key={notification.id}
                       style={{
                         padding: "8px 0",
-                        borderBottom: index !== notifications.length - 1 ? "1px solid #eee" : "none",
+                        borderBottom: "1px solid #eee",
                       }}
                     >
-                      {notification}
+                      {notification.titulo}
                     </li>
                   ))}
                 </ul>
