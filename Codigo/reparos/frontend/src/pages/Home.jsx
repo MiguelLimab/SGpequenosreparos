@@ -12,7 +12,8 @@ const Home = () => {
   const servicos = [
     {
       titulo: "Manutenção de Imóveis",
-      descricao: "Serviços preventivos e corretivos para manter seu imóvel em ótimas condições.",
+      descricao:
+        "Serviços preventivos e corretivos para manter seu imóvel em ótimas condições.",
     },
     {
       titulo: "Pequenos Reparos",
@@ -20,15 +21,18 @@ const Home = () => {
     },
     {
       titulo: "Instalação de Equipamentos",
-      descricao: "Instalação segura de suportes, eletrodomésticos, luminárias e mais.",
+      descricao:
+        "Instalação segura de suportes, eletrodomésticos, luminárias e mais.",
     },
     {
       titulo: "Montagem de Móveis",
-      descricao: "Montagem com cuidado e precisão conforme o manual do fabricante.",
+      descricao:
+        "Montagem com cuidado e precisão conforme o manual do fabricante.",
     },
     {
       titulo: "Serviços Hidráulicos",
-      descricao: "Reparos e instalações em torneiras, chuveiros, encanamentos e registros.",
+      descricao:
+        "Reparos e instalações em torneiras, chuveiros, encanamentos e registros.",
     },
     {
       titulo: "Serviços Elétricos",
@@ -36,7 +40,8 @@ const Home = () => {
     },
     {
       titulo: "Pintura",
-      descricao: "Pintura profissional para interiores e exteriores com ótimo acabamento.",
+      descricao:
+        "Pintura profissional para interiores e exteriores com ótimo acabamento.",
     },
   ];
 
@@ -74,7 +79,10 @@ const Home = () => {
           <Link to="/perfil">Perfil</Link>
 
           {/* Botão de Notificações */}
-          <div className="notification-wrapper" style={{ position: "relative" }}>
+          <div
+            className="notification-wrapper"
+            style={{ position: "relative" }}
+          >
             <button
               onClick={toggleNotifications}
               className="notification-button"
@@ -114,10 +122,17 @@ const Home = () => {
                         style={{
                           padding: "8px 0",
                           borderBottom: "1px solid #eee",
+                          color: "#2a4a7c", // <- AQUI
                         }}
                       >
-                        <strong>{notification.titulo}</strong><br />
-                        <small>{notification.descricao}</small><br />
+                        <strong style={{ color: "#2a4a7c" }}>
+                          {notification.titulo}
+                        </strong>
+                        <br />
+                        <small style={{ color: "#2a4a7c" }}>
+                          {notification.descricao}
+                        </small>
+                        <br />
                         <small style={{ color: "#888" }}>
                           {new Date(notification.data).toLocaleString("pt-BR")}
                         </small>

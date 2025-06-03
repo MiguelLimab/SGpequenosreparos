@@ -196,10 +196,17 @@ const UserList = () => {
                         style={{
                           padding: "8px 0",
                           borderBottom: "1px solid #eee",
+                          color: "#2a4a7c", // <- AQUI
                         }}
                       >
-                        <strong>{notification.titulo}</strong><br />
-                        <small>{notification.descricao}</small><br />
+                        <strong style={{ color: "#2a4a7c" }}>
+                          {notification.titulo}
+                        </strong>
+                        <br />
+                        <small style={{ color: "#2a4a7c" }}>
+                          {notification.descricao}
+                        </small>
+                        <br />
                         <small style={{ color: "#888" }}>
                           {new Date(notification.data).toLocaleString("pt-BR")}
                         </small>

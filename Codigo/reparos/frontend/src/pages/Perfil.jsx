@@ -127,7 +127,10 @@ const Perfil = () => {
           <Link to="/service">Serviços</Link>
 
           {/* Botão de Notificações */}
-          <div className="notification-wrapper" style={{ position: "relative" }}>
+          <div
+            className="notification-wrapper"
+            style={{ position: "relative" }}
+          >
             <button
               onClick={toggleNotifications}
               className="notification-button"
@@ -167,10 +170,17 @@ const Perfil = () => {
                         style={{
                           padding: "8px 0",
                           borderBottom: "1px solid #eee",
+                          color: "#2a4a7c", // <- AQUI
                         }}
                       >
-                        <strong>{notification.titulo}</strong><br />
-                        <small>{notification.descricao}</small><br />
+                        <strong style={{ color: "#2a4a7c" }}>
+                          {notification.titulo}
+                        </strong>
+                        <br />
+                        <small style={{ color: "#2a4a7c" }}>
+                          {notification.descricao}
+                        </small>
+                        <br />
                         <small style={{ color: "#888" }}>
                           {new Date(notification.data).toLocaleString("pt-BR")}
                         </small>
