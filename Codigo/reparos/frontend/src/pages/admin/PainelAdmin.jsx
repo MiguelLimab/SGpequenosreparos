@@ -149,7 +149,7 @@ const PainelAdmin = () => {
                     to="/notifications"
                     style={{
                       textDecoration: "none",
-                      color: "#007BFF",
+                      color: "#2a4a7c",
                       fontWeight: "bold",
                     }}
                   >

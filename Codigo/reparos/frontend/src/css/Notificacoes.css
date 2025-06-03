@@ -1,0 +1,128 @@
+/* Resetando margens e padding básicos */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Corpo da página */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f4f8;
+}
+
+/* Navbar fixa */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #2a4a7c;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.navbar-links a,
+.navbar-links button {
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.navbar-links a:hover,
+.navbar-links button:hover {
+  text-decoration: underline;
+}
+
+/* Estilo do container principal de notificações */
+.notificacoes-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 6rem 2rem 2rem; /* ajuste por causa da navbar fixa */
+}
+
+/* Estilo da área de conteúdo */
+.notificacoes-content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Título da seção de notificações */
+.notificacoes-content h1 {
+  text-align: center;
+  color: #2a4a7c;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Lista de notificações */
+.notificacoes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Item individual de notificação */
+.notificacao-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+  border-radius: 8px;
+}
+
+.notificacao-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Título da notificação */
+.notificacao-item h3 {
+  margin-bottom: 0.5rem;
+  color: #2a4a7c;
+  font-size: 1.25rem;
+}
+
+/* Descrição da notificação */
+.notificacao-item p {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+/* Data da notificação */
+.notificacao-item .data {
+  font-size: 0.85rem;
+  color: #999;
+  display: block;
+  margin-top: 0.5rem;
+}

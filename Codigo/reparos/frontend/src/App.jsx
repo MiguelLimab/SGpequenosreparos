@@ -8,6 +8,7 @@ import PainelAdmin from "./pages/admin/PainelAdmin";
 import ServiceCalendar from "./pages/ServiceCalendar";
 import UserList from "./pages/admin/UserList";
 import ServiceHistory from "./pages/ServiceHistory";
+import Notificacoes from "./pages/Notificacoes";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/admin" element={<PainelAdmin />} />
         <Route path="/calendar" element={<ServiceCalendar />} />
         <Route path="/userlist" element={<UserList />} />
+        <Route path="/notifications" element={<Notificacoes />} />
       </Routes>
     </BrowserRouter>
   );
