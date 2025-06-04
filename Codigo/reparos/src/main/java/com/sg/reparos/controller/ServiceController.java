@@ -30,7 +30,8 @@ public class ServiceController {
     private final ServiceService serviceService;
     private final NotificationService notificationService;
 
-    public ServiceController(ServiceRepository serviceRepository, UserService userService, ServiceService serviceService, NotificationService notificationService) {
+    public ServiceController(ServiceRepository serviceRepository, UserService userService,
+            ServiceService serviceService, NotificationService notificationService) {
         this.serviceRepository = serviceRepository;
         this.userService = userService;
         this.serviceService = serviceService;
@@ -38,9 +39,11 @@ public class ServiceController {
     }
 
     @GetMapping
-    public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model, Authentication authentication) {
+    public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model,
+            Authentication authentication) {
         Optional<User> userOptional = userService.findByUsername(authentication.getName());
-        if (userOptional.isEmpty()) return "redirect:/login";
+        if (userOptional.isEmpty())
+            return "redirect:/login";
 
         User user = userOptional.get();
         List<Service> services = (status != null)
@@ -62,7 +65,7 @@ public class ServiceController {
         LocalTime visitTime = serviceDto.getVisitTime();
 
         if (visitDate.isBefore(LocalDate.now()) ||
-            (visitDate.isEqual(LocalDate.now()) && visitTime.isBefore(LocalTime.now()))) {
+                (visitDate.isEqual(LocalDate.now()) && visitTime.isBefore(LocalTime.now()))) {
             return ResponseEntity.badRequest().body("A data e hora da visita não podem estar no passado.");
         }
 
@@ -91,8 +94,7 @@ public class ServiceController {
         notificationService.criarNotificacaoParaUsuario(
                 userOptional.get().getUsername(),
                 "Novo serviço agendado",
-                "Você agendou um serviço de " + service.getServiceType() + " para " + service.getVisitDate()
-        );
+                "Você agendou um serviço de " + service.getServiceType() + " para " + service.getVisitDate());
 
         return ResponseEntity.ok("Serviço criado com sucesso.");
     }
@@ -109,7 +111,7 @@ public class ServiceController {
 
     private String alterarStatusDoUsuario(Long id, Authentication authentication, Service.ServiceStatus novoStatus) {
         Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isPresent() && pertenceAoUsuario(optional.get(), authentication)) {
+        if (optional.isPresent() && pertenceAoUsuarioOuAdmin(optional.get(), authentication)) {
             Service service = optional.get();
             service.setStatus(novoStatus);
             serviceRepository.save(service);
@@ -125,7 +127,7 @@ public class ServiceController {
             Authentication authentication) {
 
         Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isPresent() && pertenceAoUsuario(optional.get(), authentication)) {
+        if (optional.isPresent() && pertenceAoUsuarioOuAdmin(optional.get(), authentication)) {
             Service service = optional.get();
 
             if (date.isBefore(service.getVisitDate())) {
@@ -143,20 +145,29 @@ public class ServiceController {
 
     @GetMapping("/api/service")
     @ResponseBody
-    public List<Service> listarServicosDoUsuario(Authentication authentication) {
-        return userService.findByUsername(authentication.getName())
-                .map(serviceRepository::findByUser)
-                .orElse(List.of());
+    public List<Service> listarServicos(Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return serviceRepository.findAll();
+        } else {
+            return userService.findByUsername(authentication.getName())
+                    .map(serviceRepository::findByUser)
+                    .orElse(List.of());
+        }
     }
 
     @PostMapping("/cancel/{id}")
     @ResponseBody
-    public ResponseEntity<String> cancelarComMotivo(@PathVariable Long id, @RequestBody Map<String, String> payload, Authentication authentication) {
+    public ResponseEntity<String> cancelarComMotivo(@PathVariable Long id, @RequestBody Map<String, String> payload,
+            Authentication authentication) {
         Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isEmpty()) return ResponseEntity.notFound().build();
+        if (optional.isEmpty())
+            return ResponseEntity.notFound().build();
 
         Service servico = optional.get();
-        if (!pertenceAoUsuario(servico, authentication)) {
+        if (!pertenceAoUsuarioOuAdmin(servico, authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não pode cancelar este serviço.");
         }
 
@@ -173,13 +184,17 @@ public class ServiceController {
         notificationService.criarNotificacaoParaUsuario(
                 servico.getUser().getUsername(),
                 "Serviço cancelado",
-                "Seu serviço de " + servico.getServiceType() + " foi cancelado. Motivo: " + motivo.trim()
-        );
+                "Seu serviço de " + servico.getServiceType() + " foi cancelado. Motivo: " + motivo.trim());
 
         return ResponseEntity.ok("Serviço cancelado com motivo.");
     }
 
-    private boolean pertenceAoUsuario(Service service, Authentication authentication) {
-        return service.getUser().getUsername().equals(authentication.getName());
-    }
+private boolean pertenceAoUsuarioOuAdmin(Service service, Authentication authentication) {
+    String username = authentication.getName();
+    boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+    return service.getUser().getUsername().equals(username) || isAdmin;
+}
+
 }
