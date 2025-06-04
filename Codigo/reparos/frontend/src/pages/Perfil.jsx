@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Perfil.css";
 import { useNavigate, Link } from "react-router-dom";
-import { Bell } from "lucide-react"; // ícone de sino
+import { Bell } from "lucide-react";
 
 const Perfil = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -13,10 +13,19 @@ const Perfil = () => {
     confirmPassword: "",
     currentPassword: "",
   });
+  const [usuario, setUsuario] = useState({}); // <-- Definido o usuário
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState(""); // "error", "info", etc.
   const [passwordError, setPasswordError] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchProfileData();
+    fetchRole();
+    buscarNotificacoes();
+  }, []);
 
   const fetchProfileData = async () => {
     try {
@@ -29,7 +38,7 @@ const Perfil = () => {
         email: res.data.email,
         newPassword: "",
         confirmPassword: "",
-        currentPassword: ""
+        currentPassword: "",
       });
       setMsg("");
       setMsgType("");
@@ -40,15 +49,15 @@ const Perfil = () => {
     }
   };
 
-  useEffect(() => {
-    fetchProfileData();
-    axios.get("http://localhost:8081/api/user/role", { withCredentials: true })
-      .then(res => setIsAdmin(res.data === "ROLE_ADMIN"))
-      .catch(err => {
+  const fetchRole = () => {
+    axios
+      .get("http://localhost:8081/api/user/role", { withCredentials: true })
+      .then((res) => setIsAdmin(res.data === "ROLE_ADMIN"))
+      .catch((err) => {
         console.error("Erro ao buscar papel do usuário:", err);
         setIsAdmin(false);
       });
-  }, []);
+  };
 
   const buscarNotificacoes = async () => {
     try {
@@ -63,22 +72,19 @@ const Perfil = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setForm(prev => {
+    setForm((prev) => {
       const updatedForm = { ...prev, [name]: value };
-
       if (name === "newPassword" || name === "confirmPassword") {
         if (updatedForm.newPassword && updatedForm.confirmPassword) {
-          if (updatedForm.newPassword !== updatedForm.confirmPassword) {
-            setPasswordError("As senhas não coincidem");
-          } else {
-            setPasswordError("");
-          }
+          setPasswordError(
+            updatedForm.newPassword !== updatedForm.confirmPassword
+              ? "As senhas não coincidem"
+              : ""
+          );
         } else {
           setPasswordError("");
         }
       }
-
       return updatedForm;
     });
   };
@@ -93,10 +99,8 @@ const Perfil = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
-    // Verifica se as informações são iguais às atuais (sem considerar currentPassword)
     const isUsernameUnchanged = form.username === usuario.username;
     const isEmailUnchanged = form.email === usuario.email;
     const isPasswordEmpty = !form.newPassword;
@@ -130,7 +134,6 @@ const Perfil = () => {
       navigate("/");
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
-
       if (!err.response) {
         setMsg("Não foi possível conectar ao servidor. Verifique sua conexão.");
       } else if (err.response.status === 400) {
@@ -142,7 +145,6 @@ const Perfil = () => {
       } else {
         setMsg("Erro inesperado ao atualizar perfil. Tente novamente mais tarde.");
       }
-
       setMsgType("error");
     }
   };
@@ -185,11 +187,7 @@ const Perfil = () => {
         <div className="navbar-links">
           <Link to="/service">Serviços</Link>
 
-          {/* Botão de Notificações */}
-          <div
-            className="notification-wrapper"
-            style={{ position: "relative" }}
-          >
+          <div className="notification-wrapper" style={{ position: "relative" }}>
             <button
               onClick={toggleNotifications}
               className="notification-button"
@@ -231,16 +229,12 @@ const Perfil = () => {
                         style={{
                           padding: "8px 0",
                           borderBottom: "1px solid #eee",
-                          color: "#2a4a7c", // <- AQUI
+                          color: "#2a4a7c",
                         }}
                       >
-                        <strong style={{ color: "#2a4a7c" }}>
-                          {notification.titulo}
-                        </strong>
+                        <strong>{notification.titulo}</strong>
                         <br />
-                        <small style={{ color: "#2a4a7c" }}>
-                          {notification.descricao}
-                        </small>
+                        <small>{notification.descricao}</small>
                         <br />
                         <small style={{ color: "#888" }}>
                           {new Date(notification.data).toLocaleString("pt-BR")}
