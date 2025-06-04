@@ -86,12 +86,6 @@ const Home = () => {
             <button
               onClick={toggleNotifications}
               className="notification-button"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                marginLeft: "15px",
-              }}
             >
               <Bell size={24} />
             </button>

@@ -31,7 +31,9 @@
   font-size: 1.6rem;
   font-weight: 600;
   color: white;
-  text-decoration: none;
+  text-decoration: aqua;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
 }
 
 .navbar-links {
@@ -42,18 +44,11 @@
 .navbar-links a,
 .navbar-links button {
   font-size: 1rem;
-  background: none;
-  border: none;
   color: white;
   text-decoration: none;
   cursor: pointer;
   transition: color 0.2s ease;
-}
-
-/* Botão "Sair" */
-.navbar-links button {
   background-color: #ffb347;
-  color: #2a4a7c;
   padding: 0.4rem 1rem;
   border-radius: 6px;
   transition: background-color 0.3s ease;
@@ -64,9 +59,19 @@
   color: white;
 }
 
+.navbar-links a:hover {
+  background-color: #ffa733;
+  color: white;
+}
+
+.navbar-title a:hover {
+  background-color: #ffa733;
+  color: white;
+}
+
 /* Conteúdo principal */
 .home-content {
-  padding-top: 67px;
+  padding-top: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -134,7 +139,6 @@
   transition: background-color 0.3s ease;
   margin-right: 5rem;
   cursor: pointer;
-  border: none;
   font-size: 1rem;
   font-weight: bold;
 }
