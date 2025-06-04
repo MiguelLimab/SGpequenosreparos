@@ -146,8 +146,8 @@ public class FeedbackService {
      * Verificar se o status do serviço permite feedback.
      */
     private boolean isServicoFinalizavelParaFeedback(Service.ServiceStatus status) {
-        return status == Service.ServiceStatus.FINALIZADO || 
-               status == Service.ServiceStatus.CONCLUIDO;
+        return status == Service.ServiceStatus.FINALIZADO;
+               
     }
 
     /**
