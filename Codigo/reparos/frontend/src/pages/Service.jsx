@@ -305,7 +305,7 @@ const Servicos = () => {
 
       <h1>Meus Serviços</h1>
 
-      <div className="filtro-container">
+      <div className="filtro-container-service">
         <label htmlFor="filtroTipo">Filtrar por tipo:</label>
         <select
           id="filtroTipo"
