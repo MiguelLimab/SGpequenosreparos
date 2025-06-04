@@ -53,10 +53,10 @@ const Perfil = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     setForm(prev => {
       const updatedForm = { ...prev, [name]: value };
-      
+
       if (name === "newPassword" || name === "confirmPassword") {
         if (updatedForm.newPassword && updatedForm.confirmPassword) {
           if (updatedForm.newPassword !== updatedForm.confirmPassword) {
@@ -68,7 +68,7 @@ const Perfil = () => {
           setPasswordError("");
         }
       }
-      
+
       return updatedForm;
     });
   };
@@ -104,8 +104,9 @@ const Perfil = () => {
         { withCredentials: true }
       );
 
-      setMsg("Perfil atualizado com sucesso!");
-      await fetchProfileData();
+      alert("Perfil atualizado com sucesso! Faça login novamente.");
+      await axios.post("http://localhost:8081/logout", {}, { withCredentials: true });
+      navigate("/");
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
       setMsg(err.response?.data || "Erro ao atualizar perfil.");
@@ -126,8 +127,14 @@ const Perfil = () => {
     }
   };
 
-  const handleLogout = () => {
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:8081/logout", {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Erro ao fazer logout:", err);
+    } finally {
+      navigate("/");
+    }
   };
 
   return (
@@ -137,7 +144,7 @@ const Perfil = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          <Link to="/service">Servicos</Link>
+          <Link to="/service">Serviços</Link>
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
