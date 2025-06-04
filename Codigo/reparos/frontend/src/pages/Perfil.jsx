@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/Perfil.css";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { Bell } from "lucide-react"; // ícone de sino
 
 const Perfil = () => {
-  const [usuario, setUsuario] = useState({
-    username: "",
-    email: "",
-  });
-
   const [isAdmin, setIsAdmin] = useState(false);
 
   const [form, setForm] = useState({
@@ -21,16 +16,22 @@ const Perfil = () => {
   });
 
   const [msg, setMsg] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Buscar dados do perfil
+    buscarPerfil();
+    buscarNotificacoes();
+  }, []);
+
+  const buscarPerfil = () => {
     axios
       .get("http://localhost:8081/profile/api/profile", {
         withCredentials: true,
       })
       .then((res) => {
-        setUsuario(res.data);
         setForm((prev) => ({
           ...prev,
           username: res.data.username,
@@ -42,7 +43,6 @@ const Perfil = () => {
         setMsg("Erro ao carregar dados do perfil.");
       });
 
-    // Buscar papel do usuário para saber se é admin
     axios
       .get("http://localhost:8081/api/user/role", { withCredentials: true })
       .then((res) => setIsAdmin(res.data === "ROLE_ADMIN"))
@@ -50,7 +50,18 @@ const Perfil = () => {
         console.error("Erro ao buscar papel do usuário:", err);
         setIsAdmin(false);
       });
-  }, []);
+  };
+
+  const buscarNotificacoes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/notifications", {
+        withCredentials: true,
+      });
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -99,8 +110,11 @@ const Perfil = () => {
   };
 
   const handleLogout = () => {
-    // Limpar dados locais se necessário
     navigate("/");
+  };
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
   };
 
   return (
@@ -110,10 +124,98 @@ const Perfil = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          <Link to="/service">Servicos</Link>
+          <Link to="/service">Serviços</Link>
+
+          {/* Botão de Notificações */}
+          <div
+            className="notification-wrapper"
+            style={{ position: "relative" }}
+          >
+            <button
+              onClick={toggleNotifications}
+              className="notification-button"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "15px",
+              }}
+            >
+              <Bell size={24} />
+            </button>
+            {showNotifications && (
+              <div
+                className="notification-box"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px", color: "#2a4a7c" }}>
+                      Nenhuma notificação.
+                    </li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                          color: "#2a4a7c", // <- AQUI
+                        }}
+                      >
+                        <strong style={{ color: "#2a4a7c" }}>
+                          {notification.titulo}
+                        </strong>
+                        <br />
+                        <small style={{ color: "#2a4a7c" }}>
+                          {notification.descricao}
+                        </small>
+                        <br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
+                </ul>
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid #eee",
+                    textAlign: "center",
+                  }}
+                >
+                  <Link
+                    to="/notifications"
+                    style={{
+                      textDecoration: "none",
+                      color: "#2a4a7c",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
+
       <form onSubmit={handleUpdate} className="perfil-form">
         <h2>Meu Perfil</h2>
 

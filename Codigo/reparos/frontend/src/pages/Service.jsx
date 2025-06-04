@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../css/Service.css";
 import { useNavigate, Link } from "react-router-dom";
+import { Bell } from "lucide-react"; // Ícone de sino
+import "../css/Service.css";
 
 const Servicos = () => {
   const [servicos, setServicos] = useState([]);
@@ -9,6 +10,9 @@ const Servicos = () => {
   const [erro, setErro] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [tipoFiltro, setTipoFiltro] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false); // Para dropdown
+  const [notifications, setNotifications] = useState([]); // Notificações do backend
+
   const [novoServico, setNovoServico] = useState({
     serviceType: "",
     location: "",
@@ -30,12 +34,27 @@ const Servicos = () => {
         console.error("Erro ao verificar papel do usuário:", err);
         buscarServicos();
       });
+
+    buscarNotificacoes();
   }, []);
+
+  const buscarNotificacoes = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/notifications", {
+        withCredentials: true,
+      });
+      setNotifications(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar notificações:", error);
+    }
+  };
 
   const buscarServicos = () => {
     setErro("");
     axios
-      .get("http://localhost:8081/service/api/service", { withCredentials: true })
+      .get("http://localhost:8081/service/api/service", {
+        withCredentials: true,
+      })
       .then((res) => setServicos(res.data))
       .catch((err) => {
         console.error("Erro ao buscar serviços:", err);
@@ -47,7 +66,6 @@ const Servicos = () => {
     setNovoServico({ ...novoServico, [e.target.name]: e.target.value });
   };
 
-  // ✅ Função para validar "4 dias sim, 4 dias não"
   function isDataPermitida(dateStr) {
     const date = new Date(dateStr);
     const inicio = new Date(2025, 0, 1);
@@ -62,7 +80,9 @@ const Servicos = () => {
     setErro("");
 
     if (!isDataPermitida(novoServico.visitDate)) {
-      setErro("A data selecionada está em um período não permitido (4 dias sim, 4 dias não).");
+      setErro(
+        "A data selecionada está em um período não permitido (4 dias sim, 4 dias não)."
+      );
       return;
     }
 
@@ -94,13 +114,17 @@ const Servicos = () => {
       if (err.response && err.response.data) {
         setErro(err.response.data);
       } else {
-        setErro("Erro ao adicionar serviço. Verifique os dados e tente novamente.");
+        setErro(
+          "Erro ao adicionar serviço. Verifique os dados e tente novamente."
+        );
       }
     }
   };
 
   const cancelarServico = async (id) => {
-    const justificativa = window.prompt("Por favor, informe o motivo do cancelamento:");
+    const justificativa = window.prompt(
+      "Por favor, informe o motivo do cancelamento:"
+    );
     if (!justificativa || justificativa.trim() === "") {
       alert("É necessário informar um motivo para cancelar o serviço.");
       return;
@@ -111,7 +135,7 @@ const Servicos = () => {
       try {
         await axios.post(
           `http://localhost:8081/service/cancel/${id}`,
-          { justificativa },
+          { motivo: justificativa },
           {
             withCredentials: true,
             headers: { "Content-Type": "application/json" },
@@ -159,6 +183,10 @@ const Servicos = () => {
     navigate("/");
   };
 
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
   const formatarData = (dataStr) => {
     if (!dataStr) return "";
     const data = new Date(dataStr);
@@ -173,18 +201,111 @@ const Servicos = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
-          {isAdmin && <Link to="/calendar" className="admin-link">Calendario</Link>}
+          {isAdmin && (
+            <Link to="/admin" className="admin-link">
+              Painel ADM
+            </Link>
+          )}
+          {isAdmin && (
+            <Link to="/calendar" className="admin-link">
+              Calendário
+            </Link>
+          )}
           <Link to="/service">Serviços</Link>
           <Link to="/servicehistory">Histórico</Link>
           <Link to="/perfil">Perfil</Link>
+
+          {/* Botão de Notificações */}
+          <div
+            className="notification-wrapper"
+            style={{ position: "relative" }}
+          >
+            <button
+              onClick={toggleNotifications}
+              className="notification-button"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "15px",
+              }}
+            >
+              <Bell size={24} />
+            </button>
+            {showNotifications && (
+              <div
+                className="notification-box"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px", color: "#2a4a7c" }}>Nenhuma notificação.</li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                          color: "#2a4a7c", // <- AQUI
+                        }}
+                      >
+                        <strong style={{ color: "#2a4a7c" }}>
+                          {notification.titulo}
+                        </strong>
+                        <br />
+                        <small style={{ color: "#2a4a7c" }}>
+                          {notification.descricao}
+                        </small>
+                        <br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
+                </ul>
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid #eee",
+                    textAlign: "center",
+                  }}
+                >
+                  <Link
+                    to="/notifications"
+                    style={{
+                      textDecoration: "none",
+                      color: "#2a4a7c",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
 
       <h1>Meus Serviços</h1>
 
-      <div className="filtro-container">
+      <div className="filtro-container-service">
         <label htmlFor="filtroTipo">Filtrar por tipo:</label>
         <select
           id="filtroTipo"
@@ -266,11 +387,23 @@ const Servicos = () => {
         servicos.map((servico) => (
           <div key={servico.id} className="servico-card">
             <h3>{servico.serviceType}</h3>
-            <p><strong>Local:</strong> {servico.location}</p>
-            <p><strong>Status:</strong> {servico.status}</p>
-            <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
-            <p><strong>Visita:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
-            <p><strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}</p>
+            <p>
+              <strong>Local:</strong> {servico.location}
+            </p>
+            <p>
+              <strong>Status:</strong> {servico.status}
+            </p>
+            <p>
+              <strong>Descrição:</strong> {servico.description || "Nenhuma"}
+            </p>
+            <p>
+              <strong>Visita:</strong> {formatarData(servico.visitDate)} às{" "}
+              {servico.visitTime}
+            </p>
+            <p>
+              <strong>Duração Estimada:</strong>{" "}
+              {servico.estimatedDuration || "Não informada"}
+            </p>
 
             {servico.status === "AGENDAMENTO_VISITA" && (
               <button onClick={() => cancelarServico(servico.id)}>
@@ -280,20 +413,36 @@ const Servicos = () => {
 
             {servico.status === "VISITADO" && (
               <>
-                <p><strong>Preço Proposto:</strong> {servico.price != null ? `R$ ${servico.price.toFixed(2)}` : "Aguardando avaliação"}</p>
+                <p>
+                  <strong>Preço Proposto:</strong>{" "}
+                  {servico.price != null
+                    ? `R$ ${servico.price.toFixed(2)}`
+                    : "Aguardando avaliação"}
+                </p>
                 {servico.price != null && (
                   <>
-                    <button onClick={() => aceitarServico(servico.id)}>Aceitar Preço</button>
-                    <button onClick={() => rejeitarServico(servico.id)}>Rejeitar Preço</button>
+                    <button onClick={() => aceitarServico(servico.id)}>
+                      Aceitar Preço
+                    </button>
+                    <button onClick={() => rejeitarServico(servico.id)}>
+                      Rejeitar Preço
+                    </button>
                   </>
                 )}
               </>
             )}
 
-            {(servico.status === "FINALIZADO" || servico.status === "AGUARDANDO_FINALIZACAO") && (
+            {(servico.status === "FINALIZADO" ||
+              servico.status === "AGUARDANDO_FINALIZACAO") && (
               <>
-                <p><strong>Preço:</strong> R$ {servico.price?.toFixed(2)}</p>
-                <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
+                <p>
+                  <strong>Preço:</strong> R$ {servico.price?.toFixed(2)}
+                </p>
+                <p>
+                  <strong>Finalização:</strong>{" "}
+                  {formatarData(servico.completionDate)} às{" "}
+                  {servico.completionTime}
+                </p>
               </>
             )}
           </div>

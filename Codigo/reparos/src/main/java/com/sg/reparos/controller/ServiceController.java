@@ -4,9 +4,9 @@ import com.sg.reparos.dto.ServiceDto;
 import com.sg.reparos.model.Service;
 import com.sg.reparos.model.User;
 import com.sg.reparos.repository.ServiceRepository;
+import com.sg.reparos.service.NotificationService;
 import com.sg.reparos.service.ServiceService;
 import com.sg.reparos.service.UserService;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Sort;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,20 +30,22 @@ public class ServiceController {
     private final ServiceRepository serviceRepository;
     private final UserService userService;
     private final ServiceService serviceService;
+    private final NotificationService notificationService;
 
-    public ServiceController(ServiceRepository serviceRepository, UserService userService, ServiceService serviceService) {
+    public ServiceController(ServiceRepository serviceRepository, UserService userService,
+            ServiceService serviceService, NotificationService notificationService) {
         this.serviceRepository = serviceRepository;
         this.userService = userService;
         this.serviceService = serviceService;
+        this.notificationService = notificationService;
     }
 
-    /**
-     * Página principal do usuário com seus serviços.
-     */
     @GetMapping
-    public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model, Authentication authentication) {
+    public String servicePage(@RequestParam(required = false) Service.ServiceStatus status, Model model,
+            Authentication authentication) {
         Optional<User> userOptional = userService.findByUsername(authentication.getName());
-        if (userOptional.isEmpty()) return "redirect:/login";
+        if (userOptional.isEmpty())
+            return "redirect:/login";
 
         User user = userOptional.get();
         List<Service> services = (status != null)
@@ -52,13 +56,9 @@ public class ServiceController {
         return "service";
     }
 
-    /**
-     * Criação de novo serviço/agendamento.
-     */
     @PostMapping("/new")
     public ResponseEntity<String> createService(@ModelAttribute ServiceDto serviceDto, Authentication authentication) {
         Optional<User> userOptional = userService.findByUsername(authentication.getName());
-
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado.");
         }
@@ -71,7 +71,6 @@ public class ServiceController {
             return ResponseEntity.badRequest().body("A data e hora da visita não podem estar no passado.");
         }
 
-        // ✅ NOVA VALIDAÇÃO: 4 dias sim, 4 dias não
         try {
             serviceService.validarDataPermitida(visitDate);
         } catch (IllegalArgumentException e) {
@@ -92,31 +91,29 @@ public class ServiceController {
         service.setUser(userOptional.get());
 
         serviceRepository.save(service);
+
+        // ✅ Criar notificação para o usuário
+        notificationService.criarNotificacaoParaUsuario(
+                userOptional.get().getUsername(),
+                "Novo serviço agendado",
+                "Você agendou um serviço de " + service.getServiceType() + " para " + service.getVisitDate());
+
         return ResponseEntity.ok("Serviço criado com sucesso.");
     }
 
-    /**
-     * Cliente aceita proposta.
-     */
     @PostMapping("/accept/{id}")
     public String acceptPrice(@PathVariable Long id, Authentication authentication) {
         return alterarStatusDoUsuario(id, authentication, Service.ServiceStatus.AGENDAMENTO_FINALIZACAO);
     }
 
-    /**
-     * Cliente rejeita proposta.
-     */
     @PostMapping("/reject/{id}")
     public String rejectPrice(@PathVariable Long id, Authentication authentication) {
         return alterarStatusDoUsuario(id, authentication, Service.ServiceStatus.REJEITADO);
     }
 
-    /**
-     * Auxiliar para alterar status com validação de propriedade.
-     */
     private String alterarStatusDoUsuario(Long id, Authentication authentication, Service.ServiceStatus novoStatus) {
         Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isPresent() && pertenceAoUsuario(optional.get(), authentication)) {
+        if (optional.isPresent() && pertenceAoUsuarioOuAdmin(optional.get(), authentication)) {
             Service service = optional.get();
             service.setStatus(novoStatus);
             serviceRepository.save(service);
@@ -124,9 +121,6 @@ public class ServiceController {
         return "redirect:/service";
     }
 
-    /**
-     * Reagendamento da finalização após visita.
-     */
     @PostMapping("/reschedule/{id}")
     public String rescheduleCompletion(
             @PathVariable Long id,
@@ -135,7 +129,7 @@ public class ServiceController {
             Authentication authentication) {
 
         Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isPresent() && pertenceAoUsuario(optional.get(), authentication)) {
+        if (optional.isPresent() && pertenceAoUsuarioOuAdmin(optional.get(), authentication)) {
             Service service = optional.get();
 
             if (date.isBefore(service.getVisitDate())) {
@@ -151,28 +145,34 @@ public class ServiceController {
         return "redirect:/service";
     }
 
-    /**
-     * API: listar serviços do usuário autenticado.
-     */
-    @GetMapping("/api/service")
-    @ResponseBody
-    public List<Service> listarServicosDoUsuario(Authentication authentication) {
+@GetMapping("/api/service")
+@ResponseBody
+public List<Service> listarServicos(Authentication authentication) {
+    boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+    Sort sortByDateDesc = Sort.by(Sort.Direction.DESC, "visitDate", "visitTime");
+
+    if (isAdmin) {
+        return serviceRepository.findAll(sortByDateDesc); // Aqui
+    } else {
         return userService.findByUsername(authentication.getName())
-                .map(serviceRepository::findByUser)
+                .map(user -> serviceRepository.findByUser(user, sortByDateDesc)) // E aqui
                 .orElse(List.of());
     }
+}
 
-    /**
-     * Cancelamento com motivo fornecido pelo cliente.
-     */
+
     @PostMapping("/cancel/{id}")
     @ResponseBody
-    public ResponseEntity<String> cancelarComMotivo(@PathVariable Long id, @RequestBody Map<String, String> payload, Authentication authentication) {
+    public ResponseEntity<String> cancelarComMotivo(@PathVariable Long id, @RequestBody Map<String, String> payload,
+            Authentication authentication) {
         Optional<Service> optional = serviceRepository.findById(id);
-        if (optional.isEmpty()) return ResponseEntity.notFound().build();
+        if (optional.isEmpty())
+            return ResponseEntity.notFound().build();
 
         Service servico = optional.get();
-        if (!pertenceAoUsuario(servico, authentication)) {
+        if (!pertenceAoUsuarioOuAdmin(servico, authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não pode cancelar este serviço.");
         }
 
@@ -185,13 +185,21 @@ public class ServiceController {
         servico.setMotivoCancelamento(motivo.trim());
         serviceRepository.save(servico);
 
+        // ✅ Notificar cancelamento
+        notificationService.criarNotificacaoParaUsuario(
+                servico.getUser().getUsername(),
+                "Serviço cancelado",
+                "Seu serviço de " + servico.getServiceType() + " foi cancelado. Motivo: " + motivo.trim());
+
         return ResponseEntity.ok("Serviço cancelado com motivo.");
     }
 
-    /**
-     * Valida se o serviço pertence ao usuário autenticado.
-     */
-    private boolean pertenceAoUsuario(Service service, Authentication authentication) {
-        return service.getUser().getUsername().equals(authentication.getName());
-    }
+private boolean pertenceAoUsuarioOuAdmin(Service service, Authentication authentication) {
+    String username = authentication.getName();
+    boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+    return service.getUser().getUsername().equals(username) || isAdmin;
+}
+
 }

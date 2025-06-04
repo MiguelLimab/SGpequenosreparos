@@ -2,9 +2,9 @@ package com.sg.reparos.controller;
 
 import com.sg.reparos.dto.ServiceEditDto;
 import com.sg.reparos.model.Service;
-import com.sg.reparos.repository.ServiceRepository;
+import com.sg.reparos.service.NotificationService;
 import com.sg.reparos.service.ServiceService;
-
+import com.sg.reparos.repository.ServiceRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +19,14 @@ public class AdminServiceController {
 
     private final ServiceRepository serviceRepository;
     private final ServiceService serviceService;
+    private final NotificationService notificationService;
 
-    public AdminServiceController(ServiceRepository serviceRepository, ServiceService serviceService) {
+    public AdminServiceController(ServiceRepository serviceRepository, ServiceService serviceService, NotificationService notificationService) {
         this.serviceRepository = serviceRepository;
         this.serviceService = serviceService;
+        this.notificationService = notificationService;
     }
 
-    // Listar todos com filtros opcionais
     @GetMapping("/api")
     public List<Service> listarServicosAdmin(
             @RequestParam(required = false) Service.ServiceStatus status,
@@ -48,41 +49,60 @@ public class AdminServiceController {
         }
     }
 
-    // Editar serviço (atualização completa)
     @PutMapping("/edit/{id}")
     public ResponseEntity<String> editarServico(@PathVariable Long id, @RequestBody ServiceEditDto updated) {
         serviceService.atualizarAgendamento(id, updated);
         return ResponseEntity.ok("Serviço atualizado com sucesso.");
     }
 
-    // Marcar como visitado
     @PostMapping("/visit/{id}")
     public ResponseEntity<String> markAsVisited(@PathVariable Long id, @RequestParam Double price) {
         Service service = serviceRepository.findById(id).orElseThrow();
         service.setStatus(Service.ServiceStatus.VISITADO);
         service.setPrice(price);
         serviceRepository.save(service);
+
+        // Notificação de visita realizada
+        notificationService.criarNotificacaoParaUsuario(
+                service.getUser().getUsername(),
+                "Visita realizada",
+                "O profissional visitou o local e enviou uma proposta de R$ " + String.format("%.2f", price) + " para o serviço de " + service.getServiceType()
+        );
+
         return ResponseEntity.ok("Marcado como visitado.");
     }
 
-    // Marcar como finalizado
     @PostMapping("/complete/{id}")
     public ResponseEntity<String> markAsCompleted(@PathVariable Long id) {
         Service service = serviceRepository.findById(id).orElseThrow();
         service.setStatus(Service.ServiceStatus.FINALIZADO);
         service.setCompletionDate(LocalDate.now());
         serviceRepository.save(service);
+
+        // Notificação de finalização
+        notificationService.criarNotificacaoParaUsuario(
+                service.getUser().getUsername(),
+                "Serviço finalizado",
+                "Seu serviço de " + service.getServiceType() + " foi finalizado com sucesso."
+        );
+
         return ResponseEntity.ok("Finalizado com sucesso.");
     }
 
-    // Cancelar serviço com motivo
     @PutMapping("/cancel/{id}")
     public ResponseEntity<Service> cancelService(@PathVariable Long id, @RequestParam String motivo) {
         Service cancelado = serviceService.cancelar(id, motivo);
+
+        // Notificação de cancelamento
+        notificationService.criarNotificacaoParaUsuario(
+                cancelado.getUser().getUsername(),
+                "Serviço cancelado",
+                "Seu serviço de " + cancelado.getServiceType() + " foi cancelado. Motivo: " + motivo
+        );
+
         return ResponseEntity.ok(cancelado);
     }
 
-    // Agendar visita
     @PutMapping("/agendar/{id}")
     public ResponseEntity<Service> agendarVisita(
             @PathVariable Long id,
@@ -93,7 +113,6 @@ public class AdminServiceController {
         return ResponseEntity.ok(atualizado);
     }
 
-    // Atualizar status
     @PutMapping("/status/{id}")
     public ResponseEntity<Service> atualizarStatus(
             @PathVariable Long id,

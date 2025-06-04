@@ -5,6 +5,7 @@ import com.sg.reparos.model.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.data.domain.Sort;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,6 +18,8 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     List<Service> findByServiceType(ServiceType type);
     List<Service> findByStatusAndServiceType(ServiceStatus status, ServiceType type);
     List<Service> findByUser(User user);
+    List<Service> findByUser(User user, Sort sort);
+
     long countByUser(User user);
 
     long countByUserAndStatus(User user, Service.ServiceStatus status);

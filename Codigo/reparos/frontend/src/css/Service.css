@@ -210,7 +210,7 @@
     gap: 0.5rem;
   }
 }
-.filtro-container {
+.filtro-container-service {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -225,12 +225,12 @@
   flex-wrap: wrap;
 }
 
-.filtro-container label {
+.filtro-container-service label {
   font-weight: bold;
   color: #2a4a7c;
 }
 
-.filtro-container select {
+.filtro-container-service select {
   padding: 0.6rem 0.9rem;
   border-radius: 6px;
   font-size: 1rem;

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../css/ServiceHistory.css";
 import { useNavigate, Link } from "react-router-dom";
+import { Bell } from "lucide-react"; // Ícone de sino
 
 const ServiceHistory = () => {
   const [servicos, setServicos] = useState([]);
@@ -9,6 +10,8 @@ const ServiceHistory = () => {
   const [erro, setErro] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Estado para notificações da API
 
   const navigate = useNavigate();
 
@@ -18,35 +21,56 @@ const ServiceHistory = () => {
       .then((res) => {
         setIsAdmin(res.data === "ROLE_ADMIN");
         buscarHistoricoServicos();
+        buscarNotificacoes();
       })
       .catch((err) => {
         console.error("Erro ao verificar papel do usuário:", err);
         buscarHistoricoServicos();
+        buscarNotificacoes();
       });
   }, []);
 
   const buscarHistoricoServicos = () => {
     setErro("");
     axios
-      .get("http://localhost:8081/service/api/service", { withCredentials: true })
+      .get("http://localhost:8081/service/api/service", {
+        withCredentials: true,
+      })
       .then((res) => {
-        // Filtramos apenas os serviços finalizados, concluídos, cancelados ou rejeitados
-        const historico = res.data.filter(servico => 
-          servico.status === 'CONCLUIDO' || 
-          servico.status === 'CANCELADO' || 
-          servico.status === 'FINALIZADO' || 
-          servico.status === 'REJEITADO'
+        const historico = res.data.filter(
+          (servico) =>
+            servico.status === "CONCLUIDO" ||
+            servico.status === "CANCELADO" ||
+            servico.status === "FINALIZADO" ||
+            servico.status === "REJEITADO"
         );
         setServicos(historico);
       })
       .catch((err) => {
         console.error("Erro ao buscar histórico de serviços:", err);
-        setErro("Erro ao carregar histórico de serviços. Tente novamente mais tarde.");
+        setErro(
+          "Erro ao carregar histórico de serviços. Tente novamente mais tarde."
+        );
+      });
+  };
+
+  const buscarNotificacoes = () => {
+    axios
+      .get("http://localhost:8081/notifications", { withCredentials: true })
+      .then((res) => {
+        setNotifications(res.data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar notificações:", err);
       });
   };
 
   const handleLogout = () => {
     navigate("/");
+  };
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
   };
 
   const formatarData = (dataStr) => {
@@ -56,31 +80,28 @@ const ServiceHistory = () => {
     return data.toLocaleDateString("pt-BR");
   };
 
-  // Função para converter o status em texto mais amigável
   const formatarStatus = (status) => {
     const statusMap = {
-      'CONCLUIDO': 'Concluído',
-      'FINALIZADO': 'Finalizado',
-      'CANCELADO': 'Cancelado',
-      'REJEITADO': 'Rejeitado'
+      CONCLUIDO: "Concluído",
+      FINALIZADO: "Finalizado",
+      CANCELADO: "Cancelado",
+      REJEITADO: "Rejeitado",
     };
     return statusMap[status] || status;
   };
 
-  // Função para obter o tipo de serviço em formato legível
   const formatarTipoServico = (tipo) => {
     const tiposMap = {
-      'ELETRICO': 'Elétrico',
-      'ENCANAMENTO': 'Encanamento',
-      'PINTURA': 'Pintura',
-      'ALVENARIA': 'Alvenaria',
-      'OUTROS': 'Outros'
+      ELETRICO: "Elétrico",
+      ENCANAMENTO: "Encanamento",
+      PINTURA: "Pintura",
+      ALVENARIA: "Alvenaria",
+      OUTROS: "Outros",
     };
     return tiposMap[tipo] || tipo;
   };
 
-  // Função para filtrar os serviços com base nos filtros de tipo e status
-  const servicosFiltrados = servicos.filter(servico => {
+  const servicosFiltrados = servicos.filter((servico) => {
     const filtroTipoOk = !tipoFiltro || servico.serviceType === tipoFiltro;
     const filtroStatusOk = !statusFiltro || servico.status === statusFiltro;
     return filtroTipoOk && filtroStatusOk;
@@ -93,11 +114,104 @@ const ServiceHistory = () => {
           <Link to="/home">SG Pequenos Reparos</Link>
         </div>
         <div className="navbar-links">
-          {isAdmin && <Link to="/admin" className="admin-link">Painel ADM</Link>}
-          {isAdmin && <Link to="/calendar" className="admin-link">Calendario</Link>}
+          {isAdmin && (
+            <Link to="/admin" className="admin-link">
+              Painel ADM
+            </Link>
+          )}
+          {isAdmin && (
+            <Link to="/calendar" className="admin-link">
+              Calendário
+            </Link>
+          )}
           <Link to="/service">Serviços</Link>
           <Link to="/servicehistory">Histórico</Link>
           <Link to="/perfil">Perfil</Link>
+
+          {/* Botão de Notificações */}
+          <div
+            className="notification-wrapper"
+            style={{ position: "relative" }}
+          >
+            <button
+              onClick={toggleNotifications}
+              className="notification-button"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                marginLeft: "15px",
+              }}
+            >
+              <Bell size={24} />
+            </button>
+            {showNotifications && (
+              <div
+                className="notification-box"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  right: "0",
+                  background: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
+                  zIndex: 1000,
+                }}
+              >
+                <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
+                  {notifications.length === 0 ? (
+                    <li style={{ padding: "10px", color: "#2a4a7c" }}>Nenhuma notificação.</li>
+                  ) : (
+                    notifications.map((notification) => (
+                      <li
+                        key={notification.id}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                          color: "#2a4a7c", // <- AQUI
+                        }}
+                      >
+                        <strong style={{ color: "#2a4a7c" }}>
+                          {notification.titulo}
+                        </strong>
+                        <br />
+                        <small style={{ color: "#2a4a7c" }}>
+                          {notification.descricao}
+                        </small>
+                        <br />
+                        <small style={{ color: "#888" }}>
+                          {new Date(notification.data).toLocaleString("pt-BR")}
+                        </small>
+                      </li>
+                    ))
+                  )}
+                </ul>
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid #eee",
+                    textAlign: "center",
+                  }}
+                >
+                  <Link
+                    to="/notifications"
+                    style={{
+                      textDecoration: "none",
+                      color: "#2a4a7c",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Mais detalhes
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
@@ -146,31 +260,51 @@ const ServiceHistory = () => {
           <div key={servico.id} className="servico-card">
             <div className="servico-header">
               <h3>{formatarTipoServico(servico.serviceType)}</h3>
-              <span className={`servico-status ${servico.status.toLowerCase()}`}>
+              <span
+                className={`servico-status ${servico.status.toLowerCase()}`}
+              >
                 {formatarStatus(servico.status)}
               </span>
             </div>
-            
+
             <div className="servico-content">
-              <p><strong>Local:</strong> {servico.location}</p>
-              <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
-              <p><strong>Visita realizada em:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
-              
+              <p>
+                <strong>Local:</strong> {servico.location}
+              </p>
+              <p>
+                <strong>Descrição:</strong> {servico.description || "Nenhuma"}
+              </p>
+              <p>
+                <strong>Visita realizada em:</strong>{" "}
+                {formatarData(servico.visitDate)} às {servico.visitTime}
+              </p>
+
               {servico.completionDate && (
-                <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
+                <p>
+                  <strong>Finalização:</strong>{" "}
+                  {formatarData(servico.completionDate)} às{" "}
+                  {servico.completionTime}
+                </p>
               )}
-              
+
               {servico.price && (
-                <p><strong>Valor:</strong> R$ {servico.price.toFixed(2)}</p>
+                <p>
+                  <strong>Valor:</strong> R$ {servico.price.toFixed(2)}
+                </p>
               )}
-              
+
               {servico.estimatedDuration && (
-                <p><strong>Duração Estimada:</strong> {servico.estimatedDuration}</p>
+                <p>
+                  <strong>Duração Estimada:</strong> {servico.estimatedDuration}
+                </p>
               )}
-              
+
               {servico.motivoCancelamento && (
                 <div className="motivo-cancelamento">
-                  <p><strong>Motivo do cancelamento:</strong> {servico.motivoCancelamento}</p>
+                  <p>
+                    <strong>Motivo do cancelamento:</strong>{" "}
+                    {servico.motivoCancelamento}
+                  </p>
                 </div>
               )}
             </div>
@@ -181,4 +315,4 @@ const ServiceHistory = () => {
   );
 };
 
-export default ServiceHistory
+export default ServiceHistory;
