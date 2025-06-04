@@ -51,10 +51,6 @@
     font-size: 1rem;
   }
   
-  .navbar-links button:hover,
-  .navbar-links a:hover {
-    text-decoration: underline;
-  }
   
   /* Estilo do container de perfil */
   .perfil-container {

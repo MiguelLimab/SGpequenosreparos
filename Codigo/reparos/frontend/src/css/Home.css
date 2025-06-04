@@ -50,10 +50,6 @@
   transition: color 0.2s ease;
 }
 
-.navbar-links a:hover,
-.navbar-links button:hover {
-  color: #ffb347;
-}
 /* Botão "Sair" */
 .navbar-links button {
   background-color: #ffb347;

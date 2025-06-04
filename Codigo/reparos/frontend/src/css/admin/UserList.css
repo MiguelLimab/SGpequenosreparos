@@ -40,11 +40,6 @@
     text-decoration: none;
   }
   
-  .navbar-links a:hover,
-  .navbar-links button:hover {
-    text-decoration: underline;
-  }
-  
   h1 {
     margin-bottom: 1.5rem;
     color: #333;

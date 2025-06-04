@@ -51,11 +51,6 @@ body {
   font-size: 1rem;
 }
 
-.navbar-links a:hover,
-.navbar-links button:hover {
-  text-decoration: underline;
-}
-
 /* Estilo do container principal de notificações */
 .notificacoes-container {
   display: flex;

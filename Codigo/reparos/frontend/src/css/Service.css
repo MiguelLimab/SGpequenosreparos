@@ -34,9 +34,6 @@
   border: none;
 }
 
-.navbar-title a:hover {
-  text-decoration: underline;
-}
 
 .navbar-links {
   display: flex;
@@ -54,12 +51,6 @@
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   transition: background 0.3s ease;
-}
-
-.navbar-links a:hover,
-.navbar-links button:hover {
-  text-decoration: underline;
-  background-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Título principal */
