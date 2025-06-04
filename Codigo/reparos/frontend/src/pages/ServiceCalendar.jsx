@@ -303,7 +303,7 @@ function ServiceCalendar() {
               >
                 <ul style={{ listStyle: "none", padding: "10px", margin: 0 }}>
                   {notifications.length === 0 ? (
-                    <li style={{ padding: "10px" }}>Nenhuma notificação.</li>
+                    <li style={{ padding: "10px", color: "#2a4a7c" }}>Nenhuma notificação.</li>
                   ) : (
                     notifications.map((notification) => (
                       <li
