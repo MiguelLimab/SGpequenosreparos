@@ -13,5 +13,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     // Novo método para buscar notificações de um usuário específico
     List<Notification> findByUserOrderByDataDesc(User user);
     List<Notification> findByUser(User user);
+    List<Notification> findByUserUsernameOrderByDataDesc(String username);
 
 }

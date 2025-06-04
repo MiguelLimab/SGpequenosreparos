@@ -155,7 +155,9 @@ const ServiceHistory = () => {
                   background: "#fff",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  width: "250px",
+                  width: "300px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                   boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
                   zIndex: 1000,
                 }}

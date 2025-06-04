@@ -39,9 +39,8 @@ public class NotificationService {
     /**
      * Lista todas as notificações do usuário autenticado.
      */
-    public List<Notification> listarNotificacoesPorUsuario(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + username));
-        return notificationRepository.findByUser(user);
-    }
+public List<Notification> listarNotificacoesPorUsuario(String username) {
+    return notificationRepository.findByUserUsernameOrderByDataDesc(username);
+}
+
 }

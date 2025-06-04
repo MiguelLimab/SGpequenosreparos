@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Sort;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -143,20 +145,23 @@ public class ServiceController {
         return "redirect:/service";
     }
 
-    @GetMapping("/api/service")
-    @ResponseBody
-    public List<Service> listarServicos(Authentication authentication) {
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+@GetMapping("/api/service")
+@ResponseBody
+public List<Service> listarServicos(Authentication authentication) {
+    boolean isAdmin = authentication.getAuthorities().stream()
+            .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
 
-        if (isAdmin) {
-            return serviceRepository.findAll();
-        } else {
-            return userService.findByUsername(authentication.getName())
-                    .map(serviceRepository::findByUser)
-                    .orElse(List.of());
-        }
+    Sort sortByDateDesc = Sort.by(Sort.Direction.DESC, "visitDate", "visitTime");
+
+    if (isAdmin) {
+        return serviceRepository.findAll(sortByDateDesc); // Aqui
+    } else {
+        return userService.findByUsername(authentication.getName())
+                .map(user -> serviceRepository.findByUser(user, sortByDateDesc)) // E aqui
+                .orElse(List.of());
     }
+}
+
 
     @PostMapping("/cancel/{id}")
     @ResponseBody
