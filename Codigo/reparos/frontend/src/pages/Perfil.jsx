@@ -11,75 +11,104 @@ const Perfil = () => {
   });
 
   const [isAdmin, setIsAdmin] = useState(false);
-
   const [form, setForm] = useState({
     username: "",
     email: "",
-    novaSenha: "",
-    confirmarSenha: "",
-    senhaAtual: "",
+    newPassword: "",
+    confirmPassword: "",
+    currentPassword: "",
   });
-
   const [msg, setMsg] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Buscar dados do perfil
-    axios
-      .get("http://localhost:8081/profile/api/profile", {
+  const fetchProfileData = async () => {
+    try {
+      const res = await axios.get("http://localhost:8081/profile/api/profile", {
         withCredentials: true,
-      })
-      .then((res) => {
-        setUsuario(res.data);
-        setForm((prev) => ({
-          ...prev,
-          username: res.data.username,
-          email: res.data.email,
-        }));
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar perfil:", err);
-        setMsg("Erro ao carregar dados do perfil.");
       });
+      setUsuario(res.data);
+      setForm({
+        username: res.data.username,
+        email: res.data.email,
+        newPassword: "",
+        confirmPassword: "",
+        currentPassword: ""
+      });
+    } catch (err) {
+      console.error("Erro ao buscar perfil:", err);
+      setMsg("Erro ao carregar dados do perfil.");
+    }
+  };
 
-    // Buscar papel do usuário para saber se é admin
-    axios
-      .get("http://localhost:8081/api/user/role", { withCredentials: true })
-      .then((res) => setIsAdmin(res.data === "ROLE_ADMIN"))
-      .catch((err) => {
+  useEffect(() => {
+    fetchProfileData();
+    axios.get("http://localhost:8081/api/user/role", { withCredentials: true })
+      .then(res => setIsAdmin(res.data === "ROLE_ADMIN"))
+      .catch(err => {
         console.error("Erro ao buscar papel do usuário:", err);
         setIsAdmin(false);
       });
   }, []);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    setForm(prev => {
+      const updatedForm = { ...prev, [name]: value };
+      
+      if (name === "newPassword" || name === "confirmPassword") {
+        if (updatedForm.newPassword && updatedForm.confirmPassword) {
+          if (updatedForm.newPassword !== updatedForm.confirmPassword) {
+            setPasswordError("As senhas não coincidem");
+          } else {
+            setPasswordError("");
+          }
+        } else {
+          setPasswordError("");
+        }
+      }
+      
+      return updatedForm;
+    });
+  };
+
+  const validateForm = () => {
+    if (form.newPassword && form.newPassword !== form.confirmPassword) {
+      setPasswordError("As senhas não coincidem");
+      return false;
+    }
+    return true;
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (form.novaSenha !== form.confirmarSenha) {
-      setMsg("As senhas não coincidem.");
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
+      const payload = {
+        username: form.username,
+        email: form.email,
+        currentPassword: form.currentPassword,
+      };
+
+      if (form.newPassword) {
+        payload.newPassword = form.newPassword;
+        payload.confirmPassword = form.confirmPassword;
+      }
+
       await axios.put(
         "http://localhost:8081/profile/api/profile",
-        {
-          username: form.username,
-          email: form.email,
-          novaSenha: form.novaSenha,
-          senhaAtual: form.senhaAtual,
-        },
+        payload,
         { withCredentials: true }
       );
 
       setMsg("Perfil atualizado com sucesso!");
+      await fetchProfileData();
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
-      setMsg("Erro ao atualizar perfil.");
+      setMsg(err.response?.data || "Erro ao atualizar perfil.");
     }
   };
 
@@ -89,17 +118,15 @@ const Perfil = () => {
         await axios.delete("http://localhost:8081/profile/api/profile", {
           withCredentials: true,
         });
-        setMsg("Conta excluída.");
         navigate("/");
       } catch (err) {
         console.error("Erro ao excluir conta:", err);
-        setMsg("Erro ao excluir conta.");
+        setMsg(err.response?.data || "Erro ao excluir conta.");
       }
     }
   };
 
   const handleLogout = () => {
-    // Limpar dados locais se necessário
     navigate("/");
   };
 
@@ -123,6 +150,7 @@ const Perfil = () => {
           value={form.username}
           onChange={handleChange}
           placeholder="Novo Usuário"
+          required
         />
 
         <input
@@ -131,22 +159,34 @@ const Perfil = () => {
           value={form.email}
           onChange={handleChange}
           placeholder="Novo Email"
+          required
         />
 
         <input
           type="password"
-          name="novaSenha"
-          value={form.novaSenha}
+          name="newPassword"
+          value={form.newPassword}
           onChange={handleChange}
-          placeholder="Nova Senha"
+          placeholder="Nova Senha (deixe em branco para manter a atual)"
         />
 
         <input
           type="password"
-          name="confirmarSenha"
-          value={form.confirmarSenha}
+          name="confirmPassword"
+          value={form.confirmPassword}
           onChange={handleChange}
-          placeholder="Confirmar Senha"
+          placeholder="Confirmar Nova Senha"
+        />
+
+        {passwordError && <p className="error-message">{passwordError}</p>}
+
+        <input
+          type="password"
+          name="currentPassword"
+          value={form.currentPassword}
+          onChange={handleChange}
+          placeholder="Senha Atual (obrigatória para alterações)"
+          required
         />
 
         <button type="submit">Atualizar Perfil</button>
