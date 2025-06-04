@@ -19,4 +19,8 @@ public class ServiceDto {
     private LocalDate completionDate;
     private LocalTime completionTime;
     private Double price; 
+    private Boolean temFeedback;
+    private Integer notaFeedback;
+    private String comentarioFeedback;
+    private Boolean podeReceberFeedback;
 }

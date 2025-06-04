@@ -38,6 +38,10 @@ public class Service {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getId() {
+        return id;
+    }
+    
     @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
 
@@ -79,4 +83,8 @@ public class Service {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    
+    @JsonIgnore
+    @OneToOne(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Feedback feedback;
 }
