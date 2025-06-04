@@ -3,8 +3,6 @@ package com.sg.reparos.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.sg.reparos.model.Service;
-
 import lombok.Data;
 
 @Data

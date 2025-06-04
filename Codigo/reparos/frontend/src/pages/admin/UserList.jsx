@@ -271,8 +271,12 @@ const UserList = () => {
                   <td>{user.role}</td>
                   <td>
                     <button onClick={() => setUsuarioSelecionado(user)}>Ver</button>
-                    <button onClick={() => { setUsuarioSelecionado(user); handleEditarClick(); }}>Editar</button>
-                    <button onClick={() => handleExcluir(user)}>Excluir</button>
+                    {user.role !== "ROLE_ADMIN" && (
+                      <>
+                        <button onClick={() => { setUsuarioSelecionado(user); handleEditarClick(); }}>Editar</button>
+                        <button onClick={() => handleExcluir(user)}>Excluir</button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

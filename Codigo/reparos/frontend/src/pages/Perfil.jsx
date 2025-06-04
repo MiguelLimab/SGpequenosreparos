@@ -6,51 +6,49 @@ import { Bell } from "lucide-react"; // ícone de sino
 
 const Perfil = () => {
   const [isAdmin, setIsAdmin] = useState(false);
-
   const [form, setForm] = useState({
     username: "",
     email: "",
-    novaSenha: "",
-    confirmarSenha: "",
-    senhaAtual: "",
+    newPassword: "",
+    confirmPassword: "",
+    currentPassword: "",
   });
-
   const [msg, setMsg] = useState("");
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-
+  const [msgType, setMsgType] = useState(""); // "error", "info", etc.
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    buscarPerfil();
-    buscarNotificacoes();
-  }, []);
-
-  const buscarPerfil = () => {
-    axios
-      .get("http://localhost:8081/profile/api/profile", {
+  const fetchProfileData = async () => {
+    try {
+      const res = await axios.get("http://localhost:8081/profile/api/profile", {
         withCredentials: true,
-      })
-      .then((res) => {
-        setForm((prev) => ({
-          ...prev,
-          username: res.data.username,
-          email: res.data.email,
-        }));
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar perfil:", err);
-        setMsg("Erro ao carregar dados do perfil.");
       });
+      setUsuario(res.data);
+      setForm({
+        username: res.data.username,
+        email: res.data.email,
+        newPassword: "",
+        confirmPassword: "",
+        currentPassword: ""
+      });
+      setMsg("");
+      setMsgType("");
+    } catch (err) {
+      console.error("Erro ao buscar perfil:", err);
+      setMsg("Erro ao carregar dados do perfil.");
+      setMsgType("error");
+    }
+  };
 
-    axios
-      .get("http://localhost:8081/api/user/role", { withCredentials: true })
-      .then((res) => setIsAdmin(res.data === "ROLE_ADMIN"))
-      .catch((err) => {
+  useEffect(() => {
+    fetchProfileData();
+    axios.get("http://localhost:8081/api/user/role", { withCredentials: true })
+      .then(res => setIsAdmin(res.data === "ROLE_ADMIN"))
+      .catch(err => {
         console.error("Erro ao buscar papel do usuário:", err);
         setIsAdmin(false);
       });
-  };
+  }, []);
 
   const buscarNotificacoes = async () => {
     try {
@@ -64,33 +62,88 @@ const Perfil = () => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm(prev => {
+      const updatedForm = { ...prev, [name]: value };
+
+      if (name === "newPassword" || name === "confirmPassword") {
+        if (updatedForm.newPassword && updatedForm.confirmPassword) {
+          if (updatedForm.newPassword !== updatedForm.confirmPassword) {
+            setPasswordError("As senhas não coincidem");
+          } else {
+            setPasswordError("");
+          }
+        } else {
+          setPasswordError("");
+        }
+      }
+
+      return updatedForm;
+    });
+  };
+
+  const validateForm = () => {
+    if (form.newPassword && form.newPassword !== form.confirmPassword) {
+      setPasswordError("As senhas não coincidem");
+      return false;
+    }
+    return true;
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    if (form.novaSenha !== form.confirmarSenha) {
-      setMsg("As senhas não coincidem.");
+    if (!validateForm()) return;
+
+    // Verifica se as informações são iguais às atuais (sem considerar currentPassword)
+    const isUsernameUnchanged = form.username === usuario.username;
+    const isEmailUnchanged = form.email === usuario.email;
+    const isPasswordEmpty = !form.newPassword;
+
+    if (isUsernameUnchanged && isEmailUnchanged && isPasswordEmpty) {
+      setMsg("Nenhuma alteração detectada. Por favor, modifique alguma informação para atualizar.");
+      setMsgType("info");
       return;
     }
 
     try {
+      const payload = {
+        username: form.username,
+        email: form.email,
+        currentPassword: form.currentPassword,
+      };
+
+      if (form.newPassword) {
+        payload.newPassword = form.newPassword;
+        payload.confirmPassword = form.confirmPassword;
+      }
+
       await axios.put(
         "http://localhost:8081/profile/api/profile",
-        {
-          username: form.username,
-          email: form.email,
-          novaSenha: form.novaSenha,
-          senhaAtual: form.senhaAtual,
-        },
+        payload,
         { withCredentials: true }
       );
 
-      setMsg("Perfil atualizado com sucesso!");
+      alert("Perfil atualizado com sucesso! Faça login novamente.");
+      await axios.post("http://localhost:8081/logout", {}, { withCredentials: true });
+      navigate("/");
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
-      setMsg("Erro ao atualizar perfil.");
+
+      if (!err.response) {
+        setMsg("Não foi possível conectar ao servidor. Verifique sua conexão.");
+      } else if (err.response.status === 400) {
+        setMsg(err.response.data || "Dados inválidos. Verifique o formulário.");
+      } else if (err.response.status === 401) {
+        setMsg("Senha atual incorreta. Por favor, tente novamente.");
+      } else if (err.response.status === 409) {
+        setMsg("Nome de usuário ou email já está em uso.");
+      } else {
+        setMsg("Erro inesperado ao atualizar perfil. Tente novamente mais tarde.");
+      }
+
+      setMsgType("error");
     }
   };
 
@@ -100,17 +153,23 @@ const Perfil = () => {
         await axios.delete("http://localhost:8081/profile/api/profile", {
           withCredentials: true,
         });
-        setMsg("Conta excluída.");
         navigate("/");
       } catch (err) {
         console.error("Erro ao excluir conta:", err);
-        setMsg("Erro ao excluir conta.");
+        setMsg(err.response?.data || "Erro ao excluir conta.");
+        setMsgType("error");
       }
     }
   };
 
-  const handleLogout = () => {
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:8081/logout", {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Erro ao fazer logout:", err);
+    } finally {
+      navigate("/");
+    }
   };
 
   const toggleNotifications = () => {
@@ -225,6 +284,7 @@ const Perfil = () => {
           value={form.username}
           onChange={handleChange}
           placeholder="Novo Usuário"
+          required
         />
 
         <input
@@ -233,22 +293,34 @@ const Perfil = () => {
           value={form.email}
           onChange={handleChange}
           placeholder="Novo Email"
+          required
         />
 
         <input
           type="password"
-          name="novaSenha"
-          value={form.novaSenha}
+          name="newPassword"
+          value={form.newPassword}
           onChange={handleChange}
-          placeholder="Nova Senha"
+          placeholder="Nova Senha (deixe em branco para manter a atual)"
         />
 
         <input
           type="password"
-          name="confirmarSenha"
-          value={form.confirmarSenha}
+          name="confirmPassword"
+          value={form.confirmPassword}
           onChange={handleChange}
-          placeholder="Confirmar Senha"
+          placeholder="Confirmar Nova Senha"
+        />
+
+        {passwordError && <p className="error-message">{passwordError}</p>}
+
+        <input
+          type="password"
+          name="currentPassword"
+          value={form.currentPassword}
+          onChange={handleChange}
+          placeholder="Senha Atual (obrigatória para alterações)"
+          required
         />
 
         <button type="submit">Atualizar Perfil</button>
@@ -256,7 +328,11 @@ const Perfil = () => {
           Excluir Minha Conta
         </button>
 
-        {msg && <p className="mensagem">{msg}</p>}
+        {msg && (
+          <p className={msgType === "error" ? "error-message" : "info-message"}>
+            {msg}
+          </p>
+        )}
 
         {isAdmin && <Link to="/userlist">Listar Usuários</Link>}
       </form>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../css/Login.css";
@@ -7,39 +7,53 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const forceLogout = async () => {
+    try {
+      await axios.post("http://localhost:8081/logout", {}, {
+        withCredentials: true,
+      });
+    } catch (err) {
+      console.error("Erro ao fazer logout:", err);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
-  
+    setIsLoading(true);
+
+    await forceLogout();
+
     try {
-      const params = new URLSearchParams();
-      params.append("username", username);
-      params.append("password", password);
-  
-      await axios.post("http://localhost:8081/login", params, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      const loginResponse = await axios.post(
+        "http://localhost:8081/login",
+        new URLSearchParams({ username, password }),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          withCredentials: true,
+        }
+      );
+
+      const roleResponse = await axios.get("http://localhost:8081/api/user/role", {
         withCredentials: true,
       });
-  
-      // Verifica se login deu certo perguntando o papel do usuário
-      const res = await axios.get("http://localhost:8081/api/user/role", {
-        withCredentials: true,
-      });
-  
-      if (res.data === "ROLE_ADMIN" || res.data === "ROLE_USER") {
+
+      if (roleResponse.data === "ROLE_ADMIN" || roleResponse.data === "ROLE_USER") {
         navigate("/home");
       } else {
-        setErrorMsg("Usuário ou senha inválidos.");
+        throw new Error("Role inválido");
       }
-  
     } catch (err) {
       console.error("Erro de login:", err);
-      setErrorMsg("Usuário ou senha inválidos.");
+      setErrorMsg("Credenciais inválidas");
+      await forceLogout(); 
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="login-container">
@@ -64,7 +78,9 @@ const Login = () => {
 
         {errorMsg && <p className="error-msg">{errorMsg}</p>}
 
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Processando..." : "Entrar"}
+        </button>
 
         <button
           type="button"
