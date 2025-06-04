@@ -19,6 +19,7 @@ const Perfil = () => {
     currentPassword: "",
   });
   const [msg, setMsg] = useState("");
+  const [msgType, setMsgType] = useState(""); // "error", "info", etc.
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
@@ -35,9 +36,12 @@ const Perfil = () => {
         confirmPassword: "",
         currentPassword: ""
       });
+      setMsg("");
+      setMsgType("");
     } catch (err) {
       console.error("Erro ao buscar perfil:", err);
       setMsg("Erro ao carregar dados do perfil.");
+      setMsgType("error");
     }
   };
 
@@ -86,6 +90,17 @@ const Perfil = () => {
 
     if (!validateForm()) return;
 
+    // Verifica se as informações são iguais às atuais (sem considerar currentPassword)
+    const isUsernameUnchanged = form.username === usuario.username;
+    const isEmailUnchanged = form.email === usuario.email;
+    const isPasswordEmpty = !form.newPassword;
+
+    if (isUsernameUnchanged && isEmailUnchanged && isPasswordEmpty) {
+      setMsg("Nenhuma alteração detectada. Por favor, modifique alguma informação para atualizar.");
+      setMsgType("info");
+      return;
+    }
+
     try {
       const payload = {
         username: form.username,
@@ -109,7 +124,20 @@ const Perfil = () => {
       navigate("/");
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
-      setMsg(err.response?.data || "Erro ao atualizar perfil.");
+
+      if (!err.response) {
+        setMsg("Não foi possível conectar ao servidor. Verifique sua conexão.");
+      } else if (err.response.status === 400) {
+        setMsg(err.response.data || "Dados inválidos. Verifique o formulário.");
+      } else if (err.response.status === 401) {
+        setMsg("Senha atual incorreta. Por favor, tente novamente.");
+      } else if (err.response.status === 409) {
+        setMsg("Nome de usuário ou email já está em uso.");
+      } else {
+        setMsg("Erro inesperado ao atualizar perfil. Tente novamente mais tarde.");
+      }
+
+      setMsgType("error");
     }
   };
 
@@ -123,6 +151,7 @@ const Perfil = () => {
       } catch (err) {
         console.error("Erro ao excluir conta:", err);
         setMsg(err.response?.data || "Erro ao excluir conta.");
+        setMsgType("error");
       }
     }
   };
@@ -201,7 +230,11 @@ const Perfil = () => {
           Excluir Minha Conta
         </button>
 
-        {msg && <p className="mensagem">{msg}</p>}
+        {msg && (
+          <p className={msgType === "error" ? "error-message" : "info-message"}>
+            {msg}
+          </p>
+        )}
 
         {isAdmin && <Link to="/userlist">Listar Usuários</Link>}
       </form>
