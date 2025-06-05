@@ -40,31 +40,22 @@ const Home = () => {
       </nav>
 
       <main className="home-content">
-        <div className="home-card">
-          <h2></h2>
-          <p>
-            
-          </p>
-          <p>
-            Aqui você pode solicitar serviços, acompanhar atendimentos,
-            atualizar seu perfil e muito mais!
-          </p>
+        <div className="Banner">
+          <img src="./src/assets/Banner.png" alt="Banner" />
         </div>
-        <div className="nossos-servicos"><h2 className="titulo-principal">Nossos Serviços</h2>
-        <button>Ver todos</button></div>
-        <div className="servicos-carrossel-container">
-          <div className="imagem-gelson">
-            <img src="./src/assets/Gelson.png" alt="Gelson" />
-          </div>
-          <div className="carrossel-servicos">
-            <div className="carrossel-lista">
+        <div className="nossos-servicos"><h2>Nossos Serviços</h2>
+          <button>Ver todos</button></div>
+        <div className="servicos-type-container">
+            <div className="Service-types">
               {servicos.map((servico, index) => (
-                <div key={index} className="carrossel-item">
+                <div key={index} className="service-item">
                   <h3>{servico.titulo}</h3>
                   <p>{servico.descricao}</p>
                 </div>
               ))}
             </div>
+          <div className="imagem-gelson">
+            <img src="./src/assets/Gelson.png" alt="Gelson" />
           </div>
         </div>
 
