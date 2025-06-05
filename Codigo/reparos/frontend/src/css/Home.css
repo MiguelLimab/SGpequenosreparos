@@ -17,7 +17,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: #2a4a7c;
+  background-color: aqua;
   color: white;
   padding: 1rem 2rem;
   display: flex;
@@ -181,15 +181,24 @@
   font-size: 0.95rem;
   color: #d1d1d1;
 }
+.imagem-gelson {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.imagem-gelson img {
+  max-width: 90%;
+  height: auto;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
 
 /* Responsivo */
 @media (max-width: 768px) {
   .servicos-carrossel-container {
     flex-direction: column;
     text-align: center;
-  }
-
-  .imagem-gelson img {
-    max-width: 90%;
   }
 }

@@ -41,10 +41,9 @@ const Home = () => {
 
       <main className="home-content">
         <div className="home-card">
-          <h2>Bem-vindo ao SG Pequenos Reparos!</h2>
+          <h2></h2>
           <p>
-            Nosso sistema foi desenvolvido para conectar você com profissionais
-            de manutenção de forma simples, rápida e organizada.
+            
           </p>
           <p>
             Aqui você pode solicitar serviços, acompanhar atendimentos,
@@ -55,7 +54,7 @@ const Home = () => {
         <button>Ver todos</button></div>
         <div className="servicos-carrossel-container">
           <div className="imagem-gelson">
-            <img src="./src/assets/gelson.jpeg" alt="Gelson" />
+            <img src="./src/assets/Gelson.png" alt="Gelson" />
           </div>
           <div className="carrossel-servicos">
             <div className="carrossel-lista">
