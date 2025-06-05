@@ -17,7 +17,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: aqua;
+  background-color: #1c355b;
   color: white;
   padding: 1rem 2rem;
   display: flex;
@@ -70,7 +70,7 @@
 
 /* Conteúdo principal */
 .home-content {
-  padding-top: 67px;
+  padding-top: 60px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,58 +83,44 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #2a4a7c;
-  padding: 2.5rem;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
   text-align: center;
-  margin-bottom: 3rem;
 }
 
-.home-card h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: black;
-}
-
-.home-card p {
-  font-size: 1.05rem;
-  color: black;
-  margin-bottom: 1rem;
-}
-
-.servicos-carrossel-container {
+.Banner {
   width: 100%;
+  max-height: 400px;
   display: flex;
   align-items: center;
-  color: #2a4a7c;
-  padding: 1rem 2rem;
-  justify-content: space-between;
 }
-
-.imagem-gelson img {
-  max-width: 400px;
-  border-radius: 1rem;
-  margin-right: 5rem;
+.Banner img {
+  width: 100%;
+  max-height: 400px;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-.carrossel-servicos {
-  max-width: 400px;
-  display: flex;
-  text-align: left;
-  align-items: self-end;
-}
 .nossos-servicos {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #3653b4;
+}
+.nossos-servicos h2 {
+  cursor: default; 
+  font-size: 1.5rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: #ffffff;
+  font-weight: bold;
+  display: flex;
+  margin-left: 5rem;
 }
 .nossos-servicos button {
-  background-color: #2a4a7c;
-  color: white;
+  background-color: rgba(17, 39, 54, 0.596);
+  color: WHITE;
   padding: 0.4rem 1rem;
-  border-radius: 6px;
+  border-radius: 15px;
   transition: background-color 0.3s ease;
   margin-right: 5rem;
   cursor: pointer;
@@ -142,47 +128,47 @@
   font-size: 1rem;
   font-weight: bold;
 }
-.titulo-principal {
-  font-size: 2rem;
-  font-weight: bold;
+.nossos-servicos button:hover {
+ background-color: #2a4a7c;
+}
+
+.servicos-type-container {
+  width: 100%;
   display: flex;
-  justify-content: left;
-  margin-left: 3rem;
+  align-items: center;
+  color: #2a4a7c;
+  padding-top: 1rem;
+  padding: 1rem 2rem;
+  justify-content: space-around;
 }
 
-.carrossel-lista {
-  justify-content: right;
-  height: 500px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #555 transparent;
-  
-}
-
-.carrossel-item {
+.service-item {
   margin-bottom: 1rem;
   padding: 1rem;
-  background: #2a4a7c;
+  background-color: #2a4a7c;
   border-radius: 0.75rem;
   transition: background 0.3s ease;
 }
 
-.carrossel-item:hover {
-  background: #2a2a2a;
+.service-item:hover {
+  padding: 1.2rem;
+  box-shadow: 0 4px 8px #2a4a7c;
+  cursor: pointer;
+  background-color: #163d7a;
 }
 
-.carrossel-item h3 {
+.service-item h3 {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
   color: #f3f3f3;
 }
 
-.carrossel-item p {
+.service-item p {
   font-size: 0.95rem;
   color: #d1d1d1;
 }
 .imagem-gelson {
-  width: 100%;
+  width: 90%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -197,7 +183,7 @@
 
 /* Responsivo */
 @media (max-width: 768px) {
-  .servicos-carrossel-container {
+  .servicos-carrossel-container1 {
     flex-direction: column;
     text-align: center;
   }
