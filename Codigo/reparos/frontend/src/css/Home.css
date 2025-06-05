@@ -151,7 +151,7 @@
 }
 
 .service-item:hover {
-  padding: 1.2rem;
+  transform: translateY(-2px);
   box-shadow: 0 4px 8px #2a4a7c;
   cursor: pointer;
   background-color: #163d7a;
