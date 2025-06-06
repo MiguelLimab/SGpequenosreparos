@@ -181,124 +181,128 @@ const Servicos = () => {
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
+      <div className="Filters">
 
-      <h1>Meus Serviços</h1>
+        <h1>Meus Serviços</h1>
 
-      <div className="filtro-container">
-        <label htmlFor="filtroTipo">Filtrar por tipo:</label>
-        <select
-          id="filtroTipo"
-          value={tipoFiltro}
-          onChange={(e) => setTipoFiltro(e.target.value)}
-        >
-          <option value="">Todos</option>
-          <option value="ELETRICO">Elétrico</option>
-          <option value="ENCANAMENTO">Encanamento</option>
-          <option value="PINTURA">Pintura</option>
-          <option value="ALVENARIA">Alvenaria</option>
-          <option value="OUTROS">Outros</option>
-        </select>
-      </div>
-
-      <button className="adicionar-btn" onClick={() => setShowForm(!showForm)}>
-        {showForm ? "Fechar Formulário" : "➕ Adicionar Serviço"}
-      </button>
-
-      {showForm && (
-        <form className="form-adicionar" onSubmit={handleAdicionarServico}>
+        <div className="filtro-container">
+          <label htmlFor="filtroTipo">Filtrar por tipo:</label>
           <select
-            name="serviceType"
-            value={novoServico.serviceType}
-            onChange={handleNovoChange}
-            required
+            id="filtroTipo"
+            value={tipoFiltro}
+            onChange={(e) => setTipoFiltro(e.target.value)}
           >
-            <option value="">Selecione o tipo</option>
+            <option value="">Todos</option>
             <option value="ELETRICO">Elétrico</option>
             <option value="ENCANAMENTO">Encanamento</option>
             <option value="PINTURA">Pintura</option>
             <option value="ALVENARIA">Alvenaria</option>
             <option value="OUTROS">Outros</option>
           </select>
+        </div>
 
-          <input
-            type="text"
-            name="location"
-            placeholder="Localização"
-            value={novoServico.location}
-            onChange={handleNovoChange}
-            required
-          />
+        <button className="adicionar-btn" onClick={() => setShowForm(!showForm)}>
+          {showForm ? "Fechar Formulário" : "➕ Adicionar Serviço"}
+        </button>
 
-          <input
-            type="date"
-            name="visitDate"
-            value={novoServico.visitDate}
-            onChange={handleNovoChange}
-            required
-          />
+        {showForm && (
+          <form className="form-adicionar" onSubmit={handleAdicionarServico}>
+            <select
+              name="serviceType"
+              value={novoServico.serviceType}
+              onChange={handleNovoChange}
+              required
+            >
+              <option value="">Selecione o tipo</option>
+              <option value="ELETRICO">Elétrico</option>
+              <option value="ENCANAMENTO">Encanamento</option>
+              <option value="PINTURA">Pintura</option>
+              <option value="ALVENARIA">Alvenaria</option>
+              <option value="OUTROS">Outros</option>
+            </select>
 
-          <input
-            type="time"
-            name="visitTime"
-            value={novoServico.visitTime}
-            onChange={handleNovoChange}
-            required
-          />
+            <input
+              type="text"
+              name="location"
+              placeholder="Localização"
+              value={novoServico.location}
+              onChange={handleNovoChange}
+              required
+            />
 
-          <textarea
-            name="description"
-            placeholder="Descrição"
-            value={novoServico.description}
-            onChange={handleNovoChange}
-          />
+            <input
+              type="date"
+              name="visitDate"
+              value={novoServico.visitDate}
+              onChange={handleNovoChange}
+              required
+            />
 
-          <button type="submit">Salvar Serviço</button>
-        </form>
-      )}
+            <input
+              type="time"
+              name="visitTime"
+              value={novoServico.visitTime}
+              onChange={handleNovoChange}
+              required
+            />
 
-      {erro && <p className="erro">{erro}</p>}
+            <textarea
+              name="description"
+              placeholder="Descrição"
+              value={novoServico.description}
+              onChange={handleNovoChange}
+            />
 
-      {servicos.filter(
-        (servico) => !tipoFiltro || servico.serviceType === tipoFiltro
-      ).length === 0 ? (
-        <p>Nenhum serviço encontrado.</p>
-      ) : (
-        servicos.map((servico) => (
-          <div key={servico.id} className="servico-card">
-            <h3>{servico.serviceType}</h3>
-            <p><strong>Local:</strong> {servico.location}</p>
-            <p><strong>Status:</strong> {servico.status}</p>
-            <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
-            <p><strong>Visita:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
-            <p><strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}</p>
+            <button type="submit">Salvar Serviço</button>
+          </form>
+        )}
 
-            {servico.status === "AGENDAMENTO_VISITA" && (
-              <button onClick={() => cancelarServico(servico.id)}>
-                Cancelar Serviço
-              </button>
-            )}
+        {erro && <p className="erro">{erro}</p>}
+      </div>
+      <div className="Lista-Servicos">
 
-            {servico.status === "VISITADO" && (
-              <>
-                <p><strong>Preço Proposto:</strong> {servico.price != null ? `R$ ${servico.price.toFixed(2)}` : "Aguardando avaliação"}</p>
-                {servico.price != null && (
-                  <>
-                    <button onClick={() => aceitarServico(servico.id)}>Aceitar Preço</button>
-                    <button onClick={() => rejeitarServico(servico.id)}>Rejeitar Preço</button>
-                  </>
-                )}
-              </>
-            )}
+        {servicos.filter(
+          (servico) => !tipoFiltro || servico.serviceType === tipoFiltro
+        ).length === 0 ? (
+          <p>Nenhum serviço encontrado.</p>
+        ) : (
+          servicos.map((servico) => (
+            <div key={servico.id} className="servico-card">
+              <h3>{servico.serviceType}</h3>
+              <p><strong>Local:</strong> {servico.location}</p>
+              <p><strong>Status:</strong> {servico.status}</p>
+              <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
+              <p><strong>Visita:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
+              <p><strong>Duração Estimada:</strong> {servico.estimatedDuration || "Não informada"}</p>
 
-            {(servico.status === "FINALIZADO" || servico.status === "AGUARDANDO_FINALIZACAO") && (
-              <>
-                <p><strong>Preço:</strong> R$ {servico.price?.toFixed(2)}</p>
-                <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
-              </>
-            )}
-          </div>
-        ))
-      )}
+              {servico.status === "AGENDAMENTO_VISITA" && (
+                <button onClick={() => cancelarServico(servico.id)}>
+                  Cancelar Serviço
+                </button>
+              )}
+
+              {servico.status === "VISITADO" && (
+                <>
+                  <p><strong>Preço Proposto:</strong> {servico.price != null ? `R$ ${servico.price.toFixed(2)}` : "Aguardando avaliação"}</p>
+                  {servico.price != null && (
+                    <>
+                      <button onClick={() => aceitarServico(servico.id)}>Aceitar Preço</button>
+                      <button onClick={() => rejeitarServico(servico.id)}>Rejeitar Preço</button>
+                    </>
+                  )}
+                </>
+              )}
+
+              {(servico.status === "FINALIZADO" || servico.status === "AGUARDANDO_FINALIZACAO") && (
+                <>
+                  <p><strong>Preço:</strong> R$ {servico.price?.toFixed(2)}</p>
+                  <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
+                </>
+              )}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
