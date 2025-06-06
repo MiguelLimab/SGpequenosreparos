@@ -20,28 +20,13 @@ const Home = () => {
       descricao: "Consertos rápidos em portas, janelas, móveis, entre outros.",
     },
     {
-      titulo: "Instalação de Equipamentos",
-      descricao:
-        "Instalação segura de suportes, eletrodomésticos, luminárias e mais.",
-    },
-    {
       titulo: "Montagem de Móveis",
       descricao:
         "Montagem com cuidado e precisão conforme o manual do fabricante.",
     },
     {
-      titulo: "Serviços Hidráulicos",
-      descricao:
-        "Reparos e instalações em torneiras, chuveiros, encanamentos e registros.",
-    },
-    {
       titulo: "Serviços Elétricos",
       descricao: "Instalações e trocas de tomadas, disjuntores e luminárias.",
-    },
-    {
-      titulo: "Pintura",
-      descricao:
-        "Pintura profissional para interiores e exteriores com ótimo acabamento.",
     },
   ];
 
@@ -159,10 +144,9 @@ const Home = () => {
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
-
+      <nav className="nossos-servicos"><h2>Nossos Serviços</h2>
+          <button>Ver todos</button></nav>
       <main className="home-content">
-        <div className="nossos-servicos"><h2>Nossos Serviços</h2>
-          <button>Ver todos</button></div>
         <div className="servicos-type-container">
             <div className="Service-types">
               {servicos.map((servico, index) => (
