@@ -141,7 +141,9 @@
   padding: 1rem 2rem;
   justify-content: space-around;
 }
-
+.Service-types {
+  align-items: center;
+}
 .service-item {
   margin-bottom: 1rem;
   padding: 1rem;
@@ -172,11 +174,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.2rem;
 }
 .imagem-gelson img {
   max-width: 90%;
-  height: auto;
+  height: 100%;
+  min-height: 500px;
   border-radius: 1rem;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }

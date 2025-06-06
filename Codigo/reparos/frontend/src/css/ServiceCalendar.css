@@ -8,7 +8,6 @@
   padding-top: 70px; /* espaço para navbar fixa */
   padding-bottom: 2rem;
 }
-
 /* Navbar reutilizada */
 .navbar {
   position: fixed;
@@ -32,6 +31,10 @@
   cursor: pointer;
 }
 
+.navbar-title a:hover {
+  text-decoration: underline;
+}
+
 .navbar-links {
   display: flex;
   gap: 1rem;
@@ -48,6 +51,12 @@
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   transition: background 0.3s ease;
+}
+
+.navbar-links a:hover,
+.navbar-links button:hover {
+  text-decoration: underline;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Calendário */
