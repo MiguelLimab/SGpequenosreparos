@@ -144,9 +144,9 @@ const Home = () => {
           <button onClick={handleLogout}>Sair</button>
         </div>
       </nav>
-      <nav className="nossos-servicos"><h2>Nossos Serviços</h2>
-          <button>Ver todos</button></nav>
       <main className="home-content">
+        <nav className="nossos-servicos"><h2>Nossos Serviços</h2>
+          <button>Ver todos</button></nav>
         <div className="servicos-type-container">
             <div className="Service-types">
               {servicos.map((servico, index) => (
