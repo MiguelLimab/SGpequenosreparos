@@ -31,10 +31,10 @@ const ServiceHistory = () => {
       .get("http://localhost:8081/service/api/service", { withCredentials: true })
       .then((res) => {
         // Filtramos apenas os serviços finalizados, concluídos, cancelados ou rejeitados
-        const historico = res.data.filter(servico => 
-          servico.status === 'CONCLUIDO' || 
-          servico.status === 'CANCELADO' || 
-          servico.status === 'FINALIZADO' || 
+        const historico = res.data.filter(servico =>
+          servico.status === 'CONCLUIDO' ||
+          servico.status === 'CANCELADO' ||
+          servico.status === 'FINALIZADO' ||
           servico.status === 'REJEITADO'
         );
         setServicos(historico);
@@ -87,7 +87,7 @@ const ServiceHistory = () => {
   });
 
   return (
-    <div className="servicos-container">
+    <div className="servicos-containe">
       <nav className="navbar">
         <div className="navbar-title">
           <Link to="/home">SG Pequenos Reparos</Link>
@@ -138,45 +138,47 @@ const ServiceHistory = () => {
       </div>
 
       {erro && <p className="erro">{erro}</p>}
+      <div className="servicos-History">
 
-      {servicosFiltrados.length === 0 ? (
-        <p>Nenhum serviço encontrado no histórico.</p>
-      ) : (
-        servicosFiltrados.map((servico) => (
-          <div key={servico.id} className="servico-card">
-            <div className="servico-header">
-              <h3>{formatarTipoServico(servico.serviceType)}</h3>
-              <span className={`servico-status ${servico.status.toLowerCase()}`}>
-                {formatarStatus(servico.status)}
-              </span>
+        {servicosFiltrados.length === 0 ? (
+          <p>Nenhum serviço encontrado no histórico.</p>
+        ) : (
+          servicosFiltrados.map((servico) => (
+            <div key={servico.id} className="servico-card">
+              <div className="servico-header">
+                <h3>{formatarTipoServico(servico.serviceType)}</h3>
+                <span className={`servico-status ${servico.status.toLowerCase()}`}>
+                  {formatarStatus(servico.status)}
+                </span>
+              </div>
+
+              <div className="servico-content">
+                <p><strong>Local:</strong> {servico.location}</p>
+                <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
+                <p><strong>Visita realizada em:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
+
+                {servico.completionDate && (
+                  <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
+                )}
+
+                {servico.price && (
+                  <p><strong>Valor:</strong> R$ {servico.price.toFixed(2)}</p>
+                )}
+
+                {servico.estimatedDuration && (
+                  <p><strong>Duração Estimada:</strong> {servico.estimatedDuration}</p>
+                )}
+
+                {servico.motivoCancelamento && (
+                  <div className="motivo-cancelamento">
+                    <p><strong>Motivo do cancelamento:</strong> {servico.motivoCancelamento}</p>
+                  </div>
+                )}
+              </div>
             </div>
-            
-            <div className="servico-content">
-              <p><strong>Local:</strong> {servico.location}</p>
-              <p><strong>Descrição:</strong> {servico.description || "Nenhuma"}</p>
-              <p><strong>Visita realizada em:</strong> {formatarData(servico.visitDate)} às {servico.visitTime}</p>
-              
-              {servico.completionDate && (
-                <p><strong>Finalização:</strong> {formatarData(servico.completionDate)} às {servico.completionTime}</p>
-              )}
-              
-              {servico.price && (
-                <p><strong>Valor:</strong> R$ {servico.price.toFixed(2)}</p>
-              )}
-              
-              {servico.estimatedDuration && (
-                <p><strong>Duração Estimada:</strong> {servico.estimatedDuration}</p>
-              )}
-              
-              {servico.motivoCancelamento && (
-                <div className="motivo-cancelamento">
-                  <p><strong>Motivo do cancelamento:</strong> {servico.motivoCancelamento}</p>
-                </div>
-              )}
-            </div>
-          </div>
-        ))
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 };
