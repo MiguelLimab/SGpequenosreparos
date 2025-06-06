@@ -40,9 +40,6 @@ const Home = () => {
       </nav>
 
       <main className="home-content">
-        <div className="Banner">
-          <img src="./src/assets/Banner.png" alt="Banner" />
-        </div>
         <div className="nossos-servicos"><h2>Nossos Serviços</h2>
           <button>Ver todos</button></div>
         <div className="servicos-type-container">
