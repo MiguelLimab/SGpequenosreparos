@@ -88,7 +88,7 @@ const ServicoHistorico = () => {
   });
 
   return (
-    <div className="servicos-containe">
+    <div className="servicos-container">
       <nav className="navbar">
         <div className="navbar-title">
           <Link to="/home">SG Pequenos Reparos</Link>
