@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "ReparosApplication",
+            "request": "launch",
+            "mainClass": "com.sg.reparos.ReparosApplication",
+            "projectName": "reparos"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
