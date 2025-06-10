@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { listarTipos } from '../services/tipoService';
 import { getUserProfile } from '../services/authService';
-import { solicitarServico } from '../services/servicoService'; // 🆕 Importa o service
+import { solicitarServico } from '../services/servicoService';
+import Button from './Button';
+import '../styles/components/ModalSolicitarServico.css';
 
 const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
   const [nome, setNome] = useState('');
@@ -46,7 +48,7 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await solicitarServico({ // 🆕 Usando o service agora
+      await solicitarServico({
         nome,
         descricao,
         tipoServicoId,
@@ -57,9 +59,10 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
         periodoDisponivelCliente
       });
       alert('Serviço solicitado com sucesso!');
-      onServicoCriado(); // Atualiza a lista
+      onServicoCriado();
     } catch (error) {
       console.error('Erro ao solicitar serviço:', error);
+      alert('Falha ao solicitar serviço.');
     }
   };
 
@@ -67,23 +70,26 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
   const periodos = ['MANHA', 'TARDE', 'NOITE'];
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Solicitar Novo Serviço</h2>
-        <form onSubmit={handleSubmit}>
+    <div className="modal-solicitar-overlay">
+      <div className="modal-solicitar-content">
+        <h2 className="modal-solicitar-title">Solicitar Novo Serviço</h2>
+        <form onSubmit={handleSubmit} className="modal-solicitar-form">
+          <label>Nome do serviço:</label>
           <input
             type="text"
-            placeholder="Nome do serviço"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
             required
           />
+
+          <label>Descrição:</label>
           <textarea
-            placeholder="Descrição"
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             required
           />
+
+          <label>Tipo de serviço:</label>
           <select
             value={tipoServicoId}
             onChange={(e) => setTipoServicoId(e.target.value)}
@@ -95,76 +101,39 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
             ))}
           </select>
 
-          <div>
-            <label>Dias disponíveis:</label>
+          <label>Dias disponíveis:</label>
+          <div className="modal-solicitar-checkbox-group">
             {diasSemana.map(dia => (
-              <div key={dia}>
-                <label>
-                  <input
-                    type="checkbox"
-                    value={dia}
-                    checked={diasDisponiveisCliente.includes(dia)}
-                    onChange={() => handleCheckboxChange(dia)}
-                  />
-                  {dia}
-                </label>
-              </div>
+              <label key={dia}>
+                <input
+                  type="checkbox"
+                  value={dia}
+                  checked={diasDisponiveisCliente.includes(dia)}
+                  onChange={() => handleCheckboxChange(dia)}
+                />
+                {dia}
+              </label>
             ))}
           </div>
 
-          <div>
-            <label>Período disponível:</label>
-            <select
-              value={periodoDisponivelCliente}
-              onChange={(e) => setPeriodoDisponivelCliente(e.target.value)}
-              required
-            >
-              <option value="">Selecione o período</option>
-              {periodos.map(p => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-          </div>
+          <label>Período disponível:</label>
+          <select
+            value={periodoDisponivelCliente}
+            onChange={(e) => setPeriodoDisponivelCliente(e.target.value)}
+            required
+          >
+            <option value="">Selecione o período</option>
+            {periodos.map(p => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
 
-          <div style={{ marginTop: '20px' }}>
-            <button type="submit">Solicitar</button>
-            <button type="button" onClick={onClose} style={{ marginLeft: '10px' }}>
-              Cancelar
-            </button>
+          <div className="modal-solicitar-actions">
+            <Button type="submit" variant="salvar">Solicitar</Button>
+            <Button type="button" variant="cancelar" onClick={onClose}>Cancelar</Button>
           </div>
         </form>
       </div>
-
-      <style jsx="true">{`
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        .modal-content {
-          background: white;
-          padding: 30px;
-          border-radius: 8px;
-          width: 500px;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-        form input, form textarea, form select {
-          width: 100%;
-          margin-top: 10px;
-          padding: 8px;
-        }
-        form label {
-          display: block;
-          margin-top: 15px;
-        }
-      `}</style>
     </div>
   );
 };

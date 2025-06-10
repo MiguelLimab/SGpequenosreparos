@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import CalendarioServicos from '../components/CalendarioServicos';
-import ListaServicosCliente from '../components/ListaServicosCliente';
-import ModalSolicitarServico from '../components/ModalSolicitarServico';
-import { listarServicos } from '../services/servicoService'; // 🆕 Usa o service
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import CalendarioServicos from "../components/CalendarioServicos";
+import ListaServicosCliente from "../components/ListaServicosCliente";
+import ModalSolicitarServico from "../components/ModalSolicitarServico";
+import { listarServicos } from "../services/servicoService";
+import "../styles/pages/ServicosPage.css"; // Importando o CSS da página
+import Button from "../components/Button";
 
 const ServicosPage = () => {
   const [servicos, setServicos] = useState([]);
@@ -18,7 +20,7 @@ const ServicosPage = () => {
       const response = await listarServicos();
       setServicos(response.data);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
+      console.error("Erro ao buscar serviços:", error);
     }
   };
 
@@ -36,30 +38,34 @@ const ServicosPage = () => {
   };
 
   return (
-    <div className="servicos-page" style={{ display: 'flex', gap: '20px' }}>
+    <div className="servicos-page-container">
       {/* Calendário */}
-      <div style={{ flex: 1 }}>
+      <div className="servicos-calendar">
         <CalendarioServicos servicos={servicos} />
       </div>
 
-      {/* Lista e Botão */}
-      <div style={{ flex: 1 }}>
-        <ListaServicosCliente 
-          servicos={servicos} 
-          onServicoAtualizado={fetchServicos} // 🆕 passa a função de atualizar
-        />
+      {/* Lista e Modal */}
+      <div className="servicos-content">
+            <div className="servicos-lista">
+              <ListaServicosCliente
+                servicos={servicos}
+                onServicoAtualizado={fetchServicos}
+              />
+            </div>
 
-        <button onClick={handleAbrirModal} style={{ marginTop: '20px' }}>
-          Solicitar Novo Serviço
-        </button>
+            <div className="servicos-buttons">
+              <Button variant="contratar" onClick={handleAbrirModal}>
+                Solicitar Novo Serviço
+              </Button>
 
-        <Link to="/cliente/historico">
-          <button style={{ marginTop: '10px' }}>
-            Histórico de Serviços
-          </button>
-        </Link>
+              <Link
+                to="/cliente/historico"
+                className="btn-component btn-link-button"
+              >
+                Histórico de Serviços
+              </Link>
+            </div>
 
-        {/* Modal */}
         {isModalOpen && (
           <ModalSolicitarServico
             onClose={handleFecharModal}

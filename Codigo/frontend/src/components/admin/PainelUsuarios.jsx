@@ -7,6 +7,8 @@ import {
 } from "../../services/usuarioService";
 import EditUserAdminModal from "./EditUserAdminModal";
 import Button from "../Button";
+import '../../styles/components/PainelUsuarios.css';
+
 
 const PainelUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -79,7 +81,7 @@ const PainelUsuarios = () => {
     <div className="painel-usuarios-container">
       <div className="painel-usuarios-header">
         <h2>Gerenciamento de Usuários</h2>
-        <Button variant="adicionar" onClick={() => abrirModal()}>
+        <Button variant="default" onClick={() => abrirModal()}>
           Adicionar Usuário
         </Button>
       </div>

@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
-import CalendarioServicosAdmin from '../../components/admin/CalendarioServicosAdmin';
-import ListaServicosAdmin from '../../components/admin/ListaServicosAdmin';
-import { listarServicos } from '../../services/servicoService'; // 🆕
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import CalendarioServicosAdmin from "../../components/admin/CalendarioServicosAdmin";
+import ListaServicosAdmin from "../../components/admin/ListaServicosAdmin";
+import { listarServicos } from "../../services/servicoService";
+import Button from "../../components/Button";
+import "../../styles/pages/ServicosPage.css";
+
 const ServicoAdminPage = () => {
   const [servicos, setServicos] = useState([]);
 
@@ -15,7 +18,7 @@ const ServicoAdminPage = () => {
       const response = await listarServicos();
       setServicos(response.data);
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
+      console.error("Erro ao buscar serviços:", error);
     }
   };
 
@@ -24,23 +27,29 @@ const ServicoAdminPage = () => {
   };
 
   return (
-    <div className="servicos-page" style={{ display: 'flex', gap: '20px' }}>
+    <div className="servicos-page-container">
       {/* Calendário */}
-      <div style={{ flex: 1 }}>
+      <div className="servicos-calendar">
         <CalendarioServicosAdmin servicos={servicos} />
       </div>
 
-      {/* Lista */}
-      <div style={{ flex: 1 }}>
-        <ListaServicosAdmin
-          servicos={servicos}
-          onServicoAtualizado={handleServicoAtualizado}
-        />
-        <Link to="/cliente/historico">
-          <button style={{ marginTop: '10px' }}>
+      {/* Lista e botões */}
+      <div className="servicos-content">
+        <div className="servicos-lista">
+          <ListaServicosAdmin
+            servicos={servicos}
+            onServicoAtualizado={handleServicoAtualizado}
+          />
+        </div>
+
+        <div className="servicos-buttons">
+          <Link
+            to="/cliente/historico"
+            className="btn-component btn-link-button"
+          >
             Histórico de Serviços
-          </button>
-        </Link>
+          </Link>
+        </div>
       </div>
     </div>
   );

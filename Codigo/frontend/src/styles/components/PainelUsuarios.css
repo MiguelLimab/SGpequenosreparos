@@ -1,0 +1,47 @@
+.painel-usuarios-container {
+  max-width: 100%;
+}
+
+.painel-usuarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.painel-usuarios-filtro {
+  margin-bottom: 20px;
+}
+
+.input-busca {
+  padding: 8px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.tabela-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabela-usuarios th,
+.tabela-usuarios td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.tabela-usuarios th {
+  background-color: #003366;
+  color: white;
+}
+
+.tabela-usuarios button {
+  margin-right: 8px;
+}

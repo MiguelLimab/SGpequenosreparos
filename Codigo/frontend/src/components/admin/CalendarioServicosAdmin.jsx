@@ -130,7 +130,7 @@ const CalendarioServicosAdmin = ({ servicos }) => {
         const dataAtual = diasVisiveis[index];
         if (!dataAtual) return;
         if (!isDataPermitida(dataAtual, itinerario)) {
-          element.style.backgroundColor = "#f4dede"; // Visual de bloqueado
+          element.style.backgroundColor = "#9c4339"; // Visual de bloqueado
         }
       });
     });

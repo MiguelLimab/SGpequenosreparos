@@ -1,0 +1,45 @@
+.modal-cancelar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-cancelar-content {
+  background-color: white;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-cancelar-title {
+  font-size: 1.4rem;
+  color: #003366;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.modal-cancelar-textarea {
+  width: 100%;
+  min-height: 80px;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  resize: vertical;
+}
+
+.modal-cancelar-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}

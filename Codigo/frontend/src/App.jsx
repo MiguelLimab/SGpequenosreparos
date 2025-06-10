@@ -11,6 +11,9 @@ import ServicosPage from "./pages/ServicosPage";
 import HistoricoServicosPage from "./pages/HistoricoServicosPage";
 import ServicoAdminPage from "./pages/admin/ServicoAdminPage";
 import NotificacoesPage from "./pages/NotificacoesPage";
+import './styles/global.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -80,7 +83,9 @@ function App() {
           />
         </Routes>
       </Router>
+      <ToastContainer position="top-right" autoClose={3000} />
     </AuthProvider>
+    
   );
 }
 

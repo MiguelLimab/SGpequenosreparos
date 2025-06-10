@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getItinerario, saveItinerario } from '../../services/itinerarioService'; // ajuste o caminho conforme necessário
+import '../../styles/components/PainelItinerario.css';
+
 
 const diasDaSemana = [
   { label: 'Domingo', valor: 1 },

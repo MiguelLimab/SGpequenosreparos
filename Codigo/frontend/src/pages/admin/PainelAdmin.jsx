@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PainelUsuarios from '../../components/admin/PainelUsuarios';
 import PainelTipoServicos from '../../components/admin/PainelTipoServicos';
 import PainelItinerario from '../../components/admin/PainelItinerario';
+import '../../styles/pages/PainelAdmin.css';
+
 
 const PainelAdmin = () => {
   const [abaAtiva, setAbaAtiva] = useState('usuarios'); // estados: usuarios, tipos, itinerario
@@ -20,7 +22,7 @@ const PainelAdmin = () => {
   };
 
   return (
-    <div className="painel-admin">
+    <div className="painel-admin-page">
       <aside className="painel-admin-sidebar">
         <button
           className={abaAtiva === 'usuarios' ? 'ativo' : ''}
@@ -41,9 +43,9 @@ const PainelAdmin = () => {
           Itinerário
         </button>
       </aside>
-      <main className="painel-admin-conteudo">
+      <div className="painel-admin-conteudo">
         {renderizarConteudo()}
-      </main>
+      </div>
     </div>
   );
 };
