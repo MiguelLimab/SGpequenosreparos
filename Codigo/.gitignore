@@ -1,0 +1,24 @@
+# Ignore para BACKEND (Spring Boot)
+**/target/
+**/*.log
+**/*.iml
+**/.idea/
+**/.classpath
+**/.project
+**/.settings/
+**/.vscode/
+
+# Ignore para FRONTEND (React)
+**/node_modules/
+**/dist/
+**/build/
+**/.env
+
+# Ignore para o sistema operacional
+.DS_Store
+Thumbs.db
+
+# Ignore geral
+*.bak
+*.tmp
+*.swp
