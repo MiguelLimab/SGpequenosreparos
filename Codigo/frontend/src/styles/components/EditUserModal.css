@@ -1,0 +1,33 @@
+.edit-user-modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  z-index: 1000;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.edit-user-modal-title {
+  font-size: 1.5rem;
+  color: #003366;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.edit-user-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.edit-user-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}

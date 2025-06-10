@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { enviarAvaliacao } from '../services/avaliacaoService';
+import Button from './Button';
+import '../styles/components/ModalAvaliacaoServico.css';
 
 const ModalAvaliacaoServico = ({ isOpen, onClose, servico, onAvaliado }) => {
   const [nota, setNota] = useState(5);
@@ -18,7 +20,7 @@ const ModalAvaliacaoServico = ({ isOpen, onClose, servico, onAvaliado }) => {
       });
 
       alert('Avaliação enviada com sucesso!');
-      onAvaliado(); // recarrega os serviços
+      onAvaliado();
       onClose();
     } catch (error) {
       console.error(error);
@@ -31,34 +33,38 @@ const ModalAvaliacaoServico = ({ isOpen, onClose, servico, onAvaliado }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Avaliar Serviço</h2>
-        <form onSubmit={handleSubmit}>
-          <label>Nota (1 a 5):</label>
+    <div className="modal-avaliacao-overlay">
+      <div className="modal-avaliacao-content">
+        <h2 className="modal-avaliacao-title">Avaliar Serviço</h2>
+        <form onSubmit={handleSubmit} className="modal-avaliacao-form">
+          <label htmlFor="nota">Nota (1 a 5):</label>
           <input
+            id="nota"
             type="number"
             min="1"
             max="5"
             value={nota}
             onChange={(e) => setNota(Number(e.target.value))}
             required
+            className="modal-avaliacao-input"
           />
 
-          <label>Comentário:</label>
+          <label htmlFor="comentario">Comentário:</label>
           <textarea
+            id="comentario"
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
             placeholder="(opcional)"
+            className="modal-avaliacao-textarea"
           />
 
-          <div className="modal-actions">
-            <button type="submit" disabled={enviando}>
+          <div className="modal-avaliacao-actions">
+            <Button type="submit" variant="salvar" disabled={enviando}>
               {enviando ? 'Enviando...' : 'Enviar Avaliação'}
-            </button>
-            <button type="button" onClick={onClose}>
+            </Button>
+            <Button type="button" variant="cancelar" onClick={onClose}>
               Cancelar
-            </button>
+            </Button>
           </div>
         </form>
       </div>

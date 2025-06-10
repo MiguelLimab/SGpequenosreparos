@@ -1,0 +1,75 @@
+/* Container principal da página de serviços */
+.servicos-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100vw;
+  height: 90vh;
+  padding-top: 10vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Calendário */
+.servicos-calendar {
+  flex: 1;
+  max-width: 50vw;
+  overflow-y: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Painel direito (lista/modal) */
+.servicos-content {
+  flex: 1;
+  max-width: 50vw;
+  min-width: 350px;
+  height: 90vh;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid #ccc;
+}
+
+/* Bloco da lista de serviços */
+.servicos-lista {
+    height: 70vh;
+  overflow-y: auto;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
+
+/* Bloco dos botões */
+.servicos-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 1rem;
+}
+
+/* Esconde lista e botões quando modal está ativo */
+.servicos-content.modal-active .servicos-lista,
+.servicos-content.modal-active .servicos-buttons {
+  display: none;
+}
+
+/* Botões */
+.servicos-btn {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.servicos-btn:hover {
+  background-color: #FFA500;
+  color: white;
+}

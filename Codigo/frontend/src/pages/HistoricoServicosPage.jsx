@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
-import { listarServicos, buscarServicoPorId } from '../services/servicoService';
-import { getUserProfile } from '../services/authService';
-import ModalDetalhesServico from '../components/ModalDetalhesServico';
-import ModalEditarServico from '../components/ModalEditarServicos';
-import ModalAvaliacaoServico from '../components/ModalAvaliacaoServico'; // ✅ NOVO
+import { useState, useEffect } from "react";
+import { listarServicos, buscarServicoPorId } from "../services/servicoService";
+import { getUserProfile } from "../services/authService";
+import ModalDetalhesServico from "../components/ModalDetalhesServico";
+import ModalEditarServico from "../components/ModalEditarServicos";
+import ModalAvaliacaoServico from "../components/ModalAvaliacaoServico";
+import "../styles/pages/HistoricoServicosPage.css";
+
+import Input from "../components/Input";
+import Button from "../components/Button";
 
 const HistoricoServicosPage = () => {
   const [servicos, setServicos] = useState([]);
-  const [filtroStatus, setFiltroStatus] = useState('');
-  const [filtroTipo, setFiltroTipo] = useState('');
-  const [filtroNome, setFiltroNome] = useState('');
-  const [filtroData, setFiltroData] = useState('');
+  const [filtroStatus, setFiltroStatus] = useState("");
+  const [filtroTipo, setFiltroTipo] = useState("");
+  const [filtroNome, setFiltroNome] = useState("");
+  const [filtroData, setFiltroData] = useState("");
   const [usuario, setUsuario] = useState(null);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
   const [modalEditar, setModalEditar] = useState(false);
-  const [modalAvaliacao, setModalAvaliacao] = useState(false); // ✅ NOVO
+  const [modalAvaliacao, setModalAvaliacao] = useState(false);
 
   useEffect(() => {
     fetchDados();
@@ -24,33 +28,39 @@ const HistoricoServicosPage = () => {
     try {
       const [servicoRes, usuarioRes] = await Promise.all([
         listarServicos(),
-        getUserProfile()
+        getUserProfile(),
       ]);
       setServicos(servicoRes.data);
       setUsuario(usuarioRes);
     } catch (error) {
-      console.error('Erro ao buscar dados:', error);
+      console.error("Erro ao buscar dados:", error);
     }
   };
 
-  const servicosFiltrados = servicos.filter(servico => {
-    const nomeMatch = servico.nome.toLowerCase().includes(filtroNome.toLowerCase());
+  const servicosFiltrados = servicos.filter((servico) => {
+    const nomeMatch = servico.nome
+      .toLowerCase()
+      .includes(filtroNome.toLowerCase());
     const statusMatch = filtroStatus ? servico.status === filtroStatus : true;
-    const tipoMatch = filtroTipo ? (
-      typeof servico.tipoServico === 'string'
+    const tipoMatch = filtroTipo
+      ? typeof servico.tipoServico === "string"
         ? servico.tipoServico === filtroTipo
         : servico.tipoServico?.nome === filtroTipo
-    ) : true;
+      : true;
     const dataMatch = filtroData
-      ? (servico.data?.includes?.(filtroData) ||
-        new Date(servico.data).toLocaleDateString().includes(filtroData))
+      ? servico.data?.includes?.(filtroData) ||
+        new Date(servico.data).toLocaleDateString().includes(filtroData)
       : true;
     return nomeMatch && statusMatch && tipoMatch && dataMatch;
   });
 
-  const tiposUnicos = Array.from(new Set(servicos.map(s =>
-    typeof s.tipoServico === 'string' ? s.tipoServico : s.tipoServico?.nome
-  )));
+  const tiposUnicos = Array.from(
+    new Set(
+      servicos.map((s) =>
+        typeof s.tipoServico === "string" ? s.tipoServico : s.tipoServico?.nome
+      )
+    )
+  );
 
   const handleEditar = async (servico) => {
     try {
@@ -74,91 +84,143 @@ const HistoricoServicosPage = () => {
   };
 
   return (
-    <div className="historico-page" style={{ padding: '20px' }}>
-      <h2>Histórico de Serviços</h2>
+    <div className="historico-page">
+      <h2 className="historico-titulo">Histórico de Serviços</h2>
+      <div className="box-listagem-historico">
+        {/* Filtros */}
+        <div className="historico-filtros">
+          <Input
+            label="Nome"
+            labelClassName="label-white"
+            type="text"
+            placeholder="Buscar por nome..."
+            value={filtroNome}
+            onChange={(e) => setFiltroNome(e.target.value)}
+          />
+          <Input
+            label="Data"
+            labelClassName="label-white"
+            type="text"
+            placeholder="Filtrar por data (dd/mm/aaaa)"
+            value={filtroData}
+            onChange={(e) => setFiltroData(e.target.value)}
+          />
+          <select
+            className="filtro"
+            value={filtroStatus}
+            onChange={(e) => setFiltroStatus(e.target.value)}
+          >
+            <option value="">Todos os Status</option>
+            <option value="SOLICITADO">Solicitado</option>
+            <option value="ACEITO">Agendado</option>
+            <option value="CONCLUIDO">Concluído</option>
+            <option value="RECUSADO">Recusado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+          <select
+          className="filtro"
+            value={filtroTipo}
+            onChange={(e) => setFiltroTipo(e.target.value)}
+          >
+            <option value="">Todos os Tipos</option>
+            {tiposUnicos.map((tipo) => (
+              <option key={tipo} value={tipo}>
+                {tipo}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Filtros */}
-      <div style={{ marginBottom: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-        <input type="text" placeholder="Buscar por nome..." value={filtroNome} onChange={(e) => setFiltroNome(e.target.value)} />
-        <input type="text" placeholder="Filtrar por data (dd/mm/aaaa)" value={filtroData} onChange={(e) => setFiltroData(e.target.value)} />
-        <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
-          <option value="">Todos os Status</option>
-          <option value="SOLICITADO">Solicitado</option>
-          <option value="ACEITO">Agendado</option>
-          <option value="CONCLUIDO">Concluído</option>
-          <option value="RECUSADO">Recusado</option>
-          <option value="CANCELADO">Cancelado</option>
-        </select>
-        <select value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
-          <option value="">Todos os Tipos</option>
-          {tiposUnicos.map(tipo => (
-            <option key={tipo} value={tipo}>{tipo}</option>
-          ))}
-        </select>
+        {/* Lista de Serviços */}
+        {servicosFiltrados.length === 0 ? (
+          <p className="historico-vazio">
+            Nenhum serviço encontrado com os filtros aplicados.
+          </p>
+        ) : (
+          <ul className="historico-lista">
+            {servicosFiltrados.map((servico) => (
+              <li key={servico.id} className="historico-card">
+                <h4>{servico.nome}</h4>
+                <p>
+                  <strong>Tipo:</strong>{" "}
+                  {typeof servico.tipoServico === "string"
+                    ? servico.tipoServico
+                    : servico.tipoServico?.nome}
+                </p>
+                <p>
+                  <strong>Status:</strong> {servico.status}
+                </p>
+                <p>
+                  <strong>Data:</strong>{" "}
+                  {servico.data
+                    ? new Date(servico.data).toLocaleDateString()
+                    : "Não agendado"}
+                </p>
+                {usuario?.tipo === "CLIENTE" && servico.administradorNome && (
+                  <p>
+                    <strong>Prestador:</strong> {servico.administradorNome}
+                  </p>
+                )}
+                {usuario?.tipo === "ADMIN" && servico.clienteNome && (
+                  <p>
+                    <strong>Cliente:</strong> {servico.clienteNome}
+                  </p>
+                )}
+                <div className="historico-botoes">
+                  <Button onClick={() => setServicoSelecionado(servico)}>
+                    Detalhes
+                  </Button>
+                  {usuario?.tipo === "ADMIN" && (
+                    <Button
+                      variant="editar"
+                      onClick={() => handleEditar(servico)}
+                    >
+                      Editar
+                    </Button>
+                  )}
+                  {usuario?.tipo === "CLIENTE" &&
+                    servico.status === "CONCLUIDO" && (
+                      <Button
+                        variant="avaliar"
+                        onClick={() => handleAvaliar(servico)}
+                      >
+                        Avaliar
+                      </Button>
+                    )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Modal de Detalhes */}
+        {servicoSelecionado && !modalEditar && !modalAvaliacao && (
+          <ModalDetalhesServico
+            servico={servicoSelecionado}
+            onClose={() => setServicoSelecionado(null)}
+            usuario={usuario}
+          />
+        )}
+
+        {/* Modal de Edição */}
+        {modalEditar && servicoSelecionado && (
+          <ModalEditarServico
+            servico={servicoSelecionado}
+            onClose={handleFecharModal}
+            onAtualizado={fetchDados}
+          />
+        )}
+
+        {/* Modal de Avaliação */}
+        {modalAvaliacao && servicoSelecionado && (
+          <ModalAvaliacaoServico
+            isOpen={modalAvaliacao}
+            onClose={() => setModalAvaliacao(false)}
+            servico={servicoSelecionado}
+            onAvaliado={fetchDados}
+          />
+        )}
       </div>
-
-      {/* Lista */}
-      {servicosFiltrados.length === 0 ? (
-        <p>Nenhum serviço encontrado com os filtros aplicados.</p>
-      ) : (
-        <ul className="historico-lista" style={{ listStyle: 'none', padding: 0 }}>
-          {servicosFiltrados.map(servico => (
-            <li key={servico.id} className="historico-card" style={{ border: '1px solid #ddd', padding: '10px', marginBottom: '10px' }}>
-              <h4>{servico.nome}</h4>
-              <p><strong>Tipo:</strong> {typeof servico.tipoServico === 'string' ? servico.tipoServico : servico.tipoServico?.nome}</p>
-              <p><strong>Status:</strong> {servico.status}</p>
-              <p><strong>Data:</strong> {servico.data ? new Date(servico.data).toLocaleDateString() : 'Não agendado'}</p>
-              {usuario?.tipo === 'CLIENTE' && servico.administradorNome && (
-                <p><strong>Prestador:</strong> {servico.administradorNome}</p>
-              )}
-              {usuario?.tipo === 'ADMIN' && servico.clienteNome && (
-                <p><strong>Cliente:</strong> {servico.clienteNome}</p>
-              )}
-              <button onClick={() => setServicoSelecionado(servico)} style={{ marginRight: '10px' }}>
-                Detalhes
-              </button>
-              {usuario?.tipo === 'ADMIN' && (
-                <button onClick={() => handleEditar(servico)} style={{ backgroundColor: '#007bff', color: 'white' }}>
-                  Editar
-                </button>
-              )}
-              {usuario?.tipo === 'CLIENTE' && servico.status === 'CONCLUIDO' && (
-                <button onClick={() => handleAvaliar(servico)} style={{ backgroundColor: '#28a745', color: 'white', marginLeft: '10px' }}>
-                  Avaliar
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {/* Modal de Detalhes */}
-      {servicoSelecionado && !modalEditar && !modalAvaliacao && (
-        <ModalDetalhesServico
-          servico={servicoSelecionado}
-          onClose={() => setServicoSelecionado(null)}
-          usuario={usuario}
-        />
-      )}
-
-      {/* Modal de Edição */}
-      {modalEditar && servicoSelecionado && (
-        <ModalEditarServico
-          servico={servicoSelecionado}
-          onClose={handleFecharModal}
-          onAtualizado={fetchDados}
-        />
-      )}
-
-      {/* ✅ Modal de Avaliação */}
-      {modalAvaliacao && servicoSelecionado && (
-        <ModalAvaliacaoServico
-          isOpen={modalAvaliacao}
-          onClose={() => setModalAvaliacao(false)}
-          servico={servicoSelecionado}
-          onAvaliado={fetchDados}
-        />
-      )}
     </div>
   );
 };

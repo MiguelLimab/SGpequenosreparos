@@ -1,0 +1,114 @@
+.navbar-container {
+  background-color: #003366; /* azul escuro */
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* relevo */
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.navbar-logo:hover {
+  color: #FFA500; /* laranja */
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+  color: #FFA500; /* laranja */
+}
+
+.navbar-notification-btn {
+  background: none;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+}
+
+.navbar-notification-icon {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  transition: fill 0.3s ease;
+}
+
+.navbar-notification-btn:hover .navbar-notification-icon {
+  fill: #FFA500;
+}
+
+.navbar-notification-alert {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #FFA500;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-link,
+.navbar-logo,
+.navbar-notification-btn {
+  position: relative;
+  color: white;
+  text-decoration: none,bold;
+  font-size: 1.2rem;
+  padding-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+.navbar-link:hover,
+.navbar-logo:hover,
+.navbar-notification-btn:hover {
+  color: #FFA500;
+}
+
+/* Efeito underline hover (underscore) */
+.navbar-link::after,
+.navbar-logo::after,
+.navbar-notification-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background-color: #FFA500;
+  transition: width 0.3s ease;
+}
+
+.navbar-link:hover::after,
+.navbar-logo:hover::after,
+.navbar-notification-btn:hover::after {
+  width: 100%;
+}
+

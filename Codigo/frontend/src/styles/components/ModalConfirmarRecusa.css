@@ -1,0 +1,33 @@
+.modal-confirmar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-confirmar-content {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-confirmar-title {
+  font-size: 1.5rem;
+  color: #003366;
+  margin-bottom: 10px;
+}
+
+.modal-confirmar-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

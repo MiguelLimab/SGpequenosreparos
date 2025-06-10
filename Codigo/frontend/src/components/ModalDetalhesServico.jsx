@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../services/authService';
+import '../styles/components/ModalDetalhesServico.css';
+import Button from './Button';
 
 const ModalDetalhesServico = ({ servico, onClose }) => {
   const [usuario, setUsuario] = useState(null);
@@ -25,28 +27,31 @@ const ModalDetalhesServico = ({ servico, onClose }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Detalhes do Serviço</h2>
-        <p><strong>Nome:</strong> {servico.nome}</p>
-        <p><strong>Descrição:</strong> {servico.descricao}</p>
-        <p><strong>Tipo:</strong> {typeof servico.tipoServico === 'string' ? servico.tipoServico : servico.tipoServico?.nome}</p>
-        <p><strong>Status:</strong> {servico.status}</p>
-        <p><strong>Data Agendada:</strong> {formatarData(servico.data)}</p>
-        <p><strong>Horário:</strong> {formatarHorario(servico.horario)}</p>
-        <p><strong>Turno disponível do cliente:</strong> {servico.periodoDisponivelCliente}</p>
-        <p><strong>Dias disponíveis do cliente:</strong> {servico.diasDisponiveisCliente?.join(', ')}</p>
+    <div className="modal-detalhes-overlay">
+      <div className="modal-detalhes-content">
+        <h2 className="modal-detalhes-titulo">Detalhes do Serviço</h2>
 
-        {usuario?.tipo === 'CLIENTE' && (
-          <p><strong>Prestador:</strong> {servico.administradorNome || 'Não definido'}</p>
-        )}
+        <div className="modal-detalhes-info">
+          <p><strong>Nome:</strong> {servico.nome}</p>
+          <p><strong>Descrição:</strong> {servico.descricao}</p>
+          <p><strong>Tipo:</strong> {typeof servico.tipoServico === 'string' ? servico.tipoServico : servico.tipoServico?.nome}</p>
+          <p><strong>Status:</strong> {servico.status}</p>
+          <p><strong>Data Agendada:</strong> {formatarData(servico.data)}</p>
+          <p><strong>Horário:</strong> {formatarHorario(servico.horario)}</p>
+          <p><strong>Turno do Cliente:</strong> {servico.periodoDisponivelCliente}</p>
+          <p><strong>Dias Disponíveis do Cliente:</strong> {servico.diasDisponiveisCliente?.join(', ')}</p>
 
-        {usuario?.tipo === 'ADMIN' && (
-          <p><strong>Cliente:</strong> {servico.clienteNome}</p>
-        )}
+          {usuario?.tipo === 'CLIENTE' && (
+            <p><strong>Prestador:</strong> {servico.administradorNome || 'Não definido'}</p>
+          )}
 
-        <div className="modal-buttons" style={{ marginTop: '20px' }}>
-          <button onClick={onClose}>Fechar</button>
+          {usuario?.tipo === 'ADMIN' && (
+            <p><strong>Cliente:</strong> {servico.clienteNome}</p>
+          )}
+        </div>
+
+        <div className="modal-detalhes-botoes">
+          <Button variant="cancelar" onClick={onClose}>Fechar</Button>
         </div>
       </div>
     </div>

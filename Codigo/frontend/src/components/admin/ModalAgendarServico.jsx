@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
-import { aceitarServico } from '../../services/servicoService';
-import { getUserProfile } from '../../services/authService';
-import { getItinerario } from '../../services/itinerarioService';
+import { useState, useEffect } from "react";
+import { aceitarServico } from "../../services/servicoService";
+import { getUserProfile } from "../../services/authService";
+import { getItinerario } from "../../services/itinerarioService";
+import "../../styles/components/ModalAgendarServico.css";
+import Input from "../Input";
+import Label from "../Label";
+import Button from "../Button";
 
 const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
-  const [data, setData] = useState('');
-  const [horario, setHorario] = useState('');
+  const [data, setData] = useState("");
+  const [horario, setHorario] = useState("");
   const [loading, setLoading] = useState(false);
   const [itinerario, setItinerario] = useState(null);
 
@@ -36,7 +40,7 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
 
   const handleAgendar = async () => {
     if (!data || !horario) {
-      alert('Por favor, preencha a data e o horário.');
+      alert("Por favor, preencha a data e o horário.");
       return;
     }
 
@@ -53,9 +57,11 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
         }
       } else if (itinerario.tipoItinerario === "CICLICO") {
         const inicio = new Date(2025, 0, 1);
-        const diff = Math.floor((dataSelecionada - inicio) / (1000 * 60 * 60 * 24));
+        const diff = Math.floor(
+          (dataSelecionada - inicio) / (1000 * 60 * 60 * 24)
+        );
         const ciclo = itinerario.diasTrabalho + itinerario.diasFolga;
-        if ((diff % ciclo) >= itinerario.diasTrabalho) {
+        if (diff % ciclo >= itinerario.diasTrabalho) {
           alert("Este dia está fora do ciclo de trabalho do profissional.");
           return;
         }
@@ -72,12 +78,12 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
     try {
       const admin = await getUserProfile();
       await aceitarServico(servico.id, admin.id, data, horario);
-      alert('Serviço agendado com sucesso!');
+      alert("Serviço agendado com sucesso!");
       onServicoAtualizado();
       onClose();
     } catch (error) {
-      console.error('Erro ao agendar serviço:', error);
-      alert('Erro ao agendar serviço.');
+      console.error("Erro ao agendar serviço:", error);
+      alert("Erro ao agendar serviço.");
     } finally {
       setLoading(false);
     }
@@ -87,32 +93,42 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Agendar Serviço</h2>
-        <p><strong>Serviço:</strong> {servico.nome}</p>
-        <p><strong>Cliente:</strong> {servico.clienteNome}</p>
-        <p><strong>Dias Disponíveis:</strong> {servico.diasDisponiveisCliente.join(', ')}</p>
-        <p><strong>Turno Disponível:</strong> {servico.periodoDisponivelCliente}</p>
+        <p>
+          <strong>Serviço:</strong> {servico.nome}
+        </p>
+        <p>
+          <strong>Cliente:</strong> {servico.clienteNome}
+        </p>
+        <p>
+          <strong>Dias Disponíveis:</strong>{" "}
+          {servico.diasDisponiveisCliente.join(", ")}
+        </p>
+        <p>
+          <strong>Turno Disponível:</strong> {servico.periodoDisponivelCliente}
+        </p>
 
-        <label>Data:</label>
-        <input
+        <Input
+          label="Data"
           type="date"
+          name="data"
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
-
-        <label>Horário:</label>
-        <input
+        <Input
+          label="Horário"
           type="time"
+          name="horario"
           value={horario}
           onChange={(e) => setHorario(e.target.value)}
         />
 
         <div className="modal-buttons">
-          <button onClick={handleAgendar} disabled={loading}>
+          <Button onClick={handleAgendar} disabled={loading}>
             {loading ? 'Agendando...' : 'Agendar'}
-          </button>
-          <button onClick={onClose} style={{ marginLeft: '10px' }}>
+          </Button>
+          <Button variant="cancelar" onClick={onClose}>
             Cancelar
-          </button>
+          </Button>
         </div>
       </div>
     </div>

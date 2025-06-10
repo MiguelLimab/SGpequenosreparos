@@ -3,6 +3,7 @@ import { updateUser } from '../services/authService';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import UserField from '../components/UserField';
+import '../styles/components/EditUserModal.css';
 
 const EditUserModal = ({ user = {}, onClose }) => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const EditUserModal = ({ user = {}, onClose }) => {
     try {
       await updateUser(formData);
       alert('Perfil atualizado com sucesso!');
-      onClose(); // Apenas fecha o modal
+      onClose();
     } catch (error) {
       console.error('Erro ao atualizar perfil:', error);
       alert('Falha ao atualizar perfil!');
@@ -30,19 +31,18 @@ const EditUserModal = ({ user = {}, onClose }) => {
   };
 
   return (
-    <div style={{
-      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-      backgroundColor: 'white', padding: '20px', boxShadow: '0 0 10px rgba(0,0,0,0.3)', zIndex: 1000
-    }}>
-      <h2>Editar Perfil</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="edit-user-modal-container">
+      <h2 className="edit-user-modal-title">Editar Perfil</h2>
+      <form onSubmit={handleSubmit} className="edit-user-modal-form">
         <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
         <Input label="Email" name="email" value={formData.email} onChange={handleChange} required type="email" />
         <Input label="Telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
         <UserField label="Nome de Usuário" value={formData.username} />
         <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} required type="password" />
-        <Button variant="salvar" type="submit">Salvar</Button>
-        <Button variant="cancelar" onClick={onClose}>Cancelar</Button>
+        <div className="edit-user-modal-buttons">
+          <Button variant="salvar" type="submit">Salvar</Button>
+          <Button variant="cancelar" onClick={onClose}>Cancelar</Button>
+        </div>
       </form>
     </div>
   );

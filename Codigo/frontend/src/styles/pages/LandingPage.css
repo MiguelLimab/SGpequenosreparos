@@ -1,0 +1,134 @@
+/* Container principal */
+.landing-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5vh;
+}
+
+/* === Seção 1: Banner === */
+.landing-banner {
+  width: 100%;
+  background-color: #003366;
+  color: white;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.landing-banner-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.landing-banner-subtitle {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* === Seção 2: Serviços === */
+.landing-servicos {
+  width: 100%;
+  max-width: 1000px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.landing-section-title {
+  font-size: 2rem;
+  color: #003366;
+  margin-bottom: 2rem;
+}
+
+.landing-servicos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.landing-servico-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 280px;
+  padding: 1.5rem;
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.landing-servico-card:hover {
+  transform: translateY(-5px);
+}
+
+/* === Seção 3: Feedbacks === */
+.landing-feedbacks {
+  width: 100%;
+  max-width: 1000px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.landing-feedbacks-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.landing-feedback-card {
+  background-color: white;
+  border-left: 6px solid #ffa500;
+  padding: 1.5rem;
+  width: 280px;
+  border-radius: 6px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.landing-feedback-texto {
+  font-style: italic;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+.landing-feedback-autor {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #003366;
+}
+
+.landing-feedback-nota {
+  font-weight: bold;
+  color: #003366;
+  margin-bottom: 0.5rem;
+}
+
+.landing-feedback-data {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 0.5rem;
+}
+
+.landing-servico-card {
+  background-color: white;
+  border-left: 6px solid #003366; /* borda azul escuro */
+  border-radius: 8px;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 280px;
+  padding: 1.5rem;
+  text-align: left;
+  transition: transform 0.2s ease;
+}
+
+.landing-servico-card:hover {
+  transform: translateY(-5px);
+}
+
+.landing-servico-titulo {
+  color: #003366;
+  margin-bottom: 0.5rem;
+}

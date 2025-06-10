@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { listarTipos, deletarTipo } from '../../services/tipoService';
 import EditTipoModal from '../EditTipoModal';
+import '../../styles/components/PainelTipoServicos.css';
+import Button from '../Button';
+
 
 const PainelTipoServicos = () => {
   const [tipos, setTipos] = useState([]);
@@ -56,7 +59,7 @@ const PainelTipoServicos = () => {
     <div className="painel-tipo-servicos-container">
       <div className="painel-tipo-servicos-header">
         <h2>Gerenciamento de Tipos de Serviço</h2>
-        <button className="btn-adicionar" onClick={() => abrirModal()}>Adicionar Tipo</button>
+        <Button className="default" onClick={() => abrirModal()}>Adicionar Tipo</Button>
       </div>
 
       <div className="painel-tipo-servicos-filtro">

@@ -1,22 +1,29 @@
-import { useState, useEffect } from "react";
-import { atualizarServico } from "../services/servicoService";
-import { listarTipos } from "../services/tipoService";
+import { useState, useEffect } from 'react';
+import { atualizarServico } from '../services/servicoService';
+import { listarTipos } from '../services/tipoService';
+import Input from './Input';
+import Button from './Button';
+import Label from './Label';
+import '../styles/components/ModalEditarServicos.css';
 
 const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
   const [tiposServico, setTiposServico] = useState([]);
   const [formData, setFormData] = useState({
-    nome: servico.nome || "",
-    descricao: servico.descricao || "",
-    tipoServicoId: "",
-    clienteId: servico.clienteId, 
-    emailContato: servico.emailContato || "",
-    telefoneContato: servico.telefoneContato || "",
+    nome: servico.nome || '',
+    descricao: servico.descricao || '',
+    tipoServicoId: '',
+    clienteId: servico.clienteId,
+    emailContato: servico.emailContato || '',
+    telefoneContato: servico.telefoneContato || '',
     diasDisponiveisCliente: servico.diasDisponiveisCliente || [],
-    periodoDisponivelCliente: servico.periodoDisponivelCliente || "",
-    data: servico.data ? new Date(servico.data).toISOString().split("T")[0] : "",
-    horario: servico.horario ? servico.horario.slice(0, 5) : "",
-    status: servico.status || "SOLICITADO",
+    periodoDisponivelCliente: servico.periodoDisponivelCliente || '',
+    data: servico.data ? new Date(servico.data).toISOString().split('T')[0] : '',
+    horario: servico.horario ? servico.horario.slice(0, 5) : '',
+    status: servico.status || 'SOLICITADO',
   });
+
+  const diasSemana = ['SEGUNDA', 'TERCA', 'QUARTA', 'QUINTA', 'SEXTA', 'SABADO', 'DOMINGO'];
+  const periodos = ['MANHA', 'TARDE', 'NOITE'];
 
   useEffect(() => {
     const fetchTipos = async () => {
@@ -30,11 +37,10 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
     fetchTipos();
   }, []);
 
-  // Preenche tipoServicoId se só o nome estiver disponível
   useEffect(() => {
     if (
-      typeof servico.tipoServico === "string" &&
-      formData.tipoServicoId === "" &&
+      typeof servico.tipoServico === 'string' &&
+      formData.tipoServicoId === '' &&
       tiposServico.length > 0
     ) {
       const tipo = tiposServico.find((t) => t.nome === servico.tipoServico);
@@ -43,9 +49,6 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
       }
     }
   }, [tiposServico]);
-
-  const diasSemana = ["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"];
-  const periodos = ["MANHA", "TARDE", "NOITE"];
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,58 +64,50 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Payload enviado:", formData);
       await atualizarServico(servico.id, formData);
-      alert("Serviço atualizado com sucesso!");
+      alert('Serviço atualizado com sucesso!');
       onAtualizado();
       onClose();
     } catch (error) {
-      console.error("Erro ao atualizar serviço:", error);
-      alert("Erro ao atualizar serviço.");
+      console.error('Erro ao atualizar serviço:', error);
+      alert('Erro ao atualizar serviço.');
     }
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Editar Serviço</h2>
-        <form onSubmit={handleSubmit}>
-          <label>Nome:</label>
-          <input
-            type="text"
-            name="nome"
-            value={formData.nome}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Descrição:</label>
+        <h2 className="modal-title">Editar Serviço</h2>
+        <form onSubmit={handleSubmit} className="form-editar-servico">
+          <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
+          <Label htmlFor="descricao">Descrição:</Label>
           <textarea
+            id="descricao"
             name="descricao"
             value={formData.descricao}
             onChange={handleChange}
+            className="input-field"
             required
           />
 
-          <label>Tipo de Serviço:</label>
+          <Label htmlFor="tipoServicoId">Tipo de Serviço:</Label>
           <select
             name="tipoServicoId"
             value={formData.tipoServicoId}
             onChange={handleChange}
+            className="input-field"
             required
           >
             <option value="">Selecione o tipo de serviço</option>
             {tiposServico.map((tipo) => (
-              <option key={tipo.id} value={tipo.id}>
-                {tipo.nome}
-              </option>
+              <option key={tipo.id} value={tipo.id}>{tipo.nome}</option>
             ))}
           </select>
 
-          <label>Dias disponíveis:</label>
-          {diasSemana.map((dia) => (
-            <div key={dia}>
-              <label>
+          <Label>Dias disponíveis do cliente:</Label>
+          <div className="dias-checkboxes">
+            {diasSemana.map((dia) => (
+              <label key={dia} className="checkbox-item">
                 <input
                   type="checkbox"
                   value={dia}
@@ -121,45 +116,32 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
                 />
                 {dia}
               </label>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          <label>Período disponível:</label>
+          <Label htmlFor="periodoDisponivelCliente">Período disponível:</Label>
           <select
             name="periodoDisponivelCliente"
             value={formData.periodoDisponivelCliente}
             onChange={handleChange}
+            className="input-field"
             required
           >
             <option value="">Selecione o período</option>
             {periodos.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
+              <option key={p} value={p}>{p}</option>
             ))}
           </select>
 
-          <label>Data:</label>
-          <input
-            type="date"
-            name="data"
-            value={formData.data}
-            onChange={handleChange}
-          />
+          <Input label="Data" type="date" name="data" value={formData.data} onChange={handleChange} />
+          <Input label="Horário" type="time" name="horario" value={formData.horario} onChange={handleChange} />
 
-          <label>Horário:</label>
-          <input
-            type="time"
-            name="horario"
-            value={formData.horario}
-            onChange={handleChange}
-          />
-
-          <label>Status:</label>
+          <Label htmlFor="status">Status:</Label>
           <select
             name="status"
             value={formData.status}
             onChange={handleChange}
+            className="input-field"
             required
           >
             <option value="SOLICITADO">Solicitado</option>
@@ -169,15 +151,9 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
             <option value="CONCLUIDO">Concluído</option>
           </select>
 
-          <div className="modal-buttons" style={{ marginTop: "20px" }}>
-            <button type="submit">Salvar</button>
-            <button
-              type="button"
-              onClick={onClose}
-              style={{ marginLeft: "10px" }}
-            >
-              Cancelar
-            </button>
+          <div className="modal-buttons">
+            <Button variant="salvar" type="submit">Salvar</Button>
+            <Button variant="cancelar" type="button" onClick={onClose}>Cancelar</Button>
           </div>
         </form>
       </div>

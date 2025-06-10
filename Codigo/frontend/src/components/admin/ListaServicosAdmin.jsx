@@ -1,16 +1,36 @@
 import { useState } from "react";
-import ModalAgendarServico from "./ModalAgendarServico"; // importa o modal
+import ModalAgendarServico from "./ModalAgendarServico";
+import ModalCancelarServico from "../ModalCancelarServico";
+import Button from "../Button";
+import CardServico from "../CardServico";
 import {
   concluirServico,
   cancelarServico,
-  recusarServico
-} from "../../services/servicoService"; // importa os services
+  recusarServico,
+} from "../../services/servicoService";
+import "../../styles/components/ListaServicosCliente.css";
+import { toast } from "react-toastify";
+import ModalConfirmarRecusa from "../ModalConfirmarRecusa";
+import ModalConfirmarConclusao from "../ModalConfirmarConclusao";
 
 const ListaServicosAdmin = ({ servicos, onServicoAtualizado }) => {
   const [cancelandoId, setCancelandoId] = useState(null);
   const [concluindoId, setConcluindoId] = useState(null);
+  const [servicoSelecionado, setServicoSelecionado] = useState(null);
 
-  const [servicoSelecionado, setServicoSelecionado] = useState(null); // para abrir o modal
+  // Novo modal concluir
+  const [mostrarModalConcluir, setMostrarModalConcluir] = useState(false);
+  const [concluirId, setConcluirId] = useState(null);
+  const [concluindo, setConcluindo] = useState(false);
+
+  // Novo modal cancelamento
+  const [mostrarModalCancelar, setMostrarModalCancelar] = useState(false);
+  const [idSelecionado, setIdSelecionado] = useState(null);
+  const [cancelando, setCancelando] = useState(false);
+
+  // Novo modal recusar
+  const [mostrarModalRecusar, setMostrarModalRecusar] = useState(false);
+  const [recusandoId, setRecusandoId] = useState(null);
 
   const solicitados = servicos.filter((s) => s.status === "SOLICITADO");
   const aceitos = servicos.filter((s) => s.status === "ACEITO");
@@ -18,149 +38,188 @@ const ListaServicosAdmin = ({ servicos, onServicoAtualizado }) => {
   const cancelados = servicos.filter((s) => s.status === "CANCELADO");
 
   const handleAbrirModal = (servico) => {
-    setServicoSelecionado(servico); // abre o modal com o serviço selecionado
+    setServicoSelecionado(servico);
   };
 
   const handleFecharModal = () => {
-    setServicoSelecionado(null); // fecha o modal
+    setServicoSelecionado(null);
   };
 
-  const handleRecusar = async (id) => {
-    if (window.confirm("Tem certeza que deseja recusar este serviço?")) {
-      try {
-        await recusarServico(id);
-        alert('Serviço recusado com sucesso!');
-        onServicoAtualizado();
-      } catch (error) {
-        console.error('Erro ao recusar serviço:', error);
-        alert('Erro ao recusar serviço.');
-      }
-    }
+  const iniciarCancelamento = (id) => {
+    setIdSelecionado(id);
+    setMostrarModalCancelar(true);
   };
 
-  const handleCancelar = async (id) => {
-    const motivo = prompt("Digite o motivo do cancelamento:");
-    if (!motivo) {
-      alert("Cancelamento abortado. Motivo é obrigatório.");
-      return;
-    }
-
-    setCancelandoId(id);
+  const confirmarCancelamento = async (motivo) => {
+    setCancelando(true);
     try {
-      await cancelarServico(id, motivo);
-      alert("Serviço cancelado com sucesso!");
+      await cancelarServico(idSelecionado, motivo);
+      toast.success("Serviço cancelado com sucesso!");
       onServicoAtualizado();
     } catch (error) {
-      console.error("Erro ao cancelar serviço:", error);
-      alert("Erro ao cancelar serviço.");
+      toast.error("Erro ao cancelar serviço.");
     } finally {
-      setCancelandoId(null);
+      setCancelando(false);
+      setMostrarModalCancelar(false);
+      setIdSelecionado(null);
     }
   };
 
-  const handleConcluir = async (id) => {
-    if (window.confirm("Tem certeza que deseja concluir este serviço?")) {
-      setConcluindoId(id);
-      try {
-        await concluirServico(id);
-        alert("Serviço concluído com sucesso!");
-        onServicoAtualizado();
-      } catch (error) {
-        console.error("Erro ao concluir serviço:", error);
-        alert("Erro ao concluir serviço.");
-      } finally {
-        setConcluindoId(null);
-      }
+  const iniciarRecusa = (id) => {
+    setRecusandoId(id);
+    setMostrarModalRecusar(true);
+  };
+
+  const confirmarRecusa = async () => {
+    try {
+      await recusarServico(recusandoId);
+      toast.success("Serviço recusado com sucesso!");
+      onServicoAtualizado();
+    } catch (error) {
+      toast.error("Erro ao recusar serviço.");
+    } finally {
+      setMostrarModalRecusar(false);
+      setRecusandoId(null);
     }
   };
+
+  const iniciarConclusao = (id) => {
+    setConcluirId(id);
+    setMostrarModalConcluir(true);
+  };
+
+  const confirmarConclusao = async () => {
+    setConcluindo(true);
+    try {
+      await concluirServico(concluirId);
+      toast.success("Serviço concluído com sucesso!");
+      onServicoAtualizado();
+    } catch (error) {
+      toast.error("Erro ao concluir serviço.");
+    } finally {
+      setMostrarModalConcluir(false);
+      setConcluirId(null);
+      setConcluindo(false);
+    }
+  };
+
+  const renderServico = (servico, tipo) => (
+    <div key={servico.id} className="lista-servicos-card">
+      <CardServico servico={servico} tipo={tipo} />
+      {tipo === "solicitado" && (
+        <div className="lista-servicos-botoes">
+          <Button variant="aceitar" onClick={() => handleAbrirModal(servico)}>
+            Aceitar
+          </Button>
+          <Button variant="recusar" onClick={() => iniciarRecusa(servico.id)}>
+            Recusar
+          </Button>
+        </div>
+      )}
+      {tipo === "aceito" && (
+        <div className="lista-servicos-botoes">
+          <Button
+            variant="concluir"
+            onClick={() => iniciarConclusao(servico.id)}
+          >
+            Concluir
+          </Button>
+
+          <Button
+            variant="cancelar"
+            onClick={() => iniciarCancelamento(servico.id)}
+            disabled={cancelandoId === servico.id}
+          >
+            {cancelandoId === servico.id ? "Cancelando..." : "Cancelar"}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div>
-      <h2>Serviços Solicitados</h2>
-      {solicitados.length === 0 ? (
-        <p>Não há serviços solicitados.</p>
-      ) : (
-        solicitados.map((servico) => (
-          <div key={servico.id}>
-            <h4>{servico.nome}</h4>
-            <p><strong>Cliente:</strong> {servico.clienteNome}</p>
-            <p><strong>Email:</strong> {servico.emailContato}</p>
-            <p><strong>Telefone:</strong> {servico.telefoneContato}</p>
-            <p><strong>Descrição:</strong> {servico.descricao}</p>
-            <div>
-              <button onClick={() => handleAbrirModal(servico)}>
-                Aceitar
-              </button>
-              <button
-                onClick={() => handleRecusar(servico.id)}
-                style={{ marginLeft: "10px" }}
-              >
-                Recusar
-              </button>
-            </div>
-          </div>
-        ))
-      )}
+    <div className="lista-servicos-container">
+      <h2 className="lista-servicos-titulo">Gerenciar Serviços</h2>
 
-      <h2>Serviços Aceitos</h2>
-      {aceitos.length === 0 ? (
-        <p>Não há serviços aceitos.</p>
-      ) : (
-        aceitos.map((servico) => (
-          <div key={servico.id}>
-            <h4>{servico.nome}</h4>
-            <p><strong>Cliente:</strong> {servico.clienteNome}</p>
-            <p><strong>Data:</strong> {servico.data ? new Date(servico.data).toLocaleDateString() : 'Não agendado'}</p>
-            <p><strong>Horário:</strong> {servico.horario || 'Não agendado'}</p>
-            <div>
-              <button
-                onClick={() => handleConcluir(servico.id)}
-                disabled={concluindoId === servico.id}
-              >
-                {concluindoId === servico.id ? "Concluindo..." : "Concluir"}
-              </button>
-              <button
-                onClick={() => handleCancelar(servico.id)}
-                disabled={cancelandoId === servico.id}
-                style={{ marginLeft: "10px" }}
-              >
-                {cancelandoId === servico.id ? "Cancelando..." : "Cancelar"}
-              </button>
-            </div>
-          </div>
-        ))
-      )}
+      <section className="lista-servicos-bloco">
+        <h3 className="lista-servicos-subtitulo">Solicitados</h3>
+        <div className="lista-servicos-scroll">
+          {solicitados.length === 0 ? (
+            <p className="lista-servicos-vazio">Nenhum serviço solicitado.</p>
+          ) : (
+            solicitados.map((s) => renderServico(s, "solicitado"))
+          )}
+        </div>
+      </section>
 
-      <h2>Serviços Concluídos</h2>
-      {concluidos.length === 0 ? (
-        <p>Não há serviços concluídos.</p>
-      ) : (
-        concluidos.map((servico) => (
-          <div key={servico.id}>
-            <h4>{servico.nome}</h4>
-            <p>Status: {servico.status}</p>
-          </div>
-        ))
-      )}
+      <section className="lista-servicos-bloco">
+        <h3 className="lista-servicos-subtitulo">Agendados</h3>
+        <div className="lista-servicos-scroll">
+          {aceitos.length === 0 ? (
+            <p className="lista-servicos-vazio">Nenhum serviço agendado.</p>
+          ) : (
+            aceitos.map((s) => renderServico(s, "aceito"))
+          )}
+        </div>
+      </section>
 
-      <h2>Serviços Cancelados</h2>
-      {cancelados.length === 0 ? (
-        <p>Não há serviços cancelados.</p>
-      ) : (
-        cancelados.map((servico) => (
-          <div key={servico.id}>
-            <h4>{servico.nome}</h4>
-            <p>Status: {servico.status}</p>
-          </div>
-        ))
-      )}
+      <section className="lista-servicos-bloco">
+        <h3 className="lista-servicos-subtitulo">Concluídos</h3>
+        <div className="lista-servicos-scroll">
+          {concluidos.length === 0 ? (
+            <p className="lista-servicos-vazio">Nenhum serviço concluído.</p>
+          ) : (
+            concluidos.map((servico) => (
+              <div key={servico.id} className="lista-servicos-card">
+                <CardServico servico={servico} tipo="concluido" />
+              </div>
+            ))
+          )}
+        </div>
+      </section>
 
-      {/* Modal de Agendamento */}
+      <section className="lista-servicos-bloco">
+        <h3 className="lista-servicos-subtitulo">Cancelados</h3>
+        <div className="lista-servicos-scroll">
+          {cancelados.length === 0 ? (
+            <p className="lista-servicos-vazio">Nenhum serviço cancelado.</p>
+          ) : (
+            cancelados.map((servico) => (
+              <div key={servico.id} className="lista-servicos-card">
+                <CardServico servico={servico} tipo="cancelado" />
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
       {servicoSelecionado && (
         <ModalAgendarServico
           servico={servicoSelecionado}
           onClose={handleFecharModal}
           onServicoAtualizado={onServicoAtualizado}
+        />
+      )}
+
+      {mostrarModalCancelar && (
+        <ModalCancelarServico
+          onConfirmar={confirmarCancelamento}
+          onClose={() => setMostrarModalCancelar(false)}
+          loading={cancelando}
+        />
+      )}
+      {mostrarModalRecusar && (
+        <ModalConfirmarRecusa
+          onConfirmar={confirmarRecusa}
+          onClose={() => setMostrarModalRecusar(false)}
+          loading={false}
+        />
+      )}
+      {mostrarModalConcluir && (
+        <ModalConfirmarConclusao
+          onConfirmar={confirmarConclusao}
+          onClose={() => setMostrarModalConcluir(false)}
+          loading={concluindo}
         />
       )}
     </div>

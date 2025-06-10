@@ -1,0 +1,53 @@
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-title {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #003366;
+}
+
+.form-editar-usuario {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-field,
+select.input-field {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #003366;
+}
+
+.input-field:focus {
+  border-color: #003366;
+  box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+  outline: none;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

@@ -1,0 +1,52 @@
+/* Fundo escuro translúcido */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Caixa do modal */
+.modal-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+/* Título */
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #003366;
+  font-size: 1.5rem;
+}
+
+/* Parágrafos de detalhes */
+.modal-content p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Agrupamento de botões */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+/* Espaçamento entre inputs */
+.input-container {
+  margin-top: 15px;
+}

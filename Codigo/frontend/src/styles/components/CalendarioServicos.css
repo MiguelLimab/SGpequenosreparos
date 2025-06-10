@@ -1,0 +1,92 @@
+/* Fundo e estrutura geral */
+.rbc-calendar {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #f0f6fb;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Botões do topo */
+.rbc-toolbar button {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin: 0 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #FFA500;
+  color: white;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #FFA500;
+}
+
+/* Texto do mês atual */
+.rbc-toolbar-label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #003366;
+}
+
+/* Cabeçalho dos dias */
+.rbc-header {
+  padding: 0.5rem;
+  font-weight: bold;
+  color: #003366;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Dia atual com fundo azulado */
+.rbc-today {
+  background-color: #98cdf3 !important;
+}
+
+/* Evento customizado */
+.calendario-evento {
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+/* Legenda */
+.legenda-status {
+  margin-top: 1rem;
+  background-color: #f0f6fb;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.legenda-status h4 {
+  color: #003366;
+  margin-bottom: 0.5rem;
+}
+
+.legenda-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legenda-item {
+  padding: 6px 12px;
+  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}

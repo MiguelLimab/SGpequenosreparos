@@ -1,0 +1,47 @@
+.painel-tipo-servicos-container {
+  max-width: 100%;
+}
+
+.painel-tipo-servicos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.painel-tipo-servicos-filtro {
+  margin-bottom: 15px;
+}
+
+.input-busca {
+  padding: 8px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.tabela-tipos {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabela-tipos th,
+.tabela-tipos td {
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.tabela-tipos th {
+  background-color: #003366;
+  color: white;
+}
+
+.tabela-tipos button {
+  margin-right: 8px;
+}
