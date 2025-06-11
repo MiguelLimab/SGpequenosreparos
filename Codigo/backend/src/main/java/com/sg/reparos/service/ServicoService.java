@@ -217,53 +217,54 @@ public class ServicoService {
     }
 
     @Scheduled(fixedRate = 60000) // a cada 1 minuto (60.000 ms)
-    public void notificarServicosAgendadosProximos() {
-        System.out.println("[SCHEDULER] Rodando lembretes às: " + LocalDateTime.now());
+public void notificarServicosAgendadosProximos() {
 
-        LocalDateTime agora = LocalDateTime.now();
-        LocalDateTime limite = agora.plusHours(24);
+    LocalDateTime agora = LocalDateTime.now();
+    LocalDateTime limite = agora.plusHours(24);
 
-        List<Servico> agendados = servicoRepository.findByStatus(Servico.StatusServico.ACEITO).stream()
-                .filter(s -> s.getData() != null && s.getHorario() != null)
-                .filter(s -> {
-                    LocalDateTime agendamento = LocalDateTime.of(s.getData(), s.getHorario());
-                    return agendamento.isAfter(agora) && !agendamento.isAfter(limite);
-                })
-                .toList();
+    List<Servico> agendados = servicoRepository.findByStatus(Servico.StatusServico.ACEITO).stream()
+            .filter(s -> s.getData() != null && s.getHorario() != null)
+            .filter(s -> {
+                LocalDateTime agendamento = LocalDateTime.of(s.getData(), s.getHorario());
+                return agendamento.isAfter(agora) && !agendamento.isAfter(limite);
+            })
+            .toList();
 
-        for (Servico s : agendados) {
-            String msg = "O serviço \"" + s.getNome() + "\" está agendado para "
-                    + s.getData() + " às " + s.getHorario();
+    for (Servico s : agendados) {
+        String msg = "O serviço \"" + s.getNome() + "\" está agendado para " +
+                s.getData() + " às " + s.getHorario();
 
-            boolean lembreteClienteJaEnviado = notificacaoRepository
-                    .existsByTipoAndClienteAndTitulo(Notificacao.TipoNotificacao.LEMBRETE, s.getCliente(),
-                            "Lembrete: serviço em breve");
+        String tituloCliente = "Lembrete: serviço #" + s.getId();
+        boolean lembreteClienteJaEnviado = notificacaoRepository
+                .existsByTipoAndClienteAndTitulo(Notificacao.TipoNotificacao.LEMBRETE, s.getCliente(), tituloCliente);
 
-            if (!lembreteClienteJaEnviado) {
+        if (!lembreteClienteJaEnviado) {
+            notificacaoService.enviar(new NotificacaoRequestDTO(
+                    tituloCliente,
+                    msg,
+                    s.getCliente().getId(),
+                    null,
+                    Notificacao.TipoNotificacao.LEMBRETE
+            ));
+        }
+
+        if (s.getAdministrador() != null) {
+            String tituloAdmin = "Lembrete: serviço #" + s.getId() + " (admin)";
+            boolean lembreteAdminJaEnviado = notificacaoRepository
+                    .existsByTipoAndAdminAndTitulo(Notificacao.TipoNotificacao.LEMBRETE, s.getAdministrador(), tituloAdmin);
+
+            if (!lembreteAdminJaEnviado) {
                 notificacaoService.enviar(new NotificacaoRequestDTO(
-                        "Lembrete: serviço em breve",
+                        tituloAdmin,
                         msg,
-                        s.getCliente().getId(),
                         null,
-                        Notificacao.TipoNotificacao.LEMBRETE));
-            }
-
-            if (s.getAdministrador() != null) {
-                boolean lembreteAdminJaEnviado = notificacaoRepository
-                        .existsByTipoAndAdminAndTitulo(Notificacao.TipoNotificacao.LEMBRETE, s.getAdministrador(),
-                                "Lembrete: serviço em breve");
-
-                if (!lembreteAdminJaEnviado) {
-                    notificacaoService.enviar(new NotificacaoRequestDTO(
-                            "Lembrete: serviço em breve",
-                            msg,
-                            null,
-                            s.getAdministrador().getId(),
-                            Notificacao.TipoNotificacao.LEMBRETE));
-                }
+                        s.getAdministrador().getId(),
+                        Notificacao.TipoNotificacao.LEMBRETE
+                ));
             }
         }
     }
+}
 
     public List<ServicoResponseDTO> listarTodos() {
         return servicoRepository.findAll().stream()

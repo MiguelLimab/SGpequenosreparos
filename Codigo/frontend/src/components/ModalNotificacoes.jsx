@@ -10,7 +10,7 @@ const ModalNotificacoes = ({ notificacoes, onClose }) => {
       day: "2-digit",
       month: "2-digit",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
   };
 
@@ -20,7 +20,9 @@ const ModalNotificacoes = ({ notificacoes, onClose }) => {
         <h3 className="modal-notificacoes-titulo">🔔 Suas notificações</h3>
 
         {notificacoes.length === 0 ? (
-          <p className="modal-notificacoes-vazio">Nenhuma notificação recente.</p>
+          <p className="modal-notificacoes-vazio">
+            Nenhuma notificação recente.
+          </p>
         ) : (
           <ul className="modal-notificacoes-lista">
             {notificacoes.map((n) => (
@@ -36,7 +38,10 @@ const ModalNotificacoes = ({ notificacoes, onClose }) => {
         <div className="modal-notificacoes-botoes">
           <button
             className="btn-editar"
-            onClick={() => navigate("/notificacoes")}
+            onClick={() => {
+              onClose();
+              navigate("/notificacoes");
+            }}
           >
             Ver todas
           </button>
