@@ -14,6 +14,7 @@ import NotificacoesPage from "./pages/NotificacoesPage";
 import './styles/global.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
             }
           />
         </Routes>
+        <Footer />
       </Router>
       <ToastContainer position="top-right" autoClose={3000} />
     </AuthProvider>

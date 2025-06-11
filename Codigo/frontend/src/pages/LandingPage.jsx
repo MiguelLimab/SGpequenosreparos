@@ -14,6 +14,10 @@ const LandingPage = () => {
   const [servicos, setServicos] = useState([]);
   const [avaliacoes, setAvaliacoes] = useState([]);
 
+  const [paginaServicos, setPaginaServicos] = useState(1);
+  const [paginaAvaliacoes, setPaginaAvaliacoes] = useState(1);
+  const porPagina = 6;
+
   useEffect(() => {
     const fetchDados = async () => {
       try {
@@ -34,6 +38,38 @@ const LandingPage = () => {
     navigate(isAuthenticated ? "/cliente/servicos" : "/login");
   };
 
+  const servicosExibidos = servicos.slice(
+    (paginaServicos - 1) * porPagina,
+    paginaServicos * porPagina
+  );
+  const avaliacoesExibidas = avaliacoes.slice(
+    (paginaAvaliacoes - 1) * porPagina,
+    paginaAvaliacoes * porPagina
+  );
+
+  const totalPaginasServicos = Math.ceil(servicos.length / porPagina);
+  const totalPaginasAvaliacoes = Math.ceil(avaliacoes.length / porPagina);
+
+  const Paginacao = ({ paginaAtual, totalPaginas, aoMudar }) => (
+    <div className="landing-paginacao">
+      <button
+        disabled={paginaAtual === 1}
+        onClick={() => aoMudar(paginaAtual - 1)}
+      >
+        ◀
+      </button>
+      <span>
+        {paginaAtual} / {totalPaginas}
+      </span>
+      <button
+        disabled={paginaAtual === totalPaginas}
+        onClick={() => aoMudar(paginaAtual + 1)}
+      >
+        ▶
+      </button>
+    </div>
+  );
+
   return (
     <div className="landing-page-container">
       {/* Seção 1: Banner de boas-vindas */}
@@ -49,14 +85,21 @@ const LandingPage = () => {
 
       {/* Seção 2: Tipos de serviços prestados */}
       <section className="landing-servicos">
-        <h2 className="landing-section-title">Serviços Disponíveis</h2>
-        <div className="landing-servicos-lista">
-          {servicos.map((servico) => (
-            <div key={servico.id} className="landing-servico-card">
-              <h3 className="landing-servico-titulo">{servico.nome}</h3>
-              <p>{servico.descricao}</p>
-            </div>
-          ))}
+        <div className="landing-servicos-content">
+          <h2 className="landing-section-title">Serviços Disponíveis</h2>
+          <div className="landing-servicos-lista">
+            {servicosExibidos.map((servico) => (
+              <div key={servico.id} className="landing-servico-card">
+                <h3 className="landing-servico-titulo">{servico.nome}</h3>
+                <p>{servico.descricao}</p>
+              </div>
+            ))}
+          </div>
+          <Paginacao
+            paginaAtual={paginaServicos}
+            totalPaginas={totalPaginasServicos}
+            aoMudar={setPaginaServicos}
+          />
         </div>
         <Button
           type="button"
@@ -71,7 +114,7 @@ const LandingPage = () => {
       <section className="landing-feedbacks">
         <h2 className="landing-section-title">O que dizem sobre nós</h2>
         <div className="landing-feedbacks-lista">
-          {avaliacoes.map((fb) => (
+          {avaliacoesExibidas.map((fb) => (
             <div key={fb.id} className="landing-feedback-card">
               <p className="landing-feedback-nota">Nota: {fb.nota} / 5</p>
               <p className="landing-feedback-texto">"{fb.comentario}"</p>
@@ -82,6 +125,11 @@ const LandingPage = () => {
             </div>
           ))}
         </div>
+        <Paginacao
+          paginaAtual={paginaAvaliacoes}
+          totalPaginas={totalPaginasAvaliacoes}
+          aoMudar={setPaginaAvaliacoes}
+        />
       </section>
     </div>
   );

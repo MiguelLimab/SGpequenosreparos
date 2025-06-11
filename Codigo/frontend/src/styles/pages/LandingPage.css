@@ -33,7 +33,9 @@
   padding: 3rem 1.5rem;
   text-align: center;
 }
-
+.landing-servicos-content {
+margin-bottom: 2vh;
+}
 .landing-section-title {
   font-size: 2rem;
   color: #003366;
@@ -65,9 +67,9 @@
 /* === Seção 3: Feedbacks === */
 .landing-feedbacks {
   width: 100%;
-  max-width: 1000px;
   padding: 3rem 1.5rem;
   text-align: center;
+  border-top: solid 2vh #ffa500;
 }
 
 .landing-feedbacks-lista {
@@ -131,4 +133,32 @@
 .landing-servico-titulo {
   color: #003366;
   margin-bottom: 0.5rem;
+}
+
+.landing-paginacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.landing-paginacao button {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.landing-paginacao button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.landing-paginacao span {
+  font-weight: bold;
+  color: #003366;
 }

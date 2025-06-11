@@ -1,6 +1,5 @@
 .painel-admin-page {
   display: flex;
-  height: 93vh;
   font-family: Arial, sans-serif;
   margin-top: 7vh;
 }
@@ -14,7 +13,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  height: 93vh;
+  height: 100vh;
 }
 
 .painel-admin-sidebar button {

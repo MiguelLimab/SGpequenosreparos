@@ -11,11 +11,11 @@ html, body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #dce1e6;
   color: #333;
+  overflow-x: hidden;
 }
 
 /* Espaço reservado abaixo da navbar fixa */
-main {
-  padding-top: 80px; /* altura da navbar + espaçamento extra */
+main { /* altura da navbar + espaçamento extra */
 }
 
 /* Scrollbar (opcional para estética) */

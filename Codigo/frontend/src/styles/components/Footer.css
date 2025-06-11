@@ -1,0 +1,27 @@
+.footer-container {
+  width: 100vw;
+  background-color: #003366;
+  color: white;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  font-size: 0.9rem;
+  margin-top: 4rem;
+}
+
+
+.footer-links a {
+  color: #ffa500;
+  text-decoration: none;
+  margin: 0 0.5rem;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+}
+
+.footer-links span {
+  color: white;
+  margin: 0 0.3rem;
+}

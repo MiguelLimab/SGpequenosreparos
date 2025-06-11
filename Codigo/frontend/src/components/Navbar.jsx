@@ -5,7 +5,6 @@ import { listarNotificacoesRecentes } from "../services/notificacaoService";
 import ModalNotificacoes from "./ModalNotificacoes";
 import "../styles/components/Navbar.css";
 
-
 const Navbar = () => {
   const { isAuthenticated, username, user } = useContext(AuthContext);
   const [notificacoesRecentes, setNotificacoesRecentes] = useState([]);
@@ -28,6 +27,11 @@ const Navbar = () => {
 
   const temNotificacoes = notificacoesRecentes.length > 0;
 
+  const handleFecharModal = () => {
+    setMostrarModal(false);
+    setNotificacoesRecentes([]); // limpa o ícone de exclamação após fechar
+  };
+
   return (
     <nav className="navbar-container">
       <Link to="/" className="navbar-logo">
@@ -36,24 +40,36 @@ const Navbar = () => {
 
       {!isAuthenticated ? (
         <div className="navbar-links">
-          <Link to="/cadastro" className="navbar-link">Cadastro</Link>
-          <Link to="/login" className="navbar-link">Login</Link>
+          <Link to="/cadastro" className="navbar-link">
+            Cadastro
+          </Link>
+          <Link to="/login" className="navbar-link">
+            Login
+          </Link>
         </div>
       ) : (
         <div className="navbar-links">
           {user?.tipo === "ADMIN" && (
             <>
-              <Link to="/admin/painel" className="navbar-link">Painel</Link>
-              <Link to="/admin/servicos" className="navbar-link">Serviços</Link>
+              <Link to="/admin/painel" className="navbar-link">
+                Painel
+              </Link>
+              <Link to="/admin/servicos" className="navbar-link">
+                Serviços
+              </Link>
             </>
           )}
 
           {user?.tipo === "CLIENTE" && (
-            <Link to="/cliente/servicos" className="navbar-link">Serviços</Link>
+            <Link to="/cliente/servicos" className="navbar-link">
+              Serviços
+            </Link>
           )}
 
           <button
-            onClick={() => setMostrarModal(true)}
+            onClick={() => {
+              setMostrarModal(true);
+            }}
             className="navbar-notification-btn"
             title="Notificações"
           >
@@ -69,14 +85,15 @@ const Navbar = () => {
             )}
           </button>
 
-          <Link to="/perfil" className="navbar-link">Olá, {username}!</Link>
+          <Link to="/perfil" className="navbar-link">
+            Olá, {username}!
+          </Link>
         </div>
       )}
-
       {mostrarModal && (
         <ModalNotificacoes
           notificacoes={notificacoesRecentes}
-          onClose={() => setMostrarModal(false)}
+          onClose={handleFecharModal}
         />
       )}
     </nav>
