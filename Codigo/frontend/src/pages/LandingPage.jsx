@@ -75,9 +75,9 @@ const LandingPage = () => {
             <div key={fb.id} className="landing-feedback-card">
               <p className="landing-feedback-nota">Nota: {fb.nota} / 5</p>
               <p className="landing-feedback-texto">"{fb.comentario}"</p>
-              <p className="landing-feedback-autor">– {fb.nomeCliente}</p>
+              <p className="landing-feedback-autor">– {fb.clienteNome}</p>
               <p className="landing-feedback-data">
-                {new Date(fb.dataCriacao).toLocaleDateString("pt-BR")}
+                {new Date(fb.dataAvaliacao).toLocaleDateString("pt-BR")}
               </p>
             </div>
           ))}
