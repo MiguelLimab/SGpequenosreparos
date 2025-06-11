@@ -38,20 +38,42 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
     return map[dia];
   };
 
+  const diaSemanaToNumero = (dia) => {
+    const map = {
+      0: 1, // DOMINGO
+      1: 2, // SEGUNDA
+      2: 3, // TERCA
+      3: 4, // QUARTA
+      4: 5, // QUINTA
+      5: 6, // SEXTA
+      6: 7, // SABADO
+    };
+    return map[dia];
+  };
+
+  const getPeriodo = (horario) => {
+    const [hora] = horario.split(":").map(Number);
+    if (hora >= 6 && hora < 12) return "MANHA";
+    if (hora >= 12 && hora < 18) return "TARDE";
+    return "NOITE";
+  };
+
   const handleAgendar = async () => {
     if (!data || !horario) {
       alert("Por favor, preencha a data e o horário.");
       return;
     }
 
-    const dataSelecionada = new Date(data);
-    const diaSemana = dataSelecionada.getDay();
-    const diaSistema = diaSemana === 0 ? 1 : diaSemana + 1;
+    const [ano, mes, dia] = data.split("-").map(Number);
+    const dataSelecionada = new Date(ano, mes - 1, dia); // sem timezone incorreto
 
-    // Valida itinerário
+    const diaEnum = diaSemanaToEnum(dataSelecionada.getDay());
+    const diaNumerico = diaSemanaToNumero(dataSelecionada.getDay());
+
+    // Valida itinerário do admin
     if (itinerario) {
       if (itinerario.tipoItinerario === "FIXO") {
-        if (!itinerario.diasSemana.includes(diaSistema)) {
+        if (!itinerario.diasSemana.includes(diaNumerico)) {
           alert("Este dia não está no itinerário do profissional.");
           return;
         }
@@ -68,9 +90,18 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
       }
     }
 
-    // Valida disponibilidade do cliente
-    if (!servico.diasDisponiveisCliente.includes(diaSemanaToEnum(diaSemana))) {
-      alert("O cliente não está disponível neste dia.");
+    // Valida disponibilidade do cliente (dia)
+    if (!servico.diasDisponiveisCliente.includes(diaEnum)) {
+      alert(`O cliente não está disponível na ${diaEnum}.`);
+      return;
+    }
+
+    // Valida disponibilidade do cliente (turno)
+    const periodoSelecionado = getPeriodo(horario);
+    if (periodoSelecionado !== servico.periodoDisponivelCliente) {
+      alert(
+        `O cliente está disponível apenas no período ${servico.periodoDisponivelCliente}.`
+      );
       return;
     }
 
@@ -124,7 +155,7 @@ const ModalAgendarServico = ({ servico, onClose, onServicoAtualizado }) => {
 
         <div className="modal-buttons">
           <Button onClick={handleAgendar} disabled={loading}>
-            {loading ? 'Agendando...' : 'Agendar'}
+            {loading ? "Agendando..." : "Agendar"}
           </Button>
           <Button variant="cancelar" onClick={onClose}>
             Cancelar

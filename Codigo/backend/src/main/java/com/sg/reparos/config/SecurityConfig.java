@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedOriginPatterns(List.of("*"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(List.of("*"));
@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/servicos/**").authenticated()
 
                         .requestMatchers(HttpMethod.POST, "/api/servicos").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/servicos/**").hasAnyRole("ADMIN", "CLIENTE")
                         .requestMatchers(HttpMethod.DELETE, "/api/servicos/**").hasRole("ADMIN")
 
                         // Painéis específicos

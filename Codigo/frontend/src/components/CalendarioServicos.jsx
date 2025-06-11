@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment-timezone";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import ModalDetalhesServico from "./ModalDetalhesServico";
 import "../styles/components/CalendarioServicos.css";
+import { getUserProfile } from "../services/authService";
 
 const localizer = momentLocalizer(moment);
 
@@ -53,8 +54,23 @@ const CalendarioServicos = ({ servicos }) => {
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
   const [view, setView] = useState("month");
   const [date, setDate] = useState(new Date());
+  const [meusServicos, setMeusServicos] = useState([]);
 
-  const eventos = servicos
+  useEffect(() => {
+    const filtrarServicos = async () => {
+      try {
+        const user = await getUserProfile();
+        const apenasMeus = servicos.filter(s => s.clienteId === user.id);
+        setMeusServicos(apenasMeus);
+      } catch (err) {
+        console.error("Erro ao carregar serviços do cliente:", err);
+      }
+    };
+
+    filtrarServicos();
+  }, [servicos]);
+
+  const eventos = meusServicos
     .filter(
       (servico) =>
         servico.data &&
@@ -71,7 +87,7 @@ const CalendarioServicos = ({ servicos }) => {
         start,
         end,
         status: servico.status,
-        ...servico, // Passa todos os dados
+        ...servico,
       };
     });
 

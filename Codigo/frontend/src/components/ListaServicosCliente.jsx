@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cancelarServico } from "../services/servicoService";
+import { getUserProfile } from "../services/authService";
 import CardServico from "./CardServico";
 import ModalAvaliacaoServico from "./ModalAvaliacaoServico";
 import Button from "./Button";
@@ -8,12 +9,27 @@ import { toast } from "react-toastify";
 import ModalCancelarServico from "./ModalCancelarServico";
 
 const ListaServicosCliente = ({ servicos, onServicoAtualizado }) => {
+  const [meusServicos, setMeusServicos] = useState([]);
   const [cancelandoId, setCancelandoId] = useState(null);
   const [modalAvaliacao, setModalAvaliacao] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
   const [mostrarModalCancelar, setMostrarModalCancelar] = useState(false);
   const [idSelecionado, setIdSelecionado] = useState(null);
   const [cancelando, setCancelando] = useState(false);
+
+  useEffect(() => {
+    const filtrarServicosDoCliente = async () => {
+      try {
+        const perfil = await getUserProfile();
+        const filtrados = servicos.filter(s => s.clienteId === perfil.id);
+        setMeusServicos(filtrados);
+      } catch (err) {
+        console.error("Erro ao filtrar serviços do cliente:", err);
+      }
+    };
+
+    filtrarServicosDoCliente();
+  }, [servicos]);
 
   const iniciarCancelamento = (id) => {
     setIdSelecionado(id);
@@ -45,7 +61,6 @@ const ListaServicosCliente = ({ servicos, onServicoAtualizado }) => {
       <div key={servico.id} className="lista-servicos-card">
         <CardServico servico={servico} tipo={tipo} />
 
-        {/* Mostrar o botão de cancelar apenas se o serviço estiver "SOLICITADO" */}
         {tipo === "solicitado" && (
           <Button
             variant="cancelar"
@@ -56,7 +71,6 @@ const ListaServicosCliente = ({ servicos, onServicoAtualizado }) => {
           </Button>
         )}
 
-        {/* Mostrar o botão de avaliar apenas se o serviço estiver "CONCLUÍDO" */}
         {tipo === "concluido" && (
           <Button variant="avaliar" onClick={() => handleAvaliar(servico)}>
             Avaliar
@@ -66,11 +80,9 @@ const ListaServicosCliente = ({ servicos, onServicoAtualizado }) => {
     );
   };
 
-  const solicitados = servicos.filter((s) => s.status === "SOLICITADO");
-  const agendados = servicos.filter(
-    (s) => s.status === "ACEITO" && s.data && s.horario
-  );
-  const concluidos = servicos.filter((s) => s.status === "CONCLUIDO");
+  const solicitados = meusServicos.filter((s) => s.status === "SOLICITADO");
+  const agendados = meusServicos.filter((s) => s.status === "ACEITO" && s.data && s.horario);
+  const concluidos = meusServicos.filter((s) => s.status === "CONCLUIDO");
 
   return (
     <div className="lista-servicos-container">
@@ -123,6 +135,7 @@ const ListaServicosCliente = ({ servicos, onServicoAtualizado }) => {
           onAvaliado={onServicoAtualizado}
         />
       )}
+
       {mostrarModalCancelar && (
         <ModalCancelarServico
           onConfirmar={confirmarCancelamento}
