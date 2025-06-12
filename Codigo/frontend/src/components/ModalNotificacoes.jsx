@@ -36,6 +36,9 @@ const ModalNotificacoes = ({ notificacoes, onClose }) => {
         )}
 
         <div className="modal-notificacoes-botoes">
+          <button className="btn-cancelar" onClick={onClose}>
+            Fechar
+          </button>
           <button
             className="btn-editar"
             onClick={() => {
@@ -44,9 +47,6 @@ const ModalNotificacoes = ({ notificacoes, onClose }) => {
             }}
           >
             Ver todas
-          </button>
-          <button className="btn-cancelar" onClick={onClose}>
-            Fechar
           </button>
         </div>
       </div>

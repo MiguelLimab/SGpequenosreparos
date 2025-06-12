@@ -108,29 +108,28 @@ const ListaServicosAdmin = ({ servicos, onServicoAtualizado }) => {
       <CardServico servico={servico} tipo={tipo} />
       {tipo === "solicitado" && (
         <div className="lista-servicos-botoes">
-          <Button variant="aceitar" onClick={() => handleAbrirModal(servico)}>
-            Aceitar
-          </Button>
           <Button variant="recusar" onClick={() => iniciarRecusa(servico.id)}>
             Recusar
+          </Button>
+          <Button variant="aceitar" onClick={() => handleAbrirModal(servico)}>
+            Aceitar
           </Button>
         </div>
       )}
       {tipo === "aceito" && (
         <div className="lista-servicos-botoes">
           <Button
-            variant="concluir"
-            onClick={() => iniciarConclusao(servico.id)}
-          >
-            Concluir
-          </Button>
-
-          <Button
             variant="cancelar"
             onClick={() => iniciarCancelamento(servico.id)}
             disabled={cancelandoId === servico.id}
           >
             {cancelandoId === servico.id ? "Cancelando..." : "Cancelar"}
+          </Button>
+          <Button
+            variant="concluir"
+            onClick={() => iniciarConclusao(servico.id)}
+          >
+            Concluir
           </Button>
         </div>
       )}

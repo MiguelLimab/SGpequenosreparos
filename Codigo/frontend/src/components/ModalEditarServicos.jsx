@@ -154,6 +154,7 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
           <div className="modal-buttons">
             <Button variant="salvar" type="submit">Salvar</Button>
             <Button variant="cancelar" type="button" onClick={onClose}>Cancelar</Button>
+            
           </div>
         </form>
       </div>

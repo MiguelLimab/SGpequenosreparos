@@ -59,11 +59,11 @@ const ModalAvaliacaoServico = ({ isOpen, onClose, servico, onAvaliado }) => {
           />
 
           <div className="modal-avaliacao-actions">
-            <Button type="submit" variant="salvar" disabled={enviando}>
-              {enviando ? 'Enviando...' : 'Enviar Avaliação'}
-            </Button>
             <Button type="button" variant="cancelar" onClick={onClose}>
               Cancelar
+            </Button>
+            <Button type="submit" variant="salvar" disabled={enviando}>
+              {enviando ? 'Enviando...' : 'Enviar Avaliação'}
             </Button>
           </div>
         </form>

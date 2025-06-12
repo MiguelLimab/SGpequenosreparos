@@ -10,6 +10,9 @@ const ModalConfirmarConclusao = ({ onConfirmar, onClose, loading }) => {
           Tem certeza que deseja marcar este serviço como <strong>concluído</strong>?
         </p>
         <div className="modal-actions">
+          <Button onClick={onClose} variant="sair">
+            Fechar
+          </Button>
           <Button
             onClick={onConfirmar}
             variant="concluir"
@@ -17,9 +20,7 @@ const ModalConfirmarConclusao = ({ onConfirmar, onClose, loading }) => {
           >
             {loading ? 'Concluindo...' : 'Confirmar'}
           </Button>
-          <Button onClick={onClose} variant="sair">
-            Fechar
-          </Button>
+          
         </div>
       </div>
     </div>

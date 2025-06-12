@@ -40,8 +40,8 @@ const EditUserModal = ({ user = {}, onClose }) => {
         <UserField label="Nome de Usuário" value={formData.username} />
         <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} required type="password" />
         <div className="edit-user-modal-buttons">
-          <Button variant="salvar" type="submit">Salvar</Button>
           <Button variant="cancelar" onClick={onClose}>Cancelar</Button>
+          <Button variant="salvar" type="submit">Salvar</Button>
         </div>
       </form>
     </div>

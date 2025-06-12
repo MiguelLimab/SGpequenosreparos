@@ -90,8 +90,8 @@ const EditTipoModal = ({ tipo, fecharModal }) => {
             />
           </div>
           <div className="modal-acoes">
-            <button type="submit" className="btn-salvar">Salvar</button>
             <button type="button" className="btn-cancelar" onClick={fecharModal}>Cancelar</button>
+            <button type="submit" className="btn-salvar">Salvar</button>
           </div>
         </form>
       </div>
