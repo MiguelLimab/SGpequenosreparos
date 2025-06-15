@@ -108,23 +108,25 @@
   color: white;
 }
 
-/* Botão Cancelar */
-.btn-cancelar {
-  background-color: #999;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: 6px;
-  font-size: 1rem;
+/* Botão excluir */
+.btn-excluir {
+  background-color: #8B0000; /* vermelho escuro mais sóbrio */
+  color: #fff;
+  border: 1px solid #aa2e2e;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-.btn-cancelar:hover {
-  background-color: #777;
+.btn-excluir:hover {
+  background-color: #a70000;
+  border-color: #cc4c4c;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
-/*listagem de serviços*/
 /* Botão Cancelar */
 .btn-cancelar {
   background-color: #B22222; /* vermelho escuro */
