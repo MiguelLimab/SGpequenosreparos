@@ -7,7 +7,7 @@
   transition: background-color 0.3s ease;
 }
 
-/* Botão padrão (caso necessário) */
+/* Botão padrão */
 .btn-default {
   background-color: #003366;
   color: white;
@@ -18,7 +18,7 @@
   color: white;
 }
 
-/* Botão de login azul escuro */
+/* Botão de login */
 .btn-entrar {
   background-color: #003366;
   color: white;
@@ -57,10 +57,9 @@
   color: white;
 }
 
-/* Botão de perfil */
 /* Botão Sair */
 .btn-sair {
-  background-color: #c62828; /* vermelho escuro */
+  background-color: #c62828;
   color: white;
   border: none;
   padding: 0.6rem 1.5rem;
@@ -71,12 +70,12 @@
 }
 
 .btn-sair:hover {
-  background-color: #e53935; /* vermelho mais claro */
+  background-color: #e53935;
 }
 
 /* Botão Editar */
 .btn-editar {
-  background-color: #003366; /* azul escuro da paleta */
+  background-color: #003366;
   color: white;
   border: none;
   padding: 0.6rem 1.5rem;
@@ -87,10 +86,10 @@
 }
 
 .btn-editar:hover {
-  background-color: #ffa500; /* laranja da paleta */
+  background-color: #ffa500;
   color: white;
 }
-/* Modal Editar perfil */
+
 /* Botão Salvar */
 .btn-salvar {
   background-color: #003366;
@@ -108,9 +107,9 @@
   color: white;
 }
 
-/* Botão excluir */
+/* Botão Excluir */
 .btn-excluir {
-  background-color: #8B0000; /* vermelho escuro mais sóbrio */
+  background-color: #8B0000;
   color: #fff;
   border: 1px solid #aa2e2e;
   padding: 0.5rem 1.2rem;
@@ -129,7 +128,7 @@
 
 /* Botão Cancelar */
 .btn-cancelar {
-  background-color: #B22222; /* vermelho escuro */
+  background-color: #b22222;
   color: white;
   border: none;
   padding: 0.5rem 1.2rem;
@@ -140,7 +139,7 @@
 }
 
 .btn-cancelar:hover {
-  background-color: #701e1e;
+  background-color: #d32f2f;
 }
 
 /* Botão Avaliar */
@@ -159,6 +158,7 @@
   background-color: #218838;
 }
 
+/* Botão Link (semelhante ao contratar) */
 .btn-link-button {
   background-color: #003366;
   color: white;
@@ -178,42 +178,32 @@
   color: white;
 }
 
-/* Botão de aceitar */
+/* Botão Aceitar */
 .btn-aceitar {
-  background-color: #229251; /* verde claro */
+  background-color: #229251;
   color: white;
 }
 
 .btn-aceitar:hover {
-  background-color: #1d8147; /* verde escuro */
+  background-color: #1d8147;
 }
 
-/* Botão de recusar */
+/* Botão Recusar */
 .btn-recusar {
-  background-color: #c0392b; /* vermelho escuro */
+  background-color: #c0392b;
   color: white;
 }
 
 .btn-recusar:hover {
-  background-color: #e74c3c; /* vermelho claro */
+  background-color: #e74c3c;
 }
 
-/* Botão de concluir */
+/* Botão Concluir */
 .btn-concluir {
-  background-color: #003366; /* azul escuro */
+  background-color: #003366;
   color: white;
 }
 
 .btn-concluir:hover {
-  background-color: #005fa3; /* azul médio */
-}
-
-/* Botão de cancelar */
-.btn-cancelar {
-  background-color: #b22222;
-  color: white;
-}
-
-.btn-cancelar:hover {
-  background-color: #d32f2f;
+  background-color: #005fa3;
 }
