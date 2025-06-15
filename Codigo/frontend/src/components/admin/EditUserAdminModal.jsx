@@ -43,35 +43,43 @@ const EditUserAdminModal = ({ usuario, onSave, onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2 className="modal-title">Editar Usuário</h2>
-        <form onSubmit={handleSubmit} className="form-editar-usuario">
-          <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
-          <Input label="Email" name="email" value={formData.email} onChange={handleChange} required type="email" />
-          <Input label="Telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
-          <Input label="Username" name="username" value={formData.username} onChange={handleChange} required />
-          <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} type="password" />
+        <h2 className="modal-title">Informações do Usuário</h2>
+        <div className="form-editar-usuario">
+          <div className="input-container">
+            <Label className="input-label">Nome</Label>
+            <p>{formData.nome}</p>
+          </div>
 
           <div className="input-container">
-            <Label htmlFor="tipo" className="input-label">Tipo de Usuário:</Label>
-            <select
-              id="tipo"
-              name="tipo"
-              value={formData.tipo}
-              onChange={handleChange}
-              className="input-field"
-              required
-            >
-              {tipos.map((tipo) => (
-                <option key={tipo} value={tipo}>{tipo}</option>
-              ))}
-            </select>
+            <Label className="input-label">Email</Label>
+            <p>{formData.email}</p>
+          </div>
+
+          <div className="input-container">
+            <Label className="input-label">Telefone</Label>
+            <p>{formData.telefone}</p>
+          </div>
+
+          <div className="input-container">
+            <Label className="input-label">Username</Label>
+            <p>{formData.username}</p>
+          </div>
+
+          <div className="input-container">
+            <Label className="input-label">Senha</Label>
+            <p>********</p>
+          </div>
+
+          <div className="input-container">
+            <Label className="input-label">Tipo de Usuário</Label>
+            <p>{formData.tipo}</p>
           </div>
 
           <div className="modal-buttons">
-            <Button variant="salvar" type="submit">Salvar</Button>
-            <Button variant="cancelar" type="button" onClick={onClose}>Cancelar</Button>
+            <Button variant="cancelar" type="button" onClick={onClose}>Fechar</Button>
           </div>
-        </form>
+        </div>
+
       </div>
     </div>
   );

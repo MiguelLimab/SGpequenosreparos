@@ -115,7 +115,7 @@ const PainelUsuarios = () => {
               <td>{usuario.tipo}</td>
               <td>
                 <Button variant="editar" onClick={() => abrirModal(usuario)}>
-                  Editar
+                  Ver Informações
                 </Button>
                 <Button
                   variant="excluir"
