@@ -54,8 +54,9 @@ function AddUserAdminModal({ onSave, onClose }) {
           </div>
 
           <div className="modal-buttons">
-            <Button variant="salvar" type="submit">Salvar</Button>
             <Button variant="cancelar" type="button" onClick={onClose}>Cancelar</Button>
+            <Button variant="salvar" type="submit">Salvar</Button>
+            
           </div>
         </form>
       </div>
