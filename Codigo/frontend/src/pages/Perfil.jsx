@@ -21,7 +21,6 @@ const Perfil = () => {
         {user ? (
           <div className="perfil-user-info">
             <UserField label="Nome" value={user.nome} />
-            <UserField label="Email" value={user.email} />
             <UserField label="Telefone" value={user.telefone} />
           </div>
         ) : (
