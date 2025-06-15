@@ -1,9 +1,28 @@
+.btn-component,
+.btn-default,
+.btn-entrar,
+.btn-cadastrar,
+.btn-contratar,
+.btn-sair,
+.btn-editar,
+.btn-salvar,
+.btn-excluir,
+.btn-cancelar,
+.btn-avaliar,
+.btn-link-button,
+.btn-aceitar,
+.btn-recusar,
+.btn-concluir {
+  box-shadow: none;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
 .btn-component {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  border: none;
   border-radius: 6px;
-  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
@@ -11,10 +30,12 @@
 .btn-default {
   background-color: #003366;
   color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
-
 .btn-default:hover {
-  background-color: #ffa500;
+  background-color: #002244;
   color: white;
 }
 
@@ -22,10 +43,12 @@
 .btn-entrar {
   background-color: #003366;
   color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
-
 .btn-entrar:hover {
-  background-color: #ffa500;
+  background-color: #002244;
   color: white;
 }
 
@@ -33,10 +56,12 @@
 .btn-cadastrar {
   background-color: #003366;
   color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
-
 .btn-cadastrar:hover {
-  background-color: #ffa500;
+  background-color: #002244;
   color: white;
 }
 
@@ -44,16 +69,13 @@
 .btn-contratar {
   background-color: #003366;
   color: white;
-  border: none;
-  padding: 0.75rem 2rem;
+  padding: 0.75rem 2rem; 
   border-radius: 6px;
   font-size: 1rem;
-  cursor: pointer;
   transition: background-color 0.3s;
 }
-
 .btn-contratar:hover {
-  background-color: #ffa500;
+  background-color: #002244;
   color: white;
 }
 
@@ -61,14 +83,10 @@
 .btn-sair {
   background-color: #c62828;
   color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 6px;
 }
-
 .btn-sair:hover {
   background-color: #e53935;
 }
@@ -77,16 +95,12 @@
 .btn-editar {
   background-color: #003366;
   color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 6px;
 }
-
 .btn-editar:hover {
-  background-color: #ffa500;
+  background-color: #002244;
   color: white;
 }
 
@@ -94,16 +108,12 @@
 .btn-salvar {
   background-color: #003366;
   color: white;
-  border: none;
-  padding: 0.6rem 1.5rem;
-  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 6px;
 }
-
 .btn-salvar:hover {
-  background-color: #FFA500;
+  background-color: #002244;
   color: white;
 }
 
@@ -112,32 +122,24 @@
   background-color: #8B0000;
   color: #fff;
   border: 1px solid #aa2e2e;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
+  padding: 0.6rem 1.2rem; 
+  border-radius: 6px;     
+  font-size: 1rem;        
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
-
 .btn-excluir:hover {
   background-color: #a70000;
   border-color: #cc4c4c;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Botão Cancelar */
 .btn-cancelar {
   background-color: #b22222;
   color: white;
-  border: none;
-  padding: 0.5rem 1.2rem;
+  padding: 0.6rem 1.2rem; 
   border-radius: 6px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1rem;
 }
-
 .btn-cancelar:hover {
   background-color: #d32f2f;
 }
@@ -146,14 +148,10 @@
 .btn-avaliar {
   background-color: #28a745;
   color: white;
-  border: none;
-  padding: 0.5rem 1.2rem;
+  padding: 0.6rem 1.2rem; 
   border-radius: 6px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1rem;
 }
-
 .btn-avaliar:hover {
   background-color: #218838;
 }
@@ -162,19 +160,16 @@
 .btn-link-button {
   background-color: #003366;
   color: white;
-  border: none;
-  padding: 0.75rem 2rem;
+  padding: 0.75rem 2rem; 
   border-radius: 6px;
   font-size: 1rem;
-  cursor: pointer;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.3s ease;
 }
-
 .btn-link-button:hover {
-  background-color: #FFA500;
+  background-color: #002244;
   color: white;
 }
 
@@ -182,8 +177,10 @@
 .btn-aceitar {
   background-color: #229251;
   color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
-
 .btn-aceitar:hover {
   background-color: #1d8147;
 }
@@ -192,8 +189,10 @@
 .btn-recusar {
   background-color: #c0392b;
   color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
-
 .btn-recusar:hover {
   background-color: #e74c3c;
 }
@@ -202,8 +201,10 @@
 .btn-concluir {
   background-color: #003366;
   color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
-
 .btn-concluir:hover {
-  background-color: #005fa3;
+  background-color: #002244;
 }
