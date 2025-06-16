@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { listarTipos, deletarTipo } from '../../services/tipoService';
-import EditTipoModal from '../EditTipoModal';
+import EditTipoModal from './EditTipoModal';
 import '../../styles/components/PainelTipoServicos.css';
 import Button from '../Button';
 

@@ -134,8 +134,7 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
           </select>
 
           <Input label="Data" type="date" name="data" value={formData.data} onChange={handleChange} />
-          <Input label="Horário" type="time" name="horario" value={formData.horario} onChange={handleChange} />
-
+          <Input className = "input-field" label="Horário" type="time" name="horario" value={formData.horario} onChange={handleChange} />
           <Label htmlFor="status">Status:</Label>
           <select
             name="status"
@@ -152,8 +151,10 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
           </select>
 
           <div className="modal-buttons">
-            <Button variant="salvar" type="submit">Salvar</Button>
             <Button variant="cancelar" type="button" onClick={onClose}>Cancelar</Button>
+            <Button variant="salvar" type="submit">Salvar</Button>
+            
+            
           </div>
         </form>
       </div>

@@ -6,9 +6,9 @@ import {
   criarUsuario,
 } from "../../services/usuarioService";
 import EditUserAdminModal from "./EditUserAdminModal";
+import AddUserAdminModal from "./AddUserAdminModal";
 import Button from "../Button";
 import '../../styles/components/PainelUsuarios.css';
-
 
 const PainelUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -23,6 +23,7 @@ const PainelUsuarios = () => {
   const carregarUsuarios = async () => {
     try {
       const response = await listarUsuarios();
+      console.log("Usuários carregados:", response.data);
       setUsuarios(response.data);
     } catch (error) {
       console.error("Erro ao listar usuários:", error);
@@ -62,11 +63,9 @@ const PainelUsuarios = () => {
   const handleSalvar = async (formData) => {
     try {
       if (usuarioEditando && usuarioEditando.id) {
-        // Atualiza usuário existente
         await atualizarUsuario(usuarioEditando.id, formData);
         alert("Usuário atualizado com sucesso!");
       } else {
-        // Adiciona novo usuário
         await criarUsuario(formData);
         alert("Usuário adicionado com sucesso!");
       }
@@ -115,7 +114,7 @@ const PainelUsuarios = () => {
               <td>{usuario.tipo}</td>
               <td>
                 <Button variant="editar" onClick={() => abrirModal(usuario)}>
-                  Editar
+                  Ver Informações
                 </Button>
                 <Button
                   variant="excluir"
@@ -130,11 +129,18 @@ const PainelUsuarios = () => {
       </table>
 
       {modalAberto && (
-        <EditUserAdminModal
-          usuario={usuarioEditando}
-          onSave={handleSalvar}
-          onClose={fecharModal}
-        />
+        usuarioEditando ? (
+          <EditUserAdminModal
+            usuario={usuarioEditando}
+            onSave={handleSalvar}
+            onClose={fecharModal}
+          />
+        ) : (
+          <AddUserAdminModal
+            onSave={handleSalvar}
+            onClose={fecharModal}
+          />
+        )
       )}
     </div>
   );

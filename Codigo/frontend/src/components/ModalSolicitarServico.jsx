@@ -49,7 +49,7 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
     e.preventDefault();
     try {
       await solicitarServico({
-        nome,
+        nome: 'Solicitação de Serviço',
         descricao,
         tipoServicoId,
         clienteId: cliente.id,
@@ -74,21 +74,6 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
       <div className="modal-solicitar-content">
         <h2 className="modal-solicitar-title">Solicitar Novo Serviço</h2>
         <form onSubmit={handleSubmit} className="modal-solicitar-form">
-          <label>Nome do serviço:</label>
-          <input
-            type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            required
-          />
-
-          <label>Descrição:</label>
-          <textarea
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            required
-          />
-
           <label>Tipo de serviço:</label>
           <select
             value={tipoServicoId}
@@ -100,6 +85,13 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
               <option key={tipo.id} value={tipo.id}>{tipo.nome}</option>
             ))}
           </select>
+
+          <label>Descrição:</label>
+          <textarea
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            required
+          />
 
           <label>Dias disponíveis:</label>
           <div className="modal-solicitar-checkbox-group">
@@ -129,8 +121,8 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
           </select>
 
           <div className="modal-solicitar-actions">
-            <Button type="submit" variant="salvar">Solicitar</Button>
             <Button type="button" variant="cancelar" onClick={onClose}>Cancelar</Button>
+            <Button type="submit" variant="salvar">Solicitar</Button>
           </div>
         </form>
       </div>

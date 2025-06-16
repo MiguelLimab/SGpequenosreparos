@@ -10,7 +10,10 @@ const Perfil = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    const confirmLogout = window.confirm("Tem certeza que deseja sair?");
+    if (confirmLogout) {
+      logout();
+    }
   };
 
   return (
@@ -20,9 +23,9 @@ const Perfil = () => {
 
         {user ? (
           <div className="perfil-user-info">
-            <UserField label="Nome" value={user.nome} />
-            <UserField label="Email" value={user.email} />
-            <UserField label="Telefone" value={user.telefone} />
+            <div className="user-info"><UserField label="Nome" value={user.nome} /></div>
+            <div className="user-info"><UserField label="Email" value={user.email} /></div>
+            <div className="user-info"><UserField label="Telefone" value={user.telefone} /></div>
           </div>
         ) : (
           <p className="perfil-loading">Carregando dados do usuário...</p>

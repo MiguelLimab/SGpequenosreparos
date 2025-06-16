@@ -90,7 +90,6 @@ const HistoricoServicosPage = () => {
         {/* Filtros */}
         <div className="historico-filtros">
           <Input
-            label="Nome"
             labelClassName="label-white"
             type="text"
             placeholder="Buscar por nome..."
@@ -98,7 +97,6 @@ const HistoricoServicosPage = () => {
             onChange={(e) => setFiltroNome(e.target.value)}
           />
           <Input
-            label="Data"
             labelClassName="label-white"
             type="text"
             placeholder="Filtrar por data (dd/mm/aaaa)"
