@@ -47,7 +47,6 @@ public class UsuarioService {
 
     Usuario usuario = new Usuario();
     usuario.setNome(dto.getNome());
-    usuario.setEmail(dto.getEmail());
     usuario.setTelefone(dto.getTelefone());
     usuario.setUsername(dto.getUsername());
     usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
@@ -68,7 +67,6 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
                 
         usuario.setNome(dto.getNome());
-        usuario.setEmail(dto.getEmail());
         usuario.setTelefone(dto.getTelefone());
 
         if (dto.getSenha() != null && !dto.getSenha().isEmpty()) {
@@ -83,7 +81,6 @@ public Usuario atualizarUsuarioPorAdmin(Long id, UsuarioAdminDTO dto) {
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
     usuario.setNome(dto.getNome());
-    usuario.setEmail(dto.getEmail());
     usuario.setTelefone(dto.getTelefone());
     usuario.setUsername(dto.getUsername());
 
