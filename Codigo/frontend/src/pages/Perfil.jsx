@@ -10,7 +10,10 @@ const Perfil = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    const confirmLogout = window.confirm("Tem certeza que deseja sair?");
+    if (confirmLogout) {
+      logout();
+    }
   };
 
   return (
