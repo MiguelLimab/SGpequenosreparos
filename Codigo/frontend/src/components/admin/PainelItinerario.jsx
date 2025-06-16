@@ -80,7 +80,7 @@ const PainelItinerario = () => {
     <div className="painel-itinerario-container">
       <h2>Configuração de Itinerário</h2>
       <form onSubmit={handleSubmit} className="form-itinerario">
-        <div className="form-group">
+        <div className="model-group">
           <label>Tipo de Configuração:</label>
           <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="select-tipo">
             <option value="FIXO">Dias Fixos da Semana</option>
@@ -89,7 +89,7 @@ const PainelItinerario = () => {
         </div>
 
         {tipo === 'FIXO' && (
-          <div className="form-group-dias">
+          <div className="model-group-dias">
             <label>Selecionar Dias:</label>
             <div className="dias-checkboxes">
               {diasDaSemana.map(({ label, valor }) => (
@@ -107,7 +107,7 @@ const PainelItinerario = () => {
         )}
 
         {tipo === 'CICLICO' && (
-          <div className="form-group-ciclo">
+          <div className="model-group-ciclo">
             <label>Dias de Trabalho:</label>
             <input
               type="number"
@@ -127,7 +127,7 @@ const PainelItinerario = () => {
           </div>
         )}
 
-        <div className="form-group">
+        <div className="model-group">
           <label>Hora Início:</label>
           <input
             type="time"
@@ -137,7 +137,7 @@ const PainelItinerario = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="model-group">
           <label>Hora Fim:</label>
           <input
             type="time"
@@ -147,7 +147,7 @@ const PainelItinerario = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="model-group">
           <label>Observação:</label>
           <textarea
             value={observacao}
