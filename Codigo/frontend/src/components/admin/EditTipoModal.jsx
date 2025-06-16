@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { criarTipo, atualizarTipo } from '../services/tipoService';
+import { criarTipo, atualizarTipo } from '../../services/tipoService';
+import '../../styles/components/EditTipoModal.css';
 
 const EditTipoModal = ({ tipo, fecharModal }) => {
   const [nome, setNome] = useState('');
@@ -54,16 +55,13 @@ const EditTipoModal = ({ tipo, fecharModal }) => {
   };
 
   return (
-    <div className="modal-overlay" style={{
-      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-      backgroundColor: 'white', padding: '20px', boxShadow: '0 0 10px rgba(0,0,0,0.3)', zIndex: 1000
-    }}>
+    <div className="modal-overlay">
       <div className="modal-conteudo">
         <h2>{tipo ? 'Editar Tipo de Serviço' : 'Adicionar Tipo de Serviço'}</h2>
         {erro && <div className="erro">{erro}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Nome *</label>
+            <label>Nome</label>
             <input
               type="text"
               value={nome}
@@ -80,7 +78,7 @@ const EditTipoModal = ({ tipo, fecharModal }) => {
             />
           </div>
           <div className="form-group">
-            <label>Duração (minutos) *</label>
+            <label>Duração (minutos)</label>
             <input
               type="number"
               min="1"
