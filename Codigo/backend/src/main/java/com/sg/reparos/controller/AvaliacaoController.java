@@ -2,7 +2,6 @@ package com.sg.reparos.controller;
 
 import com.sg.reparos.dto.AvaliacaoRequestDTO;
 import com.sg.reparos.dto.AvaliacaoResponseDTO;
-import com.sg.reparos.model.Avaliacao;
 import com.sg.reparos.service.AvaliacaoService;
 import lombok.RequiredArgsConstructor;
 
