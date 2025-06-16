@@ -12,7 +12,6 @@ const CadastroPage = () => {
 
   const [formData, setFormData] = useState({
     nome: '',
-    email: '',
     telefone: '',
     username: '',
     tipo: 'CLIENTE',
@@ -45,7 +44,6 @@ const CadastroPage = () => {
         {error && <p className="cadastro-box-error">{error}</p>}
         <form onSubmit={handleSubmit} className="cadastro-box-form-element">
           <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
-          <Input label="Email" name="email" value={formData.email} onChange={handleChange} required type="email" />
           <Input label="Telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
           <Input label="Nome de Usuário" name="username" value={formData.username} onChange={handleChange} required />
           <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} required type="password" />

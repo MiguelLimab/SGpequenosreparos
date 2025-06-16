@@ -1,8 +1,6 @@
-/* PainelItinerario.css */
-
 .painel-itinerario-container {
-  max-width: 1100px;
-  max-height: 1000px;
+  max-width: 1200px;
+  max-height: 900px;
   padding: 30px;
   background-color: #f4f7fa;
   border-radius: 12px;
@@ -22,9 +20,9 @@
 }
 
 /* Seções com azul suave e borda inspirada no azul institucional */
-.form-group,
-.form-group-dias,
-.form-group-ciclo {
+.model-group,
+.model-group-dias,
+.model-group-ciclo {
   background-color: #e0ecf5; /* azul claro, mas com mais contraste */
   padding: 16px;
   border-radius: 10px;

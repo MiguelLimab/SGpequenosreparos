@@ -1,6 +1,5 @@
 package com.sg.reparos.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -8,10 +7,6 @@ import lombok.Data;
 public class UsuarioAdminDTO {
     @NotBlank
     private String nome;
-
-    @Email
-    @NotBlank
-    private String email;
 
     @NotBlank
     private String telefone;
@@ -30,12 +25,6 @@ public class UsuarioAdminDTO {
     }
     public void setNome(String nome) {
         this.nome = nome;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
     }
     public String getTelefone() {
         return telefone;

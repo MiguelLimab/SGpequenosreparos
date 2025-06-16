@@ -13,7 +13,6 @@ const ModalEditarServicos = ({ servico, onClose, onAtualizado }) => {
     descricao: servico.descricao || '',
     tipoServicoId: '',
     clienteId: servico.clienteId,
-    emailContato: servico.emailContato || '',
     telefoneContato: servico.telefoneContato || '',
     diasDisponiveisCliente: servico.diasDisponiveisCliente || [],
     periodoDisponivelCliente: servico.periodoDisponivelCliente || '',

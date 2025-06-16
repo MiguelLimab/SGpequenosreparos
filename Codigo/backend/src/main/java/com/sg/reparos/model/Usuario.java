@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -26,10 +24,6 @@ public class Usuario {
 
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
-
-    @NotBlank(message = "O email é obrigatório")
-    @Email(message = "Formato de email inválido")
-    private String email;
 
     @NotBlank(message = "O telefone é obrigatório")
     private String telefone;
