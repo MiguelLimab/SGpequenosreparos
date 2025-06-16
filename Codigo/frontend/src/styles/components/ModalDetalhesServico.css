@@ -23,16 +23,23 @@
 
 .modal-detalhes-titulo {
   font-size: 1.6rem;
-  color: #003366;
+  color: #000000;
   margin-bottom: 1.2rem;
   text-align: center;
 }
 
 .modal-detalhes-info p {
-  margin: 0.5rem 0;
+  text-align: start;
+  width: 100%;
+  padding: 8px;
   font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #003366;
   color: #333;
+  background-color: #f9f9f9;
+  margin-bottom: 0.75rem;
 }
+
 
 .modal-detalhes-info strong {
   color: #003366;
