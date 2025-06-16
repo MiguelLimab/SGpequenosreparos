@@ -34,13 +34,14 @@
 .tabela-usuarios td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
-  text-align: left;
+  text-align: center;
 }
 
 .tabela-usuarios th {
   background-color: #003366;
   color: white;
 }
+
 
 .tabela-usuarios button {
   margin-right: 8px;
