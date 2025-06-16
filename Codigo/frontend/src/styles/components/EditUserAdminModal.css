@@ -46,7 +46,7 @@ select.input-field {
 }
 
 .input-container p {
-  text-align: center;
+  text-align: start;
   width: 100%;
   padding: 8px;
   font-size: 1rem;
