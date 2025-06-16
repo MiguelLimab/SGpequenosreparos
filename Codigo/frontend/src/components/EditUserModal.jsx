@@ -37,7 +37,7 @@ const EditUserModal = ({ user = {}, onClose }) => {
         <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
         <Input label="Email" name="email" value={formData.email} onChange={handleChange} required type="email" />
         <Input label="Telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
-        <UserField label="Nome de Usuário" value={formData.username} />
+        <Input label="Nome de Usuário" name="username" value={formData.username} onChange={handleChange} required />
         <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} required type="password" />
         <div className="edit-user-modal-buttons">
           <Button variant="cancelar" onClick={onClose}>Cancelar</Button>
