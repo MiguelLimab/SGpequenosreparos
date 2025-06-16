@@ -8,7 +8,6 @@ import '../../styles/components/EditUserAdminModal.css';
 function AddUserAdminModal({ onSave, onClose }) {
   const [formData, setFormData] = useState({
     nome: "",
-    email: "",
     telefone: "",
     username: "",
     senha: "",
@@ -41,7 +40,6 @@ function AddUserAdminModal({ onSave, onClose }) {
         <h2 className="modal-title">Adicionar Usuário</h2>
         <form onSubmit={handleSubmit} className="form-adicionar-usuario">
           <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
-          <Input label="Email" name="email" value={formData.email} onChange={handleChange} required type="email" />
           <Input label="Telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
           <Input label="Username" name="username" value={formData.username} onChange={handleChange} required />
           <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} required type="password" />

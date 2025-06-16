@@ -10,7 +10,6 @@ const EditUserAdminModal = ({ usuario, onSave, onClose }) => {
 
   const [formData, setFormData] = useState({
     nome: userData.nome || '',
-    email: userData.email || '',
     telefone: userData.telefone || '',
     username: userData.username || '',
     senha: '',
@@ -48,11 +47,6 @@ const EditUserAdminModal = ({ usuario, onSave, onClose }) => {
           <div className="input-container">
             <Label className="input-label">Nome</Label>
             <p>{formData.nome}</p>
-          </div>
-
-          <div className="input-container">
-            <Label className="input-label">Email</Label>
-            <p>{formData.email}</p>
           </div>
 
           <div className="input-container">
