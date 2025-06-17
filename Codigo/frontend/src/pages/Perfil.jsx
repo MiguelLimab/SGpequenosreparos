@@ -23,8 +23,9 @@ const Perfil = () => {
 
         {user ? (
           <div className="perfil-user-info">
-            <div className="user-info"><UserField label="Nome" value={user.nome} /></div>
-             <div className="user-info"><UserField label="Telefone" value={user.telefone} /></div>
+            <UserField className="user-info" label="Nome" value={user.nome} />
+            <UserField className="user-info" label="Email" value={user.email} />
+            <UserField className="user-info" label="Telefone" value={user.telefone} />
           </div>
         ) : (
           <p className="perfil-loading">Carregando dados do usuário...</p>

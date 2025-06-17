@@ -8,6 +8,7 @@ import '../styles/components/EditUserModal.css';
 const EditUserModal = ({ user = {}, onClose }) => {
   const [formData, setFormData] = useState({
     nome: user.nome || '',
+    email: user.email || '',
     telefone: user.telefone || '',
     username: user.username || '',
     senha: ''
@@ -34,6 +35,7 @@ const EditUserModal = ({ user = {}, onClose }) => {
       <h2 className="edit-user-modal-title">Editar Perfil</h2>
       <form onSubmit={handleSubmit} className="edit-user-modal-form">
         <Input label="Nome" name="nome" value={formData.nome} onChange={handleChange} required />
+        <Input label="Email" name="email" value={formData.email} onChange={handleChange} required type="email" />
         <Input label="Telefone" name="telefone" value={formData.telefone} onChange={handleChange} required />
         <Input label="Nome de Usuário" name="username" value={formData.username} onChange={handleChange} required />
         <Input label="Senha" name="senha" value={formData.senha} onChange={handleChange} required type="password" />

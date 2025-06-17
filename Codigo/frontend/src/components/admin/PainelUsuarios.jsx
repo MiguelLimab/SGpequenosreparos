@@ -99,6 +99,7 @@ const PainelUsuarios = () => {
         <thead>
           <tr>
             <th>Nome</th>
+            <th>Email</th>
             <th>Telefone</th>
             <th>Tipo</th>
             <th>Ações</th>
@@ -108,6 +109,7 @@ const PainelUsuarios = () => {
           {usuariosFiltrados.map((usuario) => (
             <tr key={usuario.id}>
               <td>{usuario.nome}</td>
+              <td>{usuario.email}</td>
               <td>{usuario.telefone}</td>
               <td>{usuario.tipo}</td>
               <td>

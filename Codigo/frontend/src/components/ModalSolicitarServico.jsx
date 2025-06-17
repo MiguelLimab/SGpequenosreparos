@@ -53,6 +53,7 @@ const ModalSolicitarServico = ({ onClose, onServicoCriado }) => {
         descricao,
         tipoServicoId,
         clienteId: cliente.id,
+        emailContato: cliente.email,
         telefoneContato: cliente.telefone,
         diasDisponiveisCliente,
         periodoDisponivelCliente
