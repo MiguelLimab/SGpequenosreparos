@@ -3,13 +3,14 @@ import Input from '../Input';
 import Button from '../Button';
 import Label from '../Label';
 import { listarTiposUsuarios } from '../../services/usuarioService';
-import '../../styles/components/EditUserAdminModal.css'; // novo CSS
+import '../../styles/components/EditUserAdminModal.css';
 
 const EditUserAdminModal = ({ usuario, onSave, onClose }) => {
   const userData = usuario || {};
 
   const [formData, setFormData] = useState({
     nome: userData.nome || '',
+    email: userData.email || '',
     telefone: userData.telefone || '',
     username: userData.username || '',
     senha: '',
@@ -47,6 +48,11 @@ const EditUserAdminModal = ({ usuario, onSave, onClose }) => {
           <div className="input-container">
             <Label className="input-label">Nome</Label>
             <p>{formData.nome}</p>
+          </div>
+
+          <div className="input-container">
+            <Label className="input-label">Email</Label>
+            <p>{formData.email}</p>
           </div>
 
           <div className="input-container">
