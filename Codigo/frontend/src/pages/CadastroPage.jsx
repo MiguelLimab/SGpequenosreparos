@@ -28,7 +28,7 @@ const CadastroPage = () => {
   const sendSmsCode = async () => {
     setError('');
     try {
-      await axios.post('http://localhost:8080/api/notificacao/send-sms', null, {
+      await axios.post('http://localhost:8081/api/notificacao/send-sms', null, {
         params: { telefone: formData.telefone }
       });
       alert('Código de verificação enviado para seu telefone.');
@@ -42,13 +42,19 @@ const CadastroPage = () => {
     e.preventDefault();
     setError('');
 
+      // Validação da senha no frontend
+  if (formData.senha.length < 6) {
+    setError('A senha deve ter no mínimo 6 caracteres');
+    return;  // interrompe o envio do formulário
+  }
+  
     if (!codeSent) {
       sendSmsCode();
       return;
     }
 
     try {
-      await axios.post('http://localhost:8080/api/usuarios/cadastro', formData, {
+      await axios.post('http://localhost:8081/api/usuarios/cadastro', formData, {
         params: { code: verificationCode }
       });
       alert('Cadastro realizado com sucesso!');
