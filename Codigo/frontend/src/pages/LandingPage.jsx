@@ -8,7 +8,7 @@ import Button from "../components/Button";
 import "../styles/pages/LandingPage.css";
 
 const LandingPage = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [servicos, setServicos] = useState([]);
@@ -101,13 +101,16 @@ const LandingPage = () => {
             aoMudar={setPaginaServicos}
           />
         </div>
-        <Button
-          type="button"
-          variant="contratar"
-          onClick={handleContratarClick}
-        >
-          Contratar Serviço
-        </Button>
+        {isAuthenticated && user?.tipo === "CLIENTE" && (
+          <Button
+            type="button"
+            variant="contratar"
+            onClick={handleContratarClick}
+          >
+            Contratar Serviço
+          </Button>
+        )}
+
       </section>
 
       {/* Seção 3: Avaliações */}
