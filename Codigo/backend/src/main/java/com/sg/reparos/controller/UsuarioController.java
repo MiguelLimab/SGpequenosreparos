@@ -4,6 +4,7 @@ import com.sg.reparos.dto.UsuarioAdminDTO;
 import com.sg.reparos.dto.UsuarioUpdateDTO;
 import com.sg.reparos.model.Usuario;
 import com.sg.reparos.model.Usuario.TipoUsuario;
+import com.sg.reparos.service.SmsService;
 import com.sg.reparos.service.UsuarioService;
 import com.sg.reparos.repository.UsuarioRepository;
 
@@ -27,6 +28,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private SmsService SmsService;
+
     @GetMapping
     public List<Usuario> listarUsuarios() {
         return usuarioService.listarUsuarios();
@@ -43,8 +47,14 @@ public class UsuarioController {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 
-    @PostMapping("/cadstro")
-    public Usuario criarUsuario(@RequestBody @Valid Usuario usuario) {
+    @PostMapping("/cadastro")
+    public Usuario criarUsuario(@RequestParam String code, @RequestBody @Valid Usuario usuario) {
+        boolean isVerified = SmsService.verifyCode(usuario.getTelefone(), code);
+
+        if (!isVerified) {
+            throw new RuntimeException("Código inválido ou expirado.");
+        }
+
         return usuarioService.salvarUsuario(usuario);
     }
 

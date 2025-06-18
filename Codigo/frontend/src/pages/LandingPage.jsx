@@ -111,7 +111,7 @@ const LandingPage = () => {
       </section>
 
       {/* Seção 3: Avaliações */}
-      <section className="landing-feedbacks">
+      <section className="landing-feedbacks" style={{ display: "none" }}>
         <h2 className="landing-section-title">O que dizem sobre nós</h2>
         <div className="landing-feedbacks-lista">
           {avaliacoesExibidas.map((fb) => (

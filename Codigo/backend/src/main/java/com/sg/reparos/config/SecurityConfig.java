@@ -62,7 +62,8 @@ public class SecurityConfig {
                         // Painéis específicos
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/cliente/**").hasRole("CLIENTE")
-
+                        .requestMatchers("/api/notificacao/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios/cadastro").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
