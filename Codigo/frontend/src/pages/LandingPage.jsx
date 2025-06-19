@@ -1,3 +1,4 @@
+// Atualizado com cards no banner e melhorias visuais
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +9,7 @@ import Button from "../components/Button";
 import "../styles/pages/LandingPage.css";
 
 const LandingPage = () => {
-  const { isAuthenticated, user} = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [servicosExibidos, setServicos] = useState([]);
@@ -38,8 +39,27 @@ const LandingPage = () => {
     <div className="landing-page-container">
       {/* Seção 1: Banner de boas-vindas */}
       <section className="landing-banner">
-        <h1 className="landing-banner-title"></h1>
-        <p className="landing-banner-subtitle"></p>
+        <img src="/gelson.jpg" alt="Banner" className="landing-banner-img" />
+        <div className="landing-banner-content">
+            <h1 className="landing-banner-title">Encontre o profissional ideal</h1>
+          <div className="landing-banner-cards">
+            <div className="landing-banner-card">
+              <h3>🛠️ Manutenção Especializada</h3>
+              <p>Serviços elétricos, hidráulicos e estruturais realizados com segurança e ferramentas adequadas.</p>
+              <button>Ver opções de manutenção</button>
+            </div>
+            <div className="landing-banner-card">
+              <h3>🪛 Instalações Rápidas</h3>
+              <p>Montagem de móveis, instalações elétricas e hidráulicas feitas com precisão e sem complicação.</p>
+              <button>Agendar instalação</button>
+            </div>
+            <div className="landing-banner-card">
+              <h3>🧱 Reformas com Acabamento Impecável</h3>
+              <p>Pintura, aplicação de revestimentos e reparos diversos com atenção aos mínimos detalhes e acabamento profissional.</p>
+              <button>Solicitar reforma</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Seção 2: Tipos de serviços prestados */}
@@ -55,6 +75,7 @@ const LandingPage = () => {
             ))}
           </div>
         </div>
+        <div className="landing-servicos-cta">
         {isAuthenticated && user?.tipo === "CLIENTE" && (
           <Button
             type="button"
@@ -64,11 +85,11 @@ const LandingPage = () => {
             Contratar Serviço
           </Button>
         )}
-
+        </div>
       </section>
 
       {/* Seção 3: Avaliações */}
-      <section className="landing-feedbacks" style={{ display: "none" }}>
+      <section className="landing-feedbacks">
         <h2 className="landing-section-title">O que dizem sobre nós</h2>
         <div className="landing-feedbacks-lista">
           {avaliacoes.map((fb) => (
