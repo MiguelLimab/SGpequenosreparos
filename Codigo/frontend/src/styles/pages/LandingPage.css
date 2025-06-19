@@ -1,140 +1,166 @@
-/* Container principal */
+/* src/styles/pages/LandingPage.css */
+
+/* === Variáveis de Tema === */
+:root {
+  --color-primary: #003366;      /* azul escuro */
+  --color-secondary: #f0f0f0;    /* cinza claro */
+  --color-accent: #ffa500;       /* laranja neutro */
+  --font-family: "Segoe UI", sans-serif;
+}
+
+/* === Reset & Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: var(--font-family);
+  color: #333;
+  background: #fff;
+  line-height: 1.5;
+}
+
+/* === 1. Layout Geral (grid por áreas) === */
 .landing-page-container {
+  display: grid;
+  grid-template-areas:
+    "banner"
+    "servicos"
+    "feedbacks";
+  grid-template-rows: auto 1fr auto;
+  row-gap: 2rem;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+/* === 2. Banner === */
+.landing-banner {
+  grid-area: banner;
+  position: relative;
+  /* Use caminho relativo à sua pasta public */
+  background-image: url('C:\Users\peecs\OneDrive\Área de Trabalho\plf-es-2025-1-ti3-898110-grupo-8-sg-1\Codigo\frontend\public\gelson.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* centraliza horizontalmente e posiciona 20% para baixo na vertical */
+  background-position: center -10%;
+  color: #fff;
+  padding: 4rem 2rem;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 5vh;
+  justify-content: center;
+  min-height: 90vh;
 }
 
-/* === Seção 1: Banner === */
-.landing-banner {
-  width: 100%;
-  background-color: #003366;
-  color: white;
-  padding: 3rem 1rem;
-  text-align: center;
+
+/* Caso queira cards no banner, adicione este wrapper no JSX:
+     <div className="landing-banner-cards">…</div>
+   com cada card usando .landing-banner-card */
+.landing-banner-cards {
+  position: absolute;
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.landing-banner-card {
+  background: #fff;
+  color: #000;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+.landing-banner-card:hover {
+  transform: translateY(-5px);
+}
+.landing-banner-card h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+.landing-banner-card p {
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+.landing-banner-card button {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
+/* Títulos do banner */
 .landing-banner-title {
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
-
 .landing-banner-subtitle {
   font-size: 1.2rem;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 600px;
 }
 
-/* === Seção 2: Serviços === */
+/* === 3. Serviços (main) === */
 .landing-servicos {
-  width: 100%;
-  max-width: 1000px;
-  padding: 3rem 1.5rem;
-  text-align: center;
+  grid-area: servicos;
+  background: var(--color-secondary);
+  padding: 3rem 2rem;
+  border-radius: 8px;
 }
 .landing-servicos-content {
-margin-bottom: 2vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
 }
 .landing-section-title {
   font-size: 2rem;
-  color: #003366;
-  margin-bottom: 2rem;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
 }
-
 .landing-servicos-lista {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
-  justify-content: center;
-  margin-bottom: 2rem;
 }
-
 .landing-servico-card {
-  background-color: white;
+  background: #fff;
   border-radius: 8px;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 280px;
-  padding: 1.5rem;
-  text-align: left;
-  transition: transform 0.2s ease;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
-
 .landing-servico-card:hover {
   transform: translateY(-5px);
 }
-
-/* === Seção 3: Feedbacks === */
-.landing-feedbacks {
-  width: 100%;
-  padding: 3rem 1.5rem;
-  text-align: center;
-  border-top: solid 2vh #ffa500;
+/* área que expande no hover: necessita de <div class="landing-servico-detalhes"> no JSX */
+.landing-servico-detalhes {
+  max-height: 0;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: max-height 0.4s ease, padding 0.4s ease;
 }
-
-.landing-feedbacks-lista {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
-  margin-top: 2rem;
+.landing-servico-card:hover .landing-servico-detalhes {
+  max-height: 150px;
+  padding: 1rem;
 }
-
-.landing-feedback-card {
-  background-color: white;
-  border-left: 6px solid #ffa500;
-  padding: 1.5rem;
-  width: 280px;
-  border-radius: 6px;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-.landing-feedback-texto {
-  font-style: italic;
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
-  color: #333;
-}
-
-.landing-feedback-autor {
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: #003366;
-}
-
-.landing-feedback-nota {
-  font-weight: bold;
-  color: #003366;
-  margin-bottom: 0.5rem;
-}
-
-.landing-feedback-data {
-  font-size: 0.8rem;
-  color: #777;
-  margin-top: 0.5rem;
-}
-
-.landing-servico-card {
-  background-color: white;
-  border-left: 6px solid #003366; /* borda azul escuro */
-  border-radius: 8px;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 280px;
-  padding: 1.5rem;
-  text-align: left;
-  transition: transform 0.2s ease;
-}
-
-.landing-servico-card:hover {
-  transform: translateY(-5px);
-}
-
 .landing-servico-titulo {
-  color: #003366;
-  margin-bottom: 0.5rem;
+  padding: 1rem;
+  font-size: 1.2rem;
+  color: var(--color-primary);
+}
+.landing-servico-card p {
+  padding: 0 1rem 1rem;
+  color: #555;
 }
 
+/* Paginação */
 .landing-paginacao {
   display: flex;
   justify-content: center;
@@ -142,23 +168,59 @@ margin-bottom: 2vh;
   gap: 1rem;
   margin-top: 1.5rem;
 }
-
 .landing-paginacao button {
-  background-color: #003366;
-  color: white;
+  background: var(--color-primary);
+  color: #fff;
   border: none;
   padding: 0.4rem 0.8rem;
   font-size: 1rem;
   border-radius: 4px;
   cursor: pointer;
 }
-
 .landing-paginacao button:disabled {
-  background-color: #ccc;
+  background: #ccc;
   cursor: not-allowed;
 }
-
 .landing-paginacao span {
   font-weight: bold;
-  color: #003366;
+  color: var(--color-primary);
+}
+
+/* === 4. Avaliações (oculta) === */
+.landing-feedbacks {
+  grid-area: feedbacks;
+  display: none;
+}
+
+/* === 5. Responsividade === */
+
+/* Tablets e desktops menores */
+@media (max-width: 1024px) {
+  .landing-banner {
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+  .landing-banner-cards {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 600px) {
+  .landing-banner-title {
+    font-size: 1.8rem;
+  }
+  .landing-banner-subtitle {
+    font-size: 1rem;
+  }
+  .landing-servicos-lista {
+    grid-template-columns: 1fr;
+  }
+  .landing-servico-detalhes {
+    display: none; /* simplifica em telas muito pequenas */
+  }
 }

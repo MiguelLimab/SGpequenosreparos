@@ -75,11 +75,10 @@ const LandingPage = () => {
       {/* Seção 1: Banner de boas-vindas */}
       <section className="landing-banner">
         <h1 className="landing-banner-title">
-          Bem-vindo ao SG Pequenos Reparos
+       
         </h1>
         <p className="landing-banner-subtitle">
-          Encontre o profissional ideal para pequenos reparos na sua casa com
-          agilidade e confiança.
+          
         </p>
       </section>
 
