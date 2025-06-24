@@ -6,12 +6,25 @@ O **Sistema de Gestão para SG Pequenos Reparos** é uma aplicação web desenvo
 
 ## ✨ Funcionalidades
 
-* Catálogo de serviços com categorias e descrições automáticas
-* Filtro de busca por tipo de serviço
-* Agendamento com horário exato via calendário
-* Gerenciamento de solicitações e status
-* Integração com WhatsApp para negociação final
-* Layout responsivo para dispositivos móveis
+*Cadastro de usuários (clientes e administrador)
+
+*Visualização de tipos de serviços com categorização
+
+*Agendamento de serviços com controle de disponibilidade (conforme itinerário)
+
+*Agenda com visualização por cores/status dos agendamentos
+
+*Histórico completo de serviços realizados
+
+*Filtros por nome, data, status e tipo de serviço
+
+*Sistema de notificações (solicitação, alteração, conclusão e lembretes)
+
+*Cancelamento de serviços com justificativa
+
+*Avaliação de serviços prestados pelos clientes
+
+*Gerenciamento completo de usuários, serviços e itinerário pelo administrador
 
 ---
 
