@@ -4,14 +4,15 @@ import '../../styles/components/PainelItinerario.css';
 
 
 const diasDaSemana = [
-  { label: 'Domingo', valor: 1 },
-  { label: 'Segunda-feira', valor: 2 },
-  { label: 'Terça-feira', valor: 3 },
-  { label: 'Quarta-feira', valor: 4 },
-  { label: 'Quinta-feira', valor: 5 },
-  { label: 'Sexta-feira', valor: 6 },
-  { label: 'Sábado', valor: 7 },
+  { label: 'Segunda-feira', valor: 1 },
+  { label: 'Terça-feira', valor: 2 },
+  { label: 'Quarta-feira', valor: 3 },
+  { label: 'Quinta-feira', valor: 4 },
+  { label: 'Sexta-feira', valor: 5 },
+  { label: 'Sábado', valor: 6 },
+  { label: 'Domingo', valor: 7 },
 ];
+
 
 const PainelItinerario = () => {
   const [tipo, setTipo] = useState('FIXO'); // 'FIXO' ou 'CICLICO'

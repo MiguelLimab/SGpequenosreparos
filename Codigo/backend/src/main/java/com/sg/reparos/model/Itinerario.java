@@ -29,7 +29,8 @@ public class Itinerario {
     @Column(nullable = false)
     private TipoItinerario tipoItinerario;
 
-    // Para FIXO: dias da semana ativos (1=Domingo, ..., 7=Sábado)
+    // Para FIXO: dias da semana ativos
+    // 1 = Segunda, 7 = Domingo (ISO padrão)
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "itinerario_dias", joinColumns = @JoinColumn(name = "itinerario_id"))
     @Column(name = "dia_semana")
