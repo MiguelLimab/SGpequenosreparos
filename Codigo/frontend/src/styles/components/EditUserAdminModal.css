@@ -14,20 +14,14 @@
   border-radius: 10px;
   width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
   box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
 .modal-title {
   margin-bottom: 20px;
   font-size: 1.5rem;
   color: #003366;
-}
-
-.form-editar-usuario {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
 }
 
 .input-field,
@@ -45,9 +39,18 @@ select.input-field {
   outline: none;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+.input-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.input-container p {
+  text-align: start;
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #003366;
+  cursor: not-allowed;
 }

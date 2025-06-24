@@ -4,15 +4,14 @@ const Footer = () => {
   return (
     <footer className="footer-container">
       <p>
-        © {new Date().getFullYear()} SG Pequenos Reparos. Todos os direitos reservados a Felipe Parreiras.
+        © {new Date().getFullYear()} SG Pequenos Reparos. Todos os direitos reservados
       </p>
       <div className="footer-links">
-        <a href="https://github.com/FelipeParreiras" target="_blank" rel="noopener noreferrer">
-          GitHub
+        <a href="" target="_blank" rel="noopener noreferrer">
+          
         </a>
-        <span>|</span>
-        <a href="https://www.linkedin.com/in/FelipeParreiras" target="_blank" rel="noopener noreferrer">
-          LinkedIn
+        <a href="" target="_blank" rel="noopener noreferrer">
+          
         </a>
       </div>
     </footer>

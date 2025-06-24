@@ -29,20 +29,23 @@
   flex-direction: column;
   gap: 15px;
 }
-
-.input-field,
-textarea,
-select {
-  width: 100%;
-  padding: 8px;
-  font-size: 1rem;
+.input-field{
+  min-width: 100%;
   border-radius: 6px;
   border: 1px solid #003366;
 }
 
+.input-field,
+textarea,
+select {
+  padding: 8px;
+  font-size: 1rem;
+}
+
 textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 100%;
+  min-width: 100%;
 }
 
 .input-field:focus,

@@ -21,10 +21,10 @@ const ModalCancelarServico = ({ onConfirmar, onClose, loading }) => {
           onChange={(e) => setMotivo(e.target.value)}
         />
         <div className="modal-cancelar-actions">
+          <Button onClick={onClose} variant="sair">Fechar</Button>
           <Button onClick={handleConfirmar} variant="default" disabled={loading}>
             {loading ? 'Cancelando...' : 'Confirmar'}
           </Button>
-          <Button onClick={onClose} variant="sair">Fechar</Button>
         </div>
       </div>
     </div>

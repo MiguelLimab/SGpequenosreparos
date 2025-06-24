@@ -9,11 +9,11 @@ const ModalConfirmarRecusa = ({ onConfirmar, onClose, loading }) => {
         <p>Tem certeza que deseja recusar este serviço?</p>
 
         <div className="modal-confirmar-actions">
-          <Button onClick={onConfirmar} disabled={loading}>
-            {loading ? 'Recusando...' : 'Confirmar'}
-          </Button>
           <Button variant="sair" onClick={onClose}>
             Cancelar
+          </Button>
+          <Button onClick={onConfirmar} disabled={loading}>
+            {loading ? 'Recusando...' : 'Confirmar'}
           </Button>
         </div>
       </div>

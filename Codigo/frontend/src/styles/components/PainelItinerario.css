@@ -1,16 +1,15 @@
 .painel-itinerario-container {
+  width: 100%;
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1);
-  max-width: 900px;
-  margin: 0 auto;
-  background-color: #ffffff;
+  background-color: #f4f7fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-family: 'Poppins', sans-serif;
 }
 
 .painel-itinerario-container h2 {
-  color: #003366;
-  margin-bottom: 20px;
   text-align: center;
+  margin-bottom: 25px;
 }
 
 .form-itinerario {
@@ -19,24 +18,34 @@
   gap: 20px;
 }
 
-.form-group,
-.form-group-ciclo,
-.form-group-dias {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* Seções com azul suave e borda inspirada no azul institucional */
+.model-group,
+.model-group-dias,
+.model-group-ciclo {
+  background-color: #e0ecf5; /* azul claro, mas com mais contraste */
+  padding: 16px;
+  border-radius: 10px;
+  border-left: 6px solid #0055aa; /* azul forte derivado do #003366 */
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  color: #003366;
+  margin-bottom: 8px;
 }
 
 .select-tipo,
 .input-ciclo,
-textarea,
-input[type="time"] {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+input[type="time"],
+.textarea-observacao {
+  cursor: text;
   width: 100%;
-  max-width: 300px;
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #ffffff;
 }
 
 .dias-checkboxes {
@@ -46,40 +55,33 @@ input[type="time"] {
 }
 
 .checkbox-dia {
-  background-color: #f0f0f0;
-  padding: 6px 10px;
-  border-radius: 6px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.textarea-observacao {
-  width: 100%;
-  max-width: 600px;
-  min-height: 80px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding: 8px;
-  font-size: 1rem;
+  background-color: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  color: #003366;
 }
 
 .form-acoes {
-  text-align: center;
-  margin-top: 20px;
+  text-align: right;
+  margin-top: 10px;
 }
 
 .btn-salvar {
-  background-color: #003366;
+  background-color: #004080;
   color: white;
-  padding: 10px 30px;
-  font-size: 1rem;
+  padding: 12px 20px;
+  font-weight: 600;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .btn-salvar:hover {
-  background-color: #ffa500;
+  background-color: #002a5c;
 }
