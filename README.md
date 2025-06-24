@@ -1,10 +1,21 @@
-# Sg Pequenos Reparos
+# Sistema de Gestão para SG Pequenos Reparos
 
-  O Sistema de Gestão para Sg Pequenos Reparos tem como objetivo fornecer uma plataforma digital para um profissional autônomo que atua como 'faz tudo', permitindo a organização eficiente de sua agenda, a exibição de serviços e a interação com clientes. A solução busca minimizar a perda de oportunidades de negócio devido à falta de organização e dificuldades de comunicação, oferecendo ferramentas como categorização de serviços, filtros de pesquisa e um sistema de agendamento adaptado ao regime de trabalho de Gelson.
+O **Sistema de Gestão para SG Pequenos Reparos** é uma aplicação web desenvolvida para auxiliar um profissional autônomo (faz-tudo) a organizar sua agenda, apresentar seus serviços e facilitar a comunicação com os clientes. O sistema busca reduzir a perda de oportunidades por falta de organização e melhorar a experiência tanto para o prestador quanto para os solicitantes.
 
-  O sistema permitirá que o Prestador de serviços gerencie suas demandas e atualize o status de cada serviço, enquanto os clientes poderão visualizar os serviços disponíveis e agendar atendimentos de forma simplificada. A versão inicial não incluirá um sistema de pagamento automatizado, focando na organização e na visibilidade dos serviços. Além disso, será projetado para ser responsivo e rápido, garantindo uma experiência acessível tanto em computadores quanto em dispositivos móveis.
+---
 
-## Alunos integrantes da equipe
+## ✨ Funcionalidades
+
+* Catálogo de serviços com categorias e descrições automáticas
+* Filtro de busca por tipo de serviço
+* Agendamento com horário exato via calendário
+* Gerenciamento de solicitações e status
+* Integração com WhatsApp para negociação final
+* Layout responsivo para dispositivos móveis
+
+---
+
+## 👨‍💻 Alunos integrantes da equipe
 
 * Felipe Luiz Parreiras Lima
 * Miguel Lima Barcellos
@@ -13,12 +24,104 @@
 * Henrique Azevedo Flores
 * Walter Roberto Rodrigues Louback
 
-## Professores responsáveis
+---
+
+## 👩‍🏫 Professores responsáveis
 
 * Eveline Alonso Veloso
 * Joana Gabriela Ribeiro de Souza
 * Ramon Lacerda Marques
 
-## Instruções de utilização
+---
 
-[Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.]
+## ✅ Requisitos para executar
+
+* **Java 24.0.1**
+* **Maven 3.8+**
+* **Node.js 18+**
+* **npm**
+* **PostgreSQL 15+**
+* **pgAdmin** (opcional)
+
+---
+
+## ⚙️ Configuração do Banco de Dados (PostgreSQL)
+
+1. Acesse o pgAdmin ou terminal e execute:
+
+   ```sql
+   CREATE USER sg_user WITH PASSWORD 'sg_password';
+   CREATE DATABASE sg_reparos OWNER sg_user;
+   GRANT ALL PRIVILEGES ON DATABASE sg_reparos TO sg_user;
+   ```
+
+2. Verifique se as credenciais estão corretamente configuradas no arquivo `application.properties` localizado em `Codigo/backend/src/main/resources/`:
+
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/sg_reparos
+   spring.datasource.username=sg_user
+   spring.datasource.password=sg_password
+   ```
+
+---
+
+## 🔧 Execução do Backend (Java + Spring Boot)
+
+1. Abra um terminal e navegue até o diretório do backend:
+
+   ```bash
+   cd Codigo/backend
+   ```
+
+2. Compile o projeto com Maven:
+
+   ```bash
+   mvn clean install
+   ```
+
+3. Execute a aplicação:
+
+   Alternativamente, você pode rodar a classe principal `SgPequenosReparosApplication.java` diretamente pela IDE.
+
+4. O backend ficará acessível em:
+
+   ```
+   http://localhost:8080
+   ```
+
+---
+
+## 💻 Execução do Frontend (React)
+
+1. No terminal, navegue até o diretório do frontend:
+
+   ```bash
+   cd Codigo/frontend/src
+   ```
+
+2. Instale as dependências:
+
+   ```bash
+   npm install
+   ```
+
+3. Inicie o servidor de desenvolvimento:
+
+   ```bash
+   npm start
+   ```
+
+4. A aplicação estará disponível em:
+
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
+Para mais detalhes, consulte o arquivo [LICENSE](LICENSE).
+
+---
