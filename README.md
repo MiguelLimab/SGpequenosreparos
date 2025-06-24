@@ -57,6 +57,11 @@ O **Sistema de Gestão para SG Pequenos Reparos** é uma aplicação web desenvo
 * **pgAdmin** (opcional)
 
 ---
+## 📦 Repositório
+
+O repositório oficial do projeto está hospedado no GitHub e pode ser acessado pelo seguinte link:
+
+https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2025-1-ti3-898110-grupo-8-sg.git
 
 ## ⚙️ Configuração do Banco de Dados (PostgreSQL)
 
