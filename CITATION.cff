@@ -1,31 +1,38 @@
 cff-version: 1.0.1
 message: Please cite this software using these metadata.
-title: 
+title: Sistema de Gestão para SG Pequenos Reparos
 authors:
-  - family-names: Sobrenome do aluno 1
-    given-names: Nome do aluno 1
-  - family-names: Sobrenome do aluno 2
-    given-names: Nome do aluno 2
-  - family-names: Sobrenome do aluno 3
-    given-names: Nome do aluno 3
-  - family-names: Sobrenome do aluno 4
-    given-names: Nome do aluno 4
-  - family-names: Sobrenome do aluno 5
-    given-names: Nome do aluno 5
-  - family-names: Sobrenome do aluno 6
-    given-names: Nome do aluno 6
+  - family-names: Parreiras Lima
+    given-names: Felipe Luiz
+  - family-names: Barcellos
+    given-names: Miguel Lima
+  - family-names: Pedrosa do Carmo Nonato
+    given-names: Gabriel
+  - family-names: Silva Vargas
+    given-names: Pedro Henrique
+  - family-names: Azevedo Flores
+    given-names: Henrique
+  - family-names: Rodrigues Louback
+    given-names: Walter Roberto
   - name-suffix: Professor
     affiliation: PUC Minas
     family-names: Alonso Veloso
     given-names: Eveline
   - name-suffix: Professor
     affiliation: PUC Minas
-    family-names: 
-    given-names: 
+    family-names: Ribeiro de Souza
+    given-names: Joana Gabriela
+  - name-suffix: Professor
+    affiliation: PUC Minas
+    family-names: Lacerda Marques
+    given-names: Ramon
 keywords:
-  - 
-  - 
-repository-code: 
+  - sistema de gestão
+  - pequenos reparos
+  - agendamento
+  - React
+  - Spring Boot
+repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2025-1-ti3-898110-grupo-8-sg.git
 license: CC-BY-4.0
 version: 1.0.0
-date-released:
+date-released: 2025-06-24
