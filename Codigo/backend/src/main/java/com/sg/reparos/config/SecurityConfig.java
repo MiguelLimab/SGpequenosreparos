@@ -30,14 +30,25 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                // .cors(cors -> cors.configurationSource(request -> {
+                // CorsConfiguration config = new CorsConfiguration();
+                // config.setAllowedOriginPatterns(List.of("*"));
+                // config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                // config.setAllowCredentials(true);
+                // config.setAllowedHeaders(List.of("*"));
+                // return config;
+                // }))
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOriginPatterns(List.of("*"));
+                    config.setAllowedOrigins(List
+                            .of("https://plf-es-2025-1-ti3-git-50f845-felipeparreiras-projects-42a5c9a3.vercel.app"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                    config.setExposedHeaders(List.of("Authorization"));
                     config.setAllowCredentials(true);
-                    config.setAllowedHeaders(List.of("*"));
                     return config;
                 }))
+
                 .authorizeHttpRequests(auth -> auth
                         // Swagger & Auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
