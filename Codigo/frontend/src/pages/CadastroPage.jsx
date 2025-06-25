@@ -56,7 +56,7 @@ const CadastroPage = () => {
     }
 
     try {
-      await axios.post('http://localhost:8081/api/usuarios/cadastro', formData, {
+      await api.post('/usuarios/cadastro', formData, {
         params: { code: verificationCode }
       });
       alert('Cadastro realizado com sucesso!');
