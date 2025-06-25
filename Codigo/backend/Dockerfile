@@ -4,11 +4,11 @@ FROM eclipse-temurin:21-jdk
 # Etapa 2: define o diretório de trabalho
 WORKDIR /app
 
-# Etapa 3: copia o JAR gerado pelo Maven para dentro do container
-COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
+# Etapa 3: copia o JAR direto da raiz da pasta backend
+COPY backend-0.0.1-SNAPSHOT.jar app.jar
 
-# Etapa 4: expõe a porta (ajuste se necessário)
+# Etapa 4: expõe a porta definida no application.properties
 EXPOSE 8081
 
-# Etapa 5: define o comando de execução do JAR
+# Etapa 5: executa o JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
