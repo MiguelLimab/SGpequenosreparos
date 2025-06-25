@@ -1,14 +1,26 @@
-# Etapa 1: usa imagem oficial do Java 21
-FROM eclipse-temurin:21-jdk
+# Etapa 1: imagem com Maven + JDK para build
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-# Etapa 2: define o diretório de trabalho
+# Define o diretório de trabalho no container
 WORKDIR /app
 
-# Etapa 3: copia o JAR direto da raiz da pasta backend
-COPY backend-0.0.1-SNAPSHOT.jar app.jar
+# Copia os arquivos do projeto
+COPY . .
 
-# Etapa 4: expõe a porta definida no application.properties
+# Compila o projeto e gera o JAR
+RUN mvn clean package -DskipTests
+
+# Etapa 2: imagem menor apenas com o JDK para rodar o app
+FROM eclipse-temurin:21-jdk
+
+# Define o diretório de trabalho no container final
+WORKDIR /app
+
+# Copia o JAR gerado na etapa de build
+COPY --from=builder /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
+
+# Expõe a porta definida
 EXPOSE 8081
 
-# Etapa 5: executa o JAR
+# Executa o JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
