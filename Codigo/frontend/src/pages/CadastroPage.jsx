@@ -5,7 +5,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Label from '../components/Label';
 import "../styles/pages/CadastroPage.css";
-import api from './api';
+import api from '../services/api';
 
 const CadastroPage = () => {
   const navigate = useNavigate();
