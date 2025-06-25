@@ -1,26 +1,21 @@
-# Etapa 1: imagem com Maven + JDK para build
+# Etapa 1: Build com Maven
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-# Define o diretório de trabalho no container
-WORKDIR /app
+WORKDIR /build
 
-# Copia os arquivos do projeto
+# Copia tudo e instala as dependências
 COPY . .
 
-# Compila o projeto e gera o JAR
 RUN mvn clean package -DskipTests
 
-# Etapa 2: imagem menor apenas com o JDK para rodar o app
+# Etapa 2: Runtime com JDK apenas
 FROM eclipse-temurin:21-jdk
 
-# Define o diretório de trabalho no container final
 WORKDIR /app
 
-# Copia o JAR gerado na etapa de build
-COPY --from=builder /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
+# Copia apenas o jar final da etapa anterior
+COPY --from=builder /build/target/backend-0.0.1-SNAPSHOT.jar /app/backend.jar
 
-# Expõe a porta definida
 EXPOSE 8081
 
-# Executa o JAR
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
