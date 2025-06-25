@@ -5,6 +5,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Label from '../components/Label';
 import "../styles/pages/CadastroPage.css";
+import api from './api';
 
 const CadastroPage = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const CadastroPage = () => {
   const sendSmsCode = async () => {
     setError('');
     try {
-      await axios.post('http://localhost:8081/api/notificacao/send-sms', null, {
+      await api.post('/notificacao/send-sms', null, {
         params: { telefone: formData.telefone }
       });
       alert('Código de verificação enviado para seu telefone.');
