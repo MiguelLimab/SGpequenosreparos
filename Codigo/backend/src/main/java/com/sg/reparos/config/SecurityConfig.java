@@ -46,6 +46,8 @@ public class SecurityConfig {
                         // Cadastro de usuários
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
 
+                        .requestMatchers("/").permitAll()
+
                         // Perfil do usuário
                         .requestMatchers("/api/usuarios/perfil").authenticated()
 
