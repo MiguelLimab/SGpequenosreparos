@@ -24,43 +24,86 @@ public class AuthenticationController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // @PostMapping("/login")
+    // public void login(@RequestBody AuthRequest authRequest, HttpServletResponse
+    // response) {
+    // try {
+    // UsernamePasswordAuthenticationToken authInputToken = new
+    // UsernamePasswordAuthenticationToken(
+    // authRequest.getUsername(),
+    // authRequest.getSenha());
+
+    // authenticationManager.authenticate(authInputToken);
+
+    // String token = jwtUtil.generateToken(authRequest.getUsername());
+
+    // Cookie cookie = new Cookie("token", token);
+    // cookie.setHttpOnly(true);
+    // cookie.setSecure(false); // Em produção true
+    // cookie.setPath("/");
+    // cookie.setMaxAge(60 * 60); // 1 hora
+    // cookie.setAttribute("SameSite", "Lax"); // <-- adiciona isso
+
+    // response.addCookie(cookie);
+    // response.setStatus(HttpServletResponse.SC_OK);
+
+    // } catch (AuthenticationException e) {
+    // throw new RuntimeException("Usuário ou senha inválidos");
+    // }
+    // }
     @PostMapping("/login")
-    public void login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest, HttpServletResponse response) {
         try {
             UsernamePasswordAuthenticationToken authInputToken = new UsernamePasswordAuthenticationToken(
-                    authRequest.getUsername(),
-                    authRequest.getSenha());
+                    authRequest.getUsername(), authRequest.getSenha());
 
             authenticationManager.authenticate(authInputToken);
 
             String token = jwtUtil.generateToken(authRequest.getUsername());
 
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false); // Em produção true
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60); // 1 hora
-            cookie.setAttribute("SameSite", "Lax"); // <-- adiciona isso
+            // ✅ Cookie com atributos corretos para Vercel + Render
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+                    .httpOnly(true)
+                    .secure(true) // ✅ obrigatório para SameSite=None funcionar
+                    .path("/")
+                    .sameSite("None") // ✅ necessário para cross-site
+                    .maxAge(60 * 60) // 1 hora
+                    .build();
 
-            response.addCookie(cookie);
-            response.setStatus(HttpServletResponse.SC_OK);
+            response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+            return ResponseEntity.ok().build();
 
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Usuário ou senha inválidos");
+            return ResponseEntity.status(401).body("Usuário ou senha inválidos");
         }
     }
 
+    // @PostMapping("/logout")
+    // public ResponseEntity<Void> logout(HttpServletResponse response) {
+    // ResponseCookie cookie = ResponseCookie.from("token", "")
+    // .httpOnly(true)
+    // .secure(false) // Em produção, deixe true para HTTPS
+    // .path("/")
+    // .maxAge(0) // Faz o cookie expirar imediatamente
+    // .sameSite("Lax") // Proteção básica contra CSRF
+    // .build();
+
+    // response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    // return ResponseEntity.noContent().build();
+    // }
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // Em produção, deixe true para HTTPS
+                .secure(true)
                 .path("/")
-                .maxAge(0) // Faz o cookie expirar imediatamente
-                .sameSite("Lax") // Proteção básica contra CSRF
+                .sameSite("None")
+                .maxAge(0)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.noContent().build();
     }
+
 }
