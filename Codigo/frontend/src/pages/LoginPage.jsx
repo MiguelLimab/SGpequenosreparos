@@ -23,10 +23,8 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const response = await loginService(formData.username, formData.senha);
-      const { token } = response.data;
-
-      await login(formData.username, token); // ✅ agora passa o token corretamente
+      await loginService(formData.username, formData.senha);
+      login(formData.username);
       navigate("/");
     } catch (err) {
       setError("Usuário ou senha inválidos");
@@ -55,15 +53,9 @@ const LoginPage = () => {
             onChange={handleChange}
             required
           />
-          <Button type="submit" variant="entrar">
-            Entrar
-          </Button>
-          <label className="login-box-register-label">
-            Não possui Cadastro?
-          </label>
-          <Link to="/cadastro" className="login-box-register-link">
-            Cadastrar
-          </Link>
+          <Button type="submit" variant="entrar">Entrar</Button>
+          <label className="login-box-register-label">Não possui Cadastro?</label>
+          <Link to="/cadastro" className="login-box-register-link">Cadastrar</Link>
         </form>
       </div>
     </div>

@@ -19,8 +19,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (username, token) => {
-    localStorage.setItem('token', token);
+  const login = async (username) => {
     setIsAuthenticated(true);
     setUsername(username);
 
@@ -38,7 +37,6 @@ const logout = async () => {
 };
 
 const logoutLocal = () => {
-  localStorage.removeItem('token'); // 🔥 limpa o token do armazenamento
   setIsAuthenticated(false);
   setUsername('');
   setUser(null);
