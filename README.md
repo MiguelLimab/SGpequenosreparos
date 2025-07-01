@@ -35,8 +35,6 @@ O **Sistema de Gestão para SG Pequenos Reparos** é uma aplicação web desenvo
 * Gabriel Pedrosa do Carmo Nonato
 * Pedro Henrique Silva Vargas
 * Henrique Azevedo Flores
-* Walter Roberto Rodrigues Louback
-
 ---
 
 ## 👩‍🏫 Professores responsáveis
